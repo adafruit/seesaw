@@ -10,6 +10,4 @@ TBD
 
 # Contributing
 
-Contributions are welcome! Please read our [Code of Conduct]
-(https://github.com/adafruit/seesaw/blob/master/CODE_OF_CONDUCT.md)
-before contributing to help this project stay welcoming.
+Contributions are welcome! Please read our [Code of Conduct](https://github.com/adafruit/seesaw/blob/master/CODE_OF_CONDUCT.md) before contributing to help this project stay welcoming.
