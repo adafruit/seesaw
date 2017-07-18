@@ -1,0 +1,441 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>7.0</ProjectVersion>
+    <ToolchainName>com.Atmel.ARMGCC.CPP</ToolchainName>
+    <ProjectGuid>dce6c7e3-ee26-4d79-826b-08594b9ad897</ProjectGuid>
+    <avrdevice>ATSAMD11D14AM</avrdevice>
+    <avrdeviceseries>none</avrdeviceseries>
+    <OutputType>Executable</OutputType>
+    <Language>CPP</Language>
+    <OutputFileName>$(MSBuildProjectName)</OutputFileName>
+    <OutputFileExtension>.elf</OutputFileExtension>
+    <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
+    <AssemblyName>qp_samd11</AssemblyName>
+    <Name>qp_samd11</Name>
+    <RootNamespace>qp_samd11</RootNamespace>
+    <ToolchainFlavour>Native</ToolchainFlavour>
+    <KeepTimersRunning>true</KeepTimersRunning>
+    <OverrideVtor>false</OverrideVtor>
+    <CacheFlash>true</CacheFlash>
+    <ProgFlashFromRam>true</ProgFlashFromRam>
+    <RamSnippetAddress>0x20000000</RamSnippetAddress>
+    <UncachedRange />
+    <preserveEEPROM>true</preserveEEPROM>
+    <OverrideVtorValue>exception_table</OverrideVtorValue>
+    <BootSegment>2</BootSegment>
+    <eraseonlaunchrule>0</eraseonlaunchrule>
+    <AsfFrameworkConfig>
+      <framework-data xmlns="">
+  <options />
+  <configurations />
+  <files />
+  <documentation help="" />
+  <offline-documentation help="" />
+  <dependencies>
+    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.34.1" />
+  </dependencies>
+</framework-data>
+    </AsfFrameworkConfig>
+    <avrtool>com.atmel.avrdbg.tool.edbg</avrtool>
+    <avrtoolserialnumber>ATML2178031800000846</avrtoolserialnumber>
+    <avrdeviceexpectedsignature>0x10030100</avrdeviceexpectedsignature>
+    <avrtoolinterface>SWD</avrtoolinterface>
+    <com_atmel_avrdbg_tool_edbg>
+      <ToolOptions>
+        <InterfaceProperties>
+          <SwdClock>2000000</SwdClock>
+        </InterfaceProperties>
+        <InterfaceName>SWD</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.edbg</ToolType>
+      <ToolNumber>ATML2178031800000846</ToolNumber>
+      <ToolName>EDBG</ToolName>
+    </com_atmel_avrdbg_tool_edbg>
+    <avrtoolinterfaceclock>2000000</avrtoolinterfaceclock>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <ToolchainSettings>
+      <ArmGccCpp>
+  <armgcc.common.outputfiles.hex>True</armgcc.common.outputfiles.hex>
+  <armgcc.common.outputfiles.lss>True</armgcc.common.outputfiles.lss>
+  <armgcc.common.outputfiles.eep>True</armgcc.common.outputfiles.eep>
+  <armgcc.common.outputfiles.bin>True</armgcc.common.outputfiles.bin>
+  <armgcc.common.outputfiles.srec>True</armgcc.common.outputfiles.srec>
+  <armgcc.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>NDEBUG</Value>
+    </ListValues>
+  </armgcc.compiler.symbols.DefSymbols>
+  <armgcc.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.70\include</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcc.compiler.directories.IncludePaths>
+  <armgcc.compiler.optimization.level>Optimize for size (-Os)</armgcc.compiler.optimization.level>
+  <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
+  <armgcc.compiler.warnings.AllWarnings>True</armgcc.compiler.warnings.AllWarnings>
+  <armgcccpp.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>NDEBUG</Value>
+    </ListValues>
+  </armgcccpp.compiler.symbols.DefSymbols>
+  <armgcccpp.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.70\include</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcccpp.compiler.directories.IncludePaths>
+  <armgcccpp.compiler.optimization.level>Optimize for size (-Os)</armgcccpp.compiler.optimization.level>
+  <armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>
+  <armgcccpp.compiler.warnings.AllWarnings>True</armgcccpp.compiler.warnings.AllWarnings>
+  <armgcccpp.linker.libraries.Libraries>
+    <ListValues>
+      <Value>libm</Value>
+    </ListValues>
+  </armgcccpp.linker.libraries.Libraries>
+  <armgcccpp.linker.libraries.LibrarySearchPaths>
+    <ListValues>
+      <Value>%24(ProjectDir)\Device_Startup</Value>
+    </ListValues>
+  </armgcccpp.linker.libraries.LibrarySearchPaths>
+  <armgcccpp.linker.optimization.GarbageCollectUnusedSections>True</armgcccpp.linker.optimization.GarbageCollectUnusedSections>
+  <armgcccpp.linker.miscellaneous.LinkerFlags>-Tsamd11d14am_flash.ld</armgcccpp.linker.miscellaneous.LinkerFlags>
+  <armgcccpp.assembler.general.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.70\include</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcccpp.assembler.general.IncludePaths>
+  <armgcccpp.preprocessingassembler.general.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.70\include</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcccpp.preprocessingassembler.general.IncludePaths>
+</ArmGccCpp>
+    </ToolchainSettings>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <ToolchainSettings>
+      <ArmGccCpp>
+  <armgcc.common.outputfiles.hex>True</armgcc.common.outputfiles.hex>
+  <armgcc.common.outputfiles.lss>True</armgcc.common.outputfiles.lss>
+  <armgcc.common.outputfiles.eep>True</armgcc.common.outputfiles.eep>
+  <armgcc.common.outputfiles.bin>True</armgcc.common.outputfiles.bin>
+  <armgcc.common.outputfiles.srec>True</armgcc.common.outputfiles.srec>
+  <armgcc.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>DEBUG</Value>
+    </ListValues>
+  </armgcc.compiler.symbols.DefSymbols>
+  <armgcc.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.70\include</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+      <Value>../qp/extras</Value>
+      <Value>../qp/include</Value>
+      <Value>../include</Value>
+      <Value>../source</Value>
+      <Value>../qp/ports/arm-cm/qxk/gnu</Value>
+    </ListValues>
+  </armgcc.compiler.directories.IncludePaths>
+  <armgcc.compiler.optimization.level>Optimize for size (-Os)</armgcc.compiler.optimization.level>
+  <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
+  <armgcc.compiler.optimization.DebugLevel>Maximum (-g3)</armgcc.compiler.optimization.DebugLevel>
+  <armgcc.compiler.warnings.AllWarnings>True</armgcc.compiler.warnings.AllWarnings>
+  <armgcccpp.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.70\include</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+      <Value>../qp/extras</Value>
+      <Value>../qp/include</Value>
+      <Value>../include</Value>
+      <Value>../source</Value>
+      <Value>../qp/ports/arm-cm/qxk/gnu</Value>
+      <Value>../bsp</Value>
+    </ListValues>
+  </armgcccpp.compiler.directories.IncludePaths>
+  <armgcccpp.compiler.optimization.level>Optimize for size (-Os)</armgcccpp.compiler.optimization.level>
+  <armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>
+  <armgcccpp.compiler.optimization.DebugLevel>Maximum (-g3)</armgcccpp.compiler.optimization.DebugLevel>
+  <armgcccpp.compiler.warnings.AllWarnings>True</armgcccpp.compiler.warnings.AllWarnings>
+  <armgcccpp.linker.general.UseNewlibNano>True</armgcccpp.linker.general.UseNewlibNano>
+  <armgcccpp.linker.general.AdditionalSpecs>Use syscall stubs (--specs=nosys.specs)</armgcccpp.linker.general.AdditionalSpecs>
+  <armgcccpp.linker.libraries.Libraries>
+    <ListValues>
+      <Value>libm</Value>
+    </ListValues>
+  </armgcccpp.linker.libraries.Libraries>
+  <armgcccpp.linker.libraries.LibrarySearchPaths>
+    <ListValues>
+      <Value>%24(ProjectDir)\Device_Startup</Value>
+    </ListValues>
+  </armgcccpp.linker.libraries.LibrarySearchPaths>
+  <armgcccpp.linker.optimization.GarbageCollectUnusedSections>True</armgcccpp.linker.optimization.GarbageCollectUnusedSections>
+  <armgcccpp.linker.memorysettings.ExternalRAM />
+  <armgcccpp.linker.miscellaneous.LinkerFlags>-Tsamd11d14am_flash.ld</armgcccpp.linker.miscellaneous.LinkerFlags>
+  <armgcccpp.assembler.general.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.70\include</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcccpp.assembler.general.IncludePaths>
+  <armgcccpp.assembler.debugging.DebugLevel>Default (-g)</armgcccpp.assembler.debugging.DebugLevel>
+  <armgcccpp.preprocessingassembler.general.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMD11_DFP\1.1.70\include</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcccpp.preprocessingassembler.general.IncludePaths>
+  <armgcccpp.preprocessingassembler.debugging.DebugLevel>Default (-Wa,-g)</armgcccpp.preprocessingassembler.debugging.DebugLevel>
+</ArmGccCpp>
+    </ToolchainSettings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="bsp\bsp_adc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="bsp\bsp_gpio.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Device_Startup\startup_samd11.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Device_Startup\system_samd11.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\AOADC.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\AODAC.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\Delegate.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\AOGPIO.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\hsm_id.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\I2CSlave.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\System.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="main.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\extras\bsp.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\extras\bsp.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\extras\event.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\extras\event.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\extras\fw_error.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\extras\fw_evt.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\extras\fw_evt.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\extras\fw_log.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\extras\fw_log.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\extras\fw_macro.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\extras\fw_pipe.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\extras\qp_extras.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qassert.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qep.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qequeue.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qf.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qk.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qmpool.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qpcpp.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qpset.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qp_port.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qs.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qstamp.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qs_dummy.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qv.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qxk.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\include\qxthread.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\ports\arm-cm\qxk\gnu\qep_port.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\ports\arm-cm\qxk\gnu\qf_port.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\ports\arm-cm\qxk\gnu\qs_port.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\ports\arm-cm\qxk\gnu\qxk_port.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\ports\arm-cm\qxk\gnu\qxk_port.S">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qep_hsm.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qep_msm.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qf_act.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qf_actq.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qf_defer.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qf_dyn.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qf_mem.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qf_pkg.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qf_ps.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qf_qact.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qf_qeq.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qf_qmact.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qf_time.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qxk.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qxk_mutex.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qxk_pkg.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qxk_sema.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="qp\source\qxk_xthr.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="source\AOADC.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="source\AODAC.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="source\Delegate.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="source\AOGPIO.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="source\I2CSlave.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="source\System.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bsp\" />
+    <Folder Include="Device_Startup\" />
+    <Folder Include="include\" />
+    <Folder Include="qp\" />
+    <Folder Include="qp\extras\" />
+    <Folder Include="qp\include\" />
+    <Folder Include="qp\ports\" />
+    <Folder Include="qp\ports\arm-cm\" />
+    <Folder Include="qp\ports\arm-cm\qxk\" />
+    <Folder Include="qp\ports\arm-cm\qxk\gnu\" />
+    <Folder Include="qp\source\" />
+    <Folder Include="source\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Device_Startup\samd11d14am_flash.ld">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="Device_Startup\samd11d14am_sram.ld">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="qp\include\au-ds.lnt">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="qp\include\au-misra-cpp.lnt">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="qp\include\qpcpp.lnt">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="qp\include\std.lnt">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="qp\source\README.txt">
+      <SubType>compile</SubType>
+    </None>
+  </ItemGroup>
+  <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
+</Project>
