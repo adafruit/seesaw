@@ -64,11 +64,13 @@ enum {
 	I2C_SLAVE_STOP_CFM,
 	I2C_SLAVE_REQUEST,
 	I2C_SLAVE_RECEIVE,
+	I2C_SLAVE_STOP_CONDITION,
 	
 	DELEGATE_START_REQ,
 	DELEGATE_START_CFM,
 	DELEGATE_STOP_REQ,
 	DELEGATE_STOP_CFM,
+	DELEGATE_DATA_READY,
     
 	ADC_START_REQ,
 	ADC_START_CFM,
@@ -84,7 +86,7 @@ enum {
 	SERCOM_START_CFM,
 	SERCOM_STOP_REQ,
 	SERCOM_STOP_CFM,
-	SERCOM_WRITE,
+	SERCOM_WRITE_REQ,
 	SERCOM_READ,
 	
     MAX_PUB_SIG
@@ -140,20 +142,27 @@ public:
 //* ==========================  DELEGATE ======================== *//
 class DelegateProcessCommand : public Evt {
 	public:
-		DelegateProcessCommand(uint8_t requesterId, uint8_t highByte, uint8_t lowByte, uint8_t len, Fifo *fifo) :
-		Evt(DELEGATE_PROCESS_COMMAND), _requesterId(requesterId), _highByte(highByte), _lowByte(lowByte), _len(len), _fifo(fifo)  {}
-	
-		DelegateProcessCommand(uint8_t requesterId, uint8_t highByte, uint8_t lowByte) :
-		Evt(DELEGATE_PROCESS_COMMAND), _requesterId(requesterId), _highByte(highByte), _lowByte(lowByte)  {}
+		DelegateProcessCommand(uint8_t requesterId, uint8_t highByte, uint8_t lowByte, uint8_t rw, Fifo *fifo) :
+		Evt(DELEGATE_PROCESS_COMMAND), _requesterId(requesterId), _highByte(highByte), _lowByte(lowByte), _rw(rw), _fifo(fifo)  {}
 		
 		uint8_t getRequesterId() const { return _requesterId; }
 		uint8_t getHighByte() const { return _highByte; }
 		uint8_t getLowByte() const { return _lowByte; }
-		uint8_t getLen() const { return _len; }
+		uint8_t getRw() const { return _rw; }
 		Fifo *getFifo() const { return _fifo; }
 	private:
-		uint8_t _requesterId, _highByte, _lowByte, _len;
+		uint8_t _requesterId, _highByte, _lowByte, _rw;
 		Fifo *_fifo;
+};
+
+class DelegateDataReady : public Evt {
+	public:
+	DelegateDataReady(uint8_t requesterId) :
+	Evt(DELEGATE_DATA_READY), _requesterId(requesterId)  {}
+	
+	uint8_t getRequesterId() const { return _requesterId; }
+	private:
+	uint8_t _requesterId;
 };
 
 class DelegateStartReq : public Evt {
@@ -210,6 +219,16 @@ class DACStopCfm : public ErrorEvt {
 
 //* ==========================  SERCOM ======================= *//
 
+class SercomStartReq : public Evt {
+	public:
+	SercomStartReq(Fifo *rxFifo) :
+	Evt(SERCOM_START_REQ), _rx_fifo(rxFifo) {}
+	
+	Fifo *getRxFifo() const { return _rx_fifo; }
+	private:
+	Fifo *_rx_fifo;
+};
+
 //TODO: add ID to these
 class SERCOMStartCfm : public ErrorEvt {
 	public:
@@ -221,6 +240,18 @@ class SERCOMStopCfm : public ErrorEvt {
 	public:
 	SERCOMStopCfm(uint16_t seq, Error error, Reason reason = 0) :
 	ErrorEvt(SERCOM_STOP_CFM, seq, error, reason) {}
+};
+
+class SercomWriteReq : public Evt {
+	public:
+	SercomWriteReq(uint8_t requesterId, Fifo *source) :
+	Evt(SERCOM_WRITE_REQ), _source(source) {}
+	
+	uint8_t getRequesterId() const { return _requesterId; }
+	Fifo *getSource() const { return _source; }
+	private:
+	uint8_t _requesterId;
+	Fifo *_source;
 };
 
 //* ==========================  I2C SLAVE ======================= *//

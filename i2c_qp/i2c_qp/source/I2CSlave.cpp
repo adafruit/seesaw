@@ -42,10 +42,10 @@ Q_DEFINE_THIS_FILE
 
 using namespace FW;
 
-volatile bool transmissionBegun;
-
 static Fifo *m_inFifo;
 static Fifo *m_outFifo;
+
+volatile bool slave_busy;
 
 I2CSlave::I2CSlave( Sercom *sercom) :
     QActive((QStateHandler)&I2CSlave::InitialPseudoState), 
@@ -59,6 +59,9 @@ QState I2CSlave::InitialPseudoState(I2CSlave * const me, QEvt const * const e) {
       
 	me->subscribe(I2C_SLAVE_REQUEST);
 	me->subscribe(I2C_SLAVE_RECEIVE);
+	me->subscribe(I2C_SLAVE_STOP_CONDITION);
+	
+	me->subscribe(DELEGATE_DATA_READY);
 	  
     return Q_TRAN(&I2CSlave::Root);
 }
@@ -121,10 +124,10 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
 			enableWIRE( me->m_sercom );
 			NVIC_ClearPendingIRQ( CONFIG_I2C_SLAVE_IRQn );
 			
+			slave_busy = false;
+			
 			pinPeripheral(CONFIG_I2C_SLAVE_PIN_SDA, 2);
 			pinPeripheral(CONFIG_I2C_SLAVE_PIN_SCL, 2);
-			
-			transmissionBegun = false;
 			
 			I2CSlaveStartReq const &req = static_cast<I2CSlaveStartReq const &>(*e);
 			m_inFifo = req.getInFifo();
@@ -149,6 +152,33 @@ QState I2CSlave::Started(I2CSlave * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+		case Q_INIT_SIG: {
+            status = Q_TRAN(&I2CSlave::Idle);
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        default: {
+            status = Q_SUPER(&I2CSlave::Root);
+            break;
+        }
+    }
+    return status;
+}
+
+QState I2CSlave::Idle(I2CSlave * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+			
+			slave_busy = false;
 			
             status = Q_HANDLED();
             break;
@@ -158,36 +188,58 @@ QState I2CSlave::Started(I2CSlave * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
-		case I2C_SLAVE_REQUEST: {
-			LOG_EVENT(e);
-			status = Q_HANDLED();
-			break;
-		}
 		case I2C_SLAVE_RECEIVE: {
 			LOG_EVENT(e);
-			status = Q_HANDLED();
-			
-			//grab the command bytes
-			uint8_t cmd[2];
-			m_inFifo->Read(cmd, 2);
-			
-			//send to the delegate to process
-			Evt *evt = new DelegateProcessCommand(me->m_id, cmd[0], cmd[1], 1, m_inFifo);
-			QF::PUBLISH(evt, me);
-			
+			status = Q_TRAN(&I2CSlave::Busy);
 			break;
 		}
         default: {
-            status = Q_SUPER(&I2CSlave::Root);
+            status = Q_SUPER(&I2CSlave::Started);
             break;
         }
     }
     return status;
 }
 
-void I2CSlave::RequestCallback(){
-	Evt *evt = new Evt(I2C_SLAVE_REQUEST);
-	QF::PUBLISH(evt, 0);
+QState I2CSlave::Busy(I2CSlave * const me, QEvt const * const e) {
+	QState status;
+	switch (e->sig) {
+		case Q_ENTRY_SIG: {
+			LOG_EVENT(e);
+			
+			//grab the command bytes
+			m_inFifo->Read(me->m_cmd, 2);
+			
+			//send to the delegate to process write if there's any data
+			if(m_inFifo->GetUsedCount()){
+				Evt *evt = new DelegateProcessCommand(me->m_id, me->m_cmd[0], me->m_cmd[1], true, m_inFifo);
+				QF::PUBLISH(evt, me);
+			}
+			else {
+				//send to the delegate to get data to read
+				Evt *evt = new DelegateProcessCommand(me->m_id, me->m_cmd[0], me->m_cmd[1], false, m_outFifo);
+				QF::PUBLISH(evt, me);
+			}
+			
+			status = Q_HANDLED();
+			
+			break;
+		}
+		case DELEGATE_DATA_READY: {
+			status = Q_TRAN(&I2CSlave::Idle);
+			break;
+		}
+		case Q_EXIT_SIG: {
+			LOG_EVENT(e);
+			status = Q_HANDLED();
+			break;
+		}
+		default: {
+			status = Q_SUPER(&I2CSlave::Started);
+			break;
+		}
+	}
+	return status;
 }
 
 void I2CSlave::ReceiveCallback(){
@@ -198,27 +250,26 @@ void I2CSlave::ReceiveCallback(){
 extern "C" {
 	void CONFIG_I2C_SLAVE_HANDLER(void){
 		QXK_ISR_ENTRY();
-		if(isStopDetectedWIRE( CONFIG_I2C_SLAVE_SERCOM ) ||
+		if( isAddressMatch( CONFIG_I2C_SLAVE_SERCOM ) && slave_busy ){
+			prepareNackBitWIRE(CONFIG_I2C_SLAVE_SERCOM);
+			prepareCommandBitsWire(CONFIG_I2C_SLAVE_SERCOM, 0x03);
+		}
+		else if(isStopDetectedWIRE( CONFIG_I2C_SLAVE_SERCOM ) ||
 		(isAddressMatch( CONFIG_I2C_SLAVE_SERCOM ) && isRestartDetectedWIRE( CONFIG_I2C_SLAVE_SERCOM ) && !isMasterReadOperationWIRE( CONFIG_I2C_SLAVE_SERCOM ))) //Stop or Restart detected
 		{
-			prepareAckBitWIRE( CONFIG_I2C_SLAVE_SERCOM );
-			prepareCommandBitsWire( CONFIG_I2C_SLAVE_SERCOM, 0x03);
 			
+			prepareAckBitWIRE(CONFIG_I2C_SLAVE_SERCOM);
+			prepareCommandBitsWire(CONFIG_I2C_SLAVE_SERCOM, 0x03);
+			
+			slave_busy = true;
 			I2CSlave::ReceiveCallback();
 		}
 		else if(isAddressMatch(CONFIG_I2C_SLAVE_SERCOM))  //Address Match
 		{
+			//otherwise acknowledge right away to clear the interrupt
 			prepareAckBitWIRE(CONFIG_I2C_SLAVE_SERCOM);
 			prepareCommandBitsWire(CONFIG_I2C_SLAVE_SERCOM, 0x03);
-
-			if(isMasterReadOperationWIRE(CONFIG_I2C_SLAVE_SERCOM)) //Is a request ?
-			{
-				//m_outFifo->Reset();
-
-				transmissionBegun = true;
-				
-				I2CSlave::RequestCallback();
-			}
+			
 		}
 		else if(isDataReadyWIRE(CONFIG_I2C_SLAVE_SERCOM))
 		{
@@ -228,7 +279,7 @@ extern "C" {
 				
 				uint8_t count = m_outFifo->Read(&c, 1);
 
-				transmissionBegun = sendDataSlaveWIRE(CONFIG_I2C_SLAVE_SERCOM, (count ? c : 0xff) );
+				sendDataSlaveWIRE(CONFIG_I2C_SLAVE_SERCOM, (count ? c : 0xff) );
 			}
 			else { //Received data
 				uint8_t c = readDataWIRE(CONFIG_I2C_SLAVE_SERCOM);

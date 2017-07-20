@@ -35,6 +35,7 @@
 #include "event.h"
 
 #include "RegisterMap.h"
+#include "SeesawConfig.h"
 #include "PinMap.h"
 
 #include "bsp_gpio.h"
@@ -144,34 +145,70 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 			uint8_t highByte = req.getHighByte();
 			uint8_t lowByte = req.getLowByte();
 			
-			switch(highByte){
-				
-				//We don't have a separate AO to handle STATUS or GPIO stuff since it's simple and a waste of resources
-				case SEESAW_STATUS_BASE: {
-					break;
-				}
-				case SEESAW_GPIO_BASE: {
+			if(!req.getRw()){
+				switch(highByte){
 					
-					Fifo *fifo = req.getFifo();
-					uint8_t dataByte;
-					fifo->Read(&dataByte, 1);
-					switch(lowByte){
-						case SEESAW_GPIO_PINMODE_CMD: {
-							_PinDescription pin = g_APinDescription[SEESAW_GPIO_GET_PINMODE_PIN(dataByte)];
-							gpio_init(pin.ulPort, pin.ulPin, SEESAW_GPIO_GET_PINMODE_MODE(dataByte));
-							break;
+					//We don't have a separate AO to handle STATUS or GPIO stuff since it's simple and a waste of resources
+					case SEESAW_STATUS_BASE: {
+						Fifo *fifo = req.getFifo();
+						switch(lowByte){
+							case SEESAW_STATUS_VERSION:{
+								uint8_t r = CONFIG_VERSION;
+								fifo->Write(&r, 1);
+								Evt *evt = new DelegateDataReady(req.getRequesterId());
+								QF::PUBLISH(evt, me);
+								break;
+							}
 						}
-						case SEESAW_GPIO_TOGGLE_CMD: {
-							_PinDescription pin = g_APinDescription[SEESAW_GPIO_GET_TOGGLE_PIN(dataByte)];
-							gpio_toggle(pin.ulPort, pin.ulPin);
-							break;
-						}
-						//TODO: fill in GPIO read, write commands following this format
+						break;
 					}
-					break;
+					default:
+						break;
 				}
-				default:
-					break;
+			}
+			
+			else{
+				switch(highByte){
+				
+					//We don't have a separate AO to handle STATUS or GPIO stuff since it's simple and a waste of resources
+					case SEESAW_STATUS_BASE: {
+						break;
+					}
+					case SEESAW_GPIO_BASE: {
+					
+						Fifo *fifo = req.getFifo();
+						uint8_t dataByte;
+						fifo->Read(&dataByte, 1);
+						switch(lowByte){
+							case SEESAW_GPIO_PINMODE_CMD: {
+								_PinDescription pin = g_APinDescription[SEESAW_GPIO_GET_PINMODE_PIN(dataByte)];
+								gpio_init(pin.ulPort, pin.ulPin, SEESAW_GPIO_GET_PINMODE_MODE(dataByte));
+								break;
+							}
+							case SEESAW_GPIO_TOGGLE_CMD: {
+								_PinDescription pin = g_APinDescription[SEESAW_GPIO_GET_TOGGLE_PIN(dataByte)];
+								gpio_toggle(pin.ulPort, pin.ulPin);
+								break;
+							}
+							//TODO: fill in more stuff
+						}
+						
+						Evt *evt = new DelegateDataReady(req.getRequesterId());
+						QF::PUBLISH(evt, me);
+						break;
+					}
+					case SEESAW_SERCOM_BASE:{
+						switch(lowByte){
+							case SEESAW_SERCOM_DATA:{
+								Evt *evt = new SercomWriteReq(req.getRequesterId(), req.getFifo());
+								QF::PUBLISH(evt, me);
+								break;
+							}
+						}
+					}
+					default:
+						break;
+				}
 			}
 			status = Q_HANDLED();
 			

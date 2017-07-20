@@ -76,13 +76,23 @@ protected:
 #if CONFIG_I2C_SLAVE
 	enum {
 		I2C_SLAVE_OUT_FIFO_ORDER = 5,
-		I2C_SLAVE_IN_FIFO_ORDER = 5
+		I2C_SLAVE_IN_FIFO_ORDER = 5,
 	};
 	
 	uint8_t m_I2CSlaveOutFifoStor[1 << I2C_SLAVE_OUT_FIFO_ORDER];
 	uint8_t m_I2CSlaveInFifoStor[1 << I2C_SLAVE_IN_FIFO_ORDER];
 	Fifo m_I2CSlaveOutFifo;
 	Fifo m_I2CSlaveInFifo;
+#endif
+
+	//TODO: to use multiple sercoms this will need to be an array
+#if CONFIG_SERCOM5
+	enum {
+		SERCOM_FIFO_ORDER = 5,
+	};
+	uint8_t m_sercom5RxFifoStor[1 << SERCOM_FIFO_ORDER];
+	Fifo m_sercom5RxFifo;
+
 #endif
 
 

@@ -49,12 +49,16 @@ public:
     }
 	static void RequestCallback();
 	static void ReceiveCallback();
+	static void StopCallback();
 
 protected:
     static QState InitialPseudoState(I2CSlave * const me, QEvt const * const e);
     static QState Root(I2CSlave * const me, QEvt const * const e);
     static QState Stopped(I2CSlave * const me, QEvt const * const e);
     static QState Started(I2CSlave * const me, QEvt const * const e);
+	
+    static QState Idle(I2CSlave * const me, QEvt const * const e);
+	static QState Busy(I2CSlave * const me, QEvt const * const e);
 
     enum {
         EVT_QUEUE_COUNT = 16,
@@ -63,6 +67,8 @@ protected:
     uint8_t m_id;
 	uint16_t m_nextSequence;
     char const * m_name;
+	
+	uint8_t m_cmd[2];
 	
 	Sercom *m_sercom;
 };

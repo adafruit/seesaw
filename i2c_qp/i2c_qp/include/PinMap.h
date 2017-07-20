@@ -21,8 +21,8 @@ typedef struct _PinDescription
 
 const PinDescription g_APinDescription[]=
 {
-  { PORTA, 11 },
-  { PORTA, 10 },
+  { PORTB, 23 },
+  { PORTB, 22 },
   { PORTA, 17 },
   { PORTA, 2 },
   { PORTB, 8 },

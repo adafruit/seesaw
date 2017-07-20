@@ -43,9 +43,16 @@ using namespace FW;
 System::System() :
     QActive((QStateHandler)&System::InitialPseudoState), 
     m_id(SYSTEM), m_name("SYSTEM"),
-    m_testTimer(this, SYSTEM_TEST_TIMER),
-    m_I2CSlaveOutFifo(m_I2CSlaveOutFifoStor, I2C_SLAVE_OUT_FIFO_ORDER),
-    m_I2CSlaveInFifo(m_I2CSlaveInFifoStor, I2C_SLAVE_IN_FIFO_ORDER) {}
+    m_testTimer(this, SYSTEM_TEST_TIMER)
+#if CONFIG_I2C_SLAVE
+    ,m_I2CSlaveOutFifo(m_I2CSlaveOutFifoStor, I2C_SLAVE_OUT_FIFO_ORDER),
+    m_I2CSlaveInFifo(m_I2CSlaveInFifoStor, I2C_SLAVE_IN_FIFO_ORDER) 
+#endif
+
+#if CONFIG_SERCOM5
+	,m_sercom5RxFifo(m_sercom5RxFifoStor, SERCOM_FIFO_ORDER)
+#endif
+	{}
 
 QState System::InitialPseudoState(System * const me, QEvt const * const e) {
     (void)e;
@@ -236,7 +243,7 @@ QState System::Starting(System * const me, QEvt const * const e) {
 
 //TODO: this should be broken out target specific sercoms	
 #if CONFIG_SERCOM5
-			evt = new Evt(SERCOM_START_REQ);
+			evt = new SercomStartReq(&me->m_sercom5RxFifo);
 			QF::PUBLISH(evt, me);
 #endif
 

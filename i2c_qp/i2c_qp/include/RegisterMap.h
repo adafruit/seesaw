@@ -3,6 +3,8 @@
 
 #define SEESAW_STATUS_BASE 0x00
 
+#define SEESAW_STATUS_VERSION 0x02
+
 //* ============== GPIO =================== *//
 #define SEESAW_GPIO_BASE 0x01
 
@@ -38,5 +40,11 @@
 #define SEESAW_GPIO_TOGGLE_CMD 0x03
 #define SEESAW_GPIO_TOGGLE_PIN_BITS 0x7F
 #define SEESAW_GPIO_GET_TOGGLE_PIN(_cmd) ( _cmd & SEESAW_GPIO_TOGGLE_PIN_BITS )
+
+//* ============== SERCOM =================== *//
+#define SEESAW_SERCOM_BASE 0x02
+
+#define SEESAW_SERCOM_DATA 0x01
+#define SEESAW_SERCOM_BAUD 0x02
 
 #endif

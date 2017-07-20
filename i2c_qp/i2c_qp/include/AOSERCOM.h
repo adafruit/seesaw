@@ -53,6 +53,9 @@ protected:
     static QState Root(AOSERCOM * const me, QEvt const * const e);
     static QState Stopped(AOSERCOM * const me, QEvt const * const e);
     static QState Started(AOSERCOM * const me, QEvt const * const e);
+	
+	static QState UART(AOSERCOM * const me, QEvt const * const e);
+	static QState SPI(AOSERCOM * const me, QEvt const * const e);
 
     enum {
         EVT_QUEUE_COUNT = 8,
