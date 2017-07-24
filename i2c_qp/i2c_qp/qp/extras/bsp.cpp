@@ -80,9 +80,8 @@ void QF::onStartup(void) {
 	SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 	NVIC_SetPriority(SysTick_IRQn, SYSTICK_PRIO);
 	
-#if CONFIG_I2C_SLAVE
 	NVIC_SetPriority(CONFIG_I2C_SLAVE_IRQn, I2C_SLAVE_ISR_PRIO);
-#endif
+	NVIC_SetPriority(SERCOM5_IRQn, SERCOM5_ISR_PRIO);
     
     // set priorities of ALL ISRs used in the system, see NOTE00
     //
@@ -96,6 +95,10 @@ void QF::onStartup(void) {
     NVIC_EnableIRQ(SysTick_IRQn);
 #if CONFIG_I2C_SLAVE
 	NVIC_EnableIRQ(CONFIG_I2C_SLAVE_IRQn);
+#endif
+
+#if CONFIG_SERCOM5
+	NVIC_EnableIRQ(SERCOM5_IRQn);
 #endif
 }
 

@@ -45,6 +45,8 @@ using namespace FW;
 static Fifo *m_inFifo;
 static Fifo *m_outFifo;
 
+static Fifo *m_defaultOutFifo;
+
 volatile bool slave_busy;
 
 I2CSlave::I2CSlave( Sercom *sercom) :
@@ -131,7 +133,11 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
 			
 			I2CSlaveStartReq const &req = static_cast<I2CSlaveStartReq const &>(*e);
 			m_inFifo = req.getInFifo();
-			m_outFifo = req.getOutFifo();
+			m_defaultOutFifo = req.getOutFifo();
+			m_outFifo = m_defaultOutFifo;
+			
+			m_inFifo->Reset();
+			m_outFifo->Reset();
 			
 			Evt *evt = new I2CSlaveStartCfm(req.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
@@ -161,9 +167,18 @@ QState I2CSlave::Started(I2CSlave * const me, QEvt const * const e) {
         }
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
+			enableWIRE( me->m_sercom );
             status = Q_HANDLED();
             break;
         }
+		case I2C_SLAVE_STOP_REQ: {
+			LOG_EVENT(e);
+			Evt const &req = EVT_CAST(*e);
+			Evt *evt = new I2CSlaveStopCfm(req.GetSeq(), ERROR_SUCCESS);
+			QF::PUBLISH(evt, me);
+			status = Q_TRAN(I2CSlave::Stopped);
+			break;
+		}
         default: {
             status = Q_SUPER(&I2CSlave::Root);
             break;
@@ -207,6 +222,10 @@ QState I2CSlave::Busy(I2CSlave * const me, QEvt const * const e) {
 		case Q_ENTRY_SIG: {
 			LOG_EVENT(e);
 			
+			//assume default output fifo
+			m_outFifo = m_defaultOutFifo;
+			m_outFifo->Reset();
+			
 			//grab the command bytes
 			m_inFifo->Read(me->m_cmd, 2);
 			
@@ -226,7 +245,13 @@ QState I2CSlave::Busy(I2CSlave * const me, QEvt const * const e) {
 			break;
 		}
 		case DELEGATE_DATA_READY: {
-			status = Q_TRAN(&I2CSlave::Idle);
+			DelegateDataReady const &req = static_cast<DelegateDataReady const &>(*e);
+			if(req.getRequesterId() == me->m_id){
+				if(req.getFifo() != NULL){
+					 m_outFifo = req.getFifo();
+				}
+				status = Q_TRAN(&I2CSlave::Idle);
+			}
 			break;
 		}
 		case Q_EXIT_SIG: {

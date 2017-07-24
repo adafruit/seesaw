@@ -3,7 +3,7 @@
 
 #define CONFIG_VERSION 0x55
 
-#define CONFIG_ADC 1
+#define CONFIG_ADC 0
 
 #define CONFIG_DAC 0
 

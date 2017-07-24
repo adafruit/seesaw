@@ -132,6 +132,14 @@ QState AOADC::Started(AOADC * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
+		case ADC_STOP_REQ: {
+			LOG_EVENT(e);
+			Evt const &req = EVT_CAST(*e);
+			Evt *evt = new ADCStopCfm(req.GetSeq(), ERROR_SUCCESS);
+			QF::PUBLISH(evt, me);
+			status = Q_TRAN(AOADC::Stopped);
+			break;
+		}
         default: {
             status = Q_SUPER(&AOADC::Root);
             break;

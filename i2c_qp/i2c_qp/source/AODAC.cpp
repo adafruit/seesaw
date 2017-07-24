@@ -134,6 +134,14 @@ QState AODAC::Started(AODAC * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
+		case DAC_STOP_REQ: {
+			LOG_EVENT(e);
+			Evt const &req = EVT_CAST(*e);
+			Evt *evt = new DACStopCfm(req.GetSeq(), ERROR_SUCCESS);
+			QF::PUBLISH(evt, me);
+			status = Q_TRAN(AODAC::Stopped);
+			break;
+		}
         default: {
             status = Q_SUPER(&AODAC::Root);
             break;

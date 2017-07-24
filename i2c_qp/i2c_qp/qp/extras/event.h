@@ -86,8 +86,11 @@ enum {
 	SERCOM_START_CFM,
 	SERCOM_STOP_REQ,
 	SERCOM_STOP_CFM,
-	SERCOM_WRITE_REQ,
-	SERCOM_READ,
+	SERCOM_WRITE_DATA_REQ,
+	SERCOM_READ_DATA_REQ,
+	SERCOM_WRITE_REG_REQ,
+	SERCOM_READ_REG_REQ,
+	SERCOM_RX_INTERRUPT,
 	
     MAX_PUB_SIG
 };
@@ -157,12 +160,17 @@ class DelegateProcessCommand : public Evt {
 
 class DelegateDataReady : public Evt {
 	public:
-	DelegateDataReady(uint8_t requesterId) :
-	Evt(DELEGATE_DATA_READY), _requesterId(requesterId)  {}
+	DelegateDataReady(uint8_t requesterId)  :
+	Evt(DELEGATE_DATA_READY), _requesterId(requesterId), _fifo(NULL)  {}
+		
+	DelegateDataReady(uint8_t requesterId, Fifo *fifo) :
+	Evt(DELEGATE_DATA_READY), _requesterId(requesterId), _fifo(fifo)  {}
 	
 	uint8_t getRequesterId() const { return _requesterId; }
+	Fifo *getFifo() const { return _fifo; }
 	private:
 	uint8_t _requesterId;
+	Fifo *_fifo;
 };
 
 class DelegateStartReq : public Evt {
@@ -242,16 +250,41 @@ class SERCOMStopCfm : public ErrorEvt {
 	ErrorEvt(SERCOM_STOP_CFM, seq, error, reason) {}
 };
 
-class SercomWriteReq : public Evt {
+class SercomWriteDataReq : public Evt {
 	public:
-	SercomWriteReq(uint8_t requesterId, Fifo *source) :
-	Evt(SERCOM_WRITE_REQ), _source(source) {}
+	SercomWriteDataReq(uint8_t requesterId, Fifo *source) :
+	Evt(SERCOM_WRITE_DATA_REQ), _source(source) {}
 	
 	uint8_t getRequesterId() const { return _requesterId; }
 	Fifo *getSource() const { return _source; }
 	private:
 	uint8_t _requesterId;
 	Fifo *_source;
+};
+
+class SercomReadDataReq : public Evt {
+	public:
+	SercomReadDataReq(uint8_t requesterId) : 
+	Evt(SERCOM_READ_DATA_REQ), _requesterId(requesterId) {}
+		
+	uint8_t getRequesterId() const { return _requesterId; }
+	private:
+	uint8_t _requesterId;
+	
+};
+
+class SercomReadRegReq : public Evt {
+	public:
+	SercomReadRegReq(uint8_t requesterId, uint8_t reg, Fifo *dest) : 
+	Evt(SERCOM_READ_REG_REQ), _requesterId(requesterId), _reg(reg), _dest(dest) {}
+		
+	uint8_t getRequesterId() const { return _requesterId; }
+	uint8_t getReg() const { return _reg; }
+	Fifo *getDest() const { return _dest; }
+		
+	private:
+	uint8_t _requesterId, _reg;
+	Fifo *_dest;	
 };
 
 //* ==========================  I2C SLAVE ======================= *//

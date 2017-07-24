@@ -48,6 +48,7 @@ Q_ASSERT_COMPILE(MAX_KERNEL_UNAWARE_CMSIS_PRI <= QF_AWARE_ISR_CMSIS_PRI);
 enum KernelAwareISRs {
     SYSTICK_PRIO            = QF_AWARE_ISR_CMSIS_PRI,
 	I2C_SLAVE_ISR_PRIO		= QF_AWARE_ISR_CMSIS_PRI + 1,
+	SERCOM5_ISR_PRIO		= QF_AWARE_ISR_CMSIS_PRI + 1,
     MAX_KERNEL_AWARE_CMSIS_PRI // keep always last
 };
 // "kernel-aware" interrupts should not overlap the PendSV priority

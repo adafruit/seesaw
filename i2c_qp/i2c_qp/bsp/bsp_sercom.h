@@ -173,19 +173,6 @@ void resetWIRE(Sercom *sercom);
 
 void enableWIRE(Sercom *sercom);
 
-inline void disableWIRE(Sercom *sercom)
-{
-  // I2C Master and Slave modes share the ENABLE bit function.
-
-  // Enable the I²C master mode
-  sercom->I2CM.CTRLA.bit.ENABLE = 0 ;
-
-  while ( sercom->I2CM.SYNCBUSY.bit.ENABLE != 0 )
-  {
-    // Waiting the enable bit from SYNCBUSY is equal to 0;
-  }
-}
-
 inline void disableInterruptsWIRE( Sercom * sercom )
 {
 	// clear the interrupt register
@@ -200,6 +187,20 @@ inline void enableInterruptsWIRE( Sercom * sercom )
   sercom->I2CS.INTENSET.reg = SERCOM_I2CS_INTENSET_PREC |   // Stop
                               SERCOM_I2CS_INTENSET_AMATCH | // Address Match
                               SERCOM_I2CS_INTENSET_DRDY ;   // Data Ready
+}
+
+inline void disableWIRE(Sercom *sercom)
+{
+	disableInterruptsWIRE( sercom );
+	// I2C Master and Slave modes share the ENABLE bit function.
+
+	// Enable the I²C master mode
+	sercom->I2CM.CTRLA.bit.ENABLE = 0 ;
+
+	while ( sercom->I2CM.SYNCBUSY.bit.ENABLE != 0 )
+	{
+		// Waiting the enable bit from SYNCBUSY is equal to 0;
+	}
 }
 
 void initSlaveWIRE( Sercom *sercom, uint8_t ucAddress );
@@ -278,6 +279,10 @@ inline uint8_t readDataUART( Sercom * sercom )
   return sercom->USART.DATA.bit.DATA;
 }
 
+inline bool isEnabledUART( Sercom * sercom )
+{
+	return sercom->USART.CTRLA.bit.ENABLE;
+}
 
 int writeDataUART( Sercom * sercom ,uint8_t data);
 

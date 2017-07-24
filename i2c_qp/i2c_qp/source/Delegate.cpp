@@ -146,6 +146,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 			uint8_t lowByte = req.getLowByte();
 			
 			if(!req.getRw()){
+				//we are reading
 				switch(highByte){
 					
 					//We don't have a separate AO to handle STATUS or GPIO stuff since it's simple and a waste of resources
@@ -162,16 +163,51 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						}
 						break;
 					}
+					case SEESAW_SERCOM0_BASE:
+					case SEESAW_SERCOM1_BASE:
+					case SEESAW_SERCOM2_BASE:
+					case SEESAW_SERCOM3_BASE:
+					case SEESAW_SERCOM4_BASE:
+					case SEESAW_SERCOM5_BASE:{
+						switch(lowByte){
+							//TODO: fix for more sercoms
+							case SEESAW_SERCOM_STATUS:
+							case SEESAW_SERCOM_INTEN:
+							case SEESAW_SERCOM_BAUD:{
+								Evt *evt = new SercomReadRegReq(req.getRequesterId(), lowByte, req.getFifo());
+								QF::PUBLISH(evt, me);
+								break;
+							}
+							case SEESAW_SERCOM_DATA:{
+								Evt *evt = new SercomReadDataReq(req.getRequesterId());
+								QF::PUBLISH(evt, me);
+								break;
+							}
+							default: {
+								__BKPT();
+								Q_ASSERT(0);
+							}
+						}
+						break;
+					}
 					default:
 						break;
 				}
 			}
 			
 			else{
+				//we are writing
 				switch(highByte){
 				
 					//We don't have a separate AO to handle STATUS or GPIO stuff since it's simple and a waste of resources
 					case SEESAW_STATUS_BASE: {
+						switch(lowByte){
+							case SEESAW_STATUS_SWRST:{
+								Evt *evt = new Evt(SYSTEM_STOP_REQ);
+								QF::PUBLISH(evt, me);
+								break;
+							}
+						}
 						break;
 					}
 					case SEESAW_GPIO_BASE: {
@@ -197,10 +233,16 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						QF::PUBLISH(evt, me);
 						break;
 					}
-					case SEESAW_SERCOM_BASE:{
+					case SEESAW_SERCOM0_BASE:
+					case SEESAW_SERCOM1_BASE:
+					case SEESAW_SERCOM2_BASE:
+					case SEESAW_SERCOM3_BASE:
+					case SEESAW_SERCOM4_BASE:
+					case SEESAW_SERCOM5_BASE:{
 						switch(lowByte){
+							//TODO: fix for more sercoms
 							case SEESAW_SERCOM_DATA:{
-								Evt *evt = new SercomWriteReq(req.getRequesterId(), req.getFifo());
+								Evt *evt = new SercomWriteDataReq(req.getRequesterId(), req.getFifo());
 								QF::PUBLISH(evt, me);
 								break;
 							}
@@ -212,6 +254,14 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 			}
 			status = Q_HANDLED();
 			
+			break;
+		}
+		case DELEGATE_STOP_REQ: {
+			LOG_EVENT(e);
+			Evt const &req = EVT_CAST(*e);
+			Evt *evt = new DelegateStopCfm(req.GetSeq(), ERROR_SUCCESS);
+			QF::PUBLISH(evt, me);
+			status = Q_TRAN(Delegate::Stopped);
 			break;
 		}
         default: {

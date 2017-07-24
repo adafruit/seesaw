@@ -47,6 +47,8 @@ public:
     void Start(uint8_t prio) {
         QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
     }
+	
+	static void RxCallback();
 
 protected:
     static QState InitialPseudoState(AOSERCOM * const me, QEvt const * const e);
@@ -66,6 +68,59 @@ protected:
     char const * m_name;
 	
 	Sercom *m_sercom;
+	
+	// The status register
+    struct status {
+           
+        /* 0: no error
+        *  1: error has occurred
+        */ 
+        uint8_t ERROR: 1;
+
+        /* 0: no data is ready
+        *  1: data is ready
+        */ 
+        uint8_t DATA_RDY: 1;
+
+        uint8_t get(){
+			return (DATA_RDY << 1) | ERROR;
+        }
+		void set(uint8_t data){
+			ERROR = data & 0x01;
+			DATA_RDY = (data & 0x02) >> 1;
+		}
+    };
+    status m_status;
+	
+	struct inten {
+		uint8_t DATA_RDY: 1;
+		
+		uint8_t get(){
+			return DATA_RDY;
+		}
+		void set(uint8_t data){
+			DATA_RDY = data & 0x01;
+		}
+	};
+	inten m_inten;
+	
+	struct intenclr {
+		uint8_t DATA_RDY: 1;
+		
+		void set(uint8_t data){
+			DATA_RDY = data & 0x01;
+		}
+	};
+	intenclr m_intenclr;
+	
+	struct intclr {
+		uint8_t DATA_RDY: 1;
+		
+		void set(uint8_t data){
+			DATA_RDY = data & 0x01;
+		}
+	};
+	intclr m_intclr;
 };
 
 

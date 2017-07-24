@@ -35,6 +35,7 @@
 #include "event.h"
 
 #include "SeesawConfig.h"
+#include "RegisterMap.h"
 #include "bsp_sercom.h"
 #include "bsp_gpio.h"
 
@@ -55,7 +56,11 @@ QState AOSERCOM::InitialPseudoState(AOSERCOM * const me, QEvt const * const e) {
     me->subscribe(SERCOM_START_REQ);
     me->subscribe(SERCOM_STOP_REQ);
 	
-	me->subscribe(SERCOM_WRITE_REQ);
+	me->subscribe(SERCOM_WRITE_DATA_REQ);
+	me->subscribe(SERCOM_READ_DATA_REQ);
+	me->subscribe(SERCOM_READ_REG_REQ);
+	
+	me->subscribe(SERCOM_RX_INTERRUPT);
       
     return Q_TRAN(&AOSERCOM::Root);
 }
@@ -117,6 +122,11 @@ QState AOSERCOM::Stopped(AOSERCOM * const me, QEvt const * const e) {
 			SercomStartReq const &req = static_cast<SercomStartReq const &>(*e);
 			m_rxFifo = req.getRxFifo();
 			
+			me->m_status.set(0x00);
+			me->m_inten.set(0x00);
+			me->m_intenclr.set(0x00);
+			me->m_intclr.set(0x00);
+			
 			Evt const &r = EVT_CAST(*e);
 			Evt *evt = new SERCOMStartCfm(r.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
@@ -150,7 +160,14 @@ QState AOSERCOM::Started(AOSERCOM * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
-		
+		case SERCOM_STOP_REQ: {
+			LOG_EVENT(e);
+			Evt const &req = EVT_CAST(*e);
+			Evt *evt = new SERCOMStopCfm(req.GetSeq(), ERROR_SUCCESS);
+			QF::PUBLISH(evt, me);
+			status = Q_TRAN(AOSERCOM::Stopped);
+			break;
+		}
         default: {
             status = Q_SUPER(&AOSERCOM::Root);
             break;
@@ -179,9 +196,9 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			break;
 		}
 		
-		case SERCOM_WRITE_REQ: {
+		case SERCOM_WRITE_DATA_REQ: {
 			
-			SercomWriteReq const &req = static_cast<SercomWriteReq const &>(*e);
+			SercomWriteDataReq const &req = static_cast<SercomWriteDataReq const &>(*e);
 			Fifo *source = req.getSource();
 			
 			uint8_t c;
@@ -195,12 +212,69 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			status = Q_HANDLED();
 			break;	
 		}
-		case Q_EXIT_SIG: {
-			LOG_EVENT(e);
+		case SERCOM_READ_DATA_REQ: {
+			
+			//clear DATA_RDY flag
+			me->m_status.DATA_RDY = 0;
+			
+			//TODO: clear interrupt as well if necessary
+			
+			SercomReadDataReq const &req = static_cast<SercomReadDataReq const &>(*e);
+			Evt *evt = new DelegateDataReady(req.getRequesterId(), m_rxFifo);
+			QF::PUBLISH(evt, me);
+			status = Q_HANDLED();
+			break;	
+		}
+		case SERCOM_READ_REG_REQ: {
+			SercomReadRegReq const &req = static_cast<SercomReadRegReq const &>(*e);
+			Fifo *dest = req.getDest();
+			uint8_t reg = req.getReg();
+			
+			//there should be nothing in the destination pipe
+			Q_ASSERT(!dest->GetUsedCount());
+			
+			Evt *evt;
+			uint8_t c;
+			switch (reg){
+				case SEESAW_SERCOM_STATUS:{
+					c = me->m_status.get();
+					if(me->m_status.DATA_RDY){
+						int k = 0;
+						k++;
+					}
+					break;
+				}
+				case SEESAW_SERCOM_INTEN:{
+					c = me->m_inten.get();
+					break;
+				}
+				default:
+					//TODO: lets handle this error better
+					Q_ASSERT(0);
+					break;
+			}
+			
+			dest->Write(&c, 1);
+			evt = new DelegateDataReady(req.getRequesterId());
+			QF::PUBLISH(evt, me);
+			
 			status = Q_HANDLED();
 			break;
 		}
-		
+		case SERCOM_RX_INTERRUPT: {
+			me->m_status.DATA_RDY = 1;
+			if(me->m_inten.DATA_RDY){
+				//post and interrupt event
+			}
+			status = Q_HANDLED();
+			break;
+		}
+		case Q_EXIT_SIG: {
+			LOG_EVENT(e);
+			resetUART( me->m_sercom );
+			status = Q_HANDLED();
+			break;
+		}
 		default: {
 			status = Q_SUPER(&AOSERCOM::Started);
 			break;
@@ -232,22 +306,30 @@ QState AOSERCOM::SPI(AOSERCOM * const me, QEvt const * const e) {
 	return status;
 }
 
+void AOSERCOM::RxCallback(){
+	Evt *evt = new Evt(SERCOM_RX_INTERRUPT);
+	QF::PUBLISH(evt, 0);
+}
+
 extern "C" {
 	void SERCOM5_Handler(void){
 		QXK_ISR_ENTRY();
-		if (availableDataUART( SERCOM5 )) {
-			uint8_t c = readDataUART( SERCOM5 );
-			m_rxFifo->Write(&c, 1);
-			//TODO: post interrupt
-		}
+		if( isEnabledUART( SERCOM5 ) ){
+			if (availableDataUART( SERCOM5 )) {
+				uint8_t c = readDataUART( SERCOM5 );
+				m_rxFifo->Write(&c, 1);
+				AOSERCOM::RxCallback();
+			}
 
-		if (isUARTError( SERCOM5 )) {
-			acknowledgeUARTError( SERCOM5 );
-			// TODO: if (sercom->isBufferOverflowErrorUART()) ....
-			// TODO: if (sercom->isFrameErrorUART()) ....
-			// TODO: if (sercom->isParityErrorUART()) ....
-			clearStatusUART( SERCOM5 );
+			if (isUARTError( SERCOM5 )) {
+				acknowledgeUARTError( SERCOM5 );
+				// TODO: if (sercom->isBufferOverflowErrorUART()) ....
+				// TODO: if (sercom->isFrameErrorUART()) ....
+				// TODO: if (sercom->isParityErrorUART()) ....
+				clearStatusUART( SERCOM5 );
+			}
 		}
+		//TODO: else if ( isEnabledSPI( SERCOM5 ) ) { }
 		QXK_ISR_EXIT();
 	}
 };
