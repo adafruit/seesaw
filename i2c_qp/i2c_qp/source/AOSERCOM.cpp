@@ -46,9 +46,9 @@ using namespace FW;
 //TODO: we probably will need these for each sercom
 static Fifo *m_rxFifo;
 
-AOSERCOM::AOSERCOM( Sercom *sercom, uint8_t id ) :
+AOSERCOM::AOSERCOM( Sercom *sercom, uint8_t id, uint8_t offset ) :
     QActive((QStateHandler)&AOSERCOM::InitialPseudoState), 
-    m_id(id), m_name("SERCOM"), m_sercom(sercom) {}
+    m_id(id), m_name("SERCOM"), m_sercom(sercom), m_offset(offset) {}
 
 QState AOSERCOM::InitialPseudoState(AOSERCOM * const me, QEvt const * const e) {
     (void)e;
@@ -59,6 +59,7 @@ QState AOSERCOM::InitialPseudoState(AOSERCOM * const me, QEvt const * const e) {
 	me->subscribe(SERCOM_WRITE_DATA_REQ);
 	me->subscribe(SERCOM_READ_DATA_REQ);
 	me->subscribe(SERCOM_READ_REG_REQ);
+	me->subscribe(SERCOM_WRITE_REG_REQ);
 	
 	me->subscribe(SERCOM_RX_INTERRUPT);
       
@@ -217,7 +218,11 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			//clear DATA_RDY flag
 			me->m_status.DATA_RDY = 0;
 			
-			//TODO: clear interrupt as well if necessary
+			if(me->m_inten.DATA_RDY){
+				//post an interrupt event
+				Evt *evt = new InterruptClearReq( (SEESAW_INTERRUPT_SERCOM0_DATA_RDY << me->m_offset) );
+				QF::PUBLISH(evt, me);
+			}
 			
 			SercomReadDataReq const &req = static_cast<SercomReadDataReq const &>(*e);
 			Evt *evt = new DelegateDataReady(req.getRequesterId(), m_rxFifo);
@@ -261,10 +266,30 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			status = Q_HANDLED();
 			break;
 		}
+		case SERCOM_WRITE_REG_REQ: {
+			SercomWriteRegReq const &req = static_cast<SercomWriteRegReq const &>(*e);
+			uint8_t reg = req.getReg();
+			
+			switch (reg){
+				case SEESAW_SERCOM_INTEN:{
+					me->m_inten.set(req.getValue());
+					break;
+				}
+				default:
+				//TODO: lets handle this error better
+				Q_ASSERT(0);
+				break;
+			}
+			
+			status = Q_HANDLED();
+			break;
+		}
 		case SERCOM_RX_INTERRUPT: {
 			me->m_status.DATA_RDY = 1;
 			if(me->m_inten.DATA_RDY){
-				//post and interrupt event
+				//post an interrupt event
+				Evt *evt = new InterruptSetReq( (SEESAW_INTERRUPT_SERCOM0_DATA_RDY << me->m_offset) );
+				QF::PUBLISH(evt, me);
 			}
 			status = Q_HANDLED();
 			break;

@@ -42,8 +42,8 @@ using namespace FW;
 
 System::System() :
     QActive((QStateHandler)&System::InitialPseudoState), 
-    m_id(SYSTEM), m_name("SYSTEM"),
-    m_testTimer(this, SYSTEM_TEST_TIMER)
+    m_id(SYSTEM), m_name("SYSTEM")
+    //,m_testTimer(this, SYSTEM_TEST_TIMER)
 #if CONFIG_I2C_SLAVE
     ,m_I2CSlaveOutFifo(m_I2CSlaveOutFifoStor, I2C_SLAVE_OUT_FIFO_ORDER),
     m_I2CSlaveInFifo(m_I2CSlaveInFifoStor, I2C_SLAVE_IN_FIFO_ORDER) 
@@ -60,7 +60,7 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
 
     me->subscribe(SYSTEM_START_REQ);
     me->subscribe(SYSTEM_STOP_REQ);
-    me->subscribe(SYSTEM_TEST_TIMER);
+    //me->subscribe(SYSTEM_TEST_TIMER);
     me->subscribe(SYSTEM_DONE);
     me->subscribe(SYSTEM_FAIL);
 	
@@ -78,6 +78,9 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
 	
 	me->subscribe(DELEGATE_START_CFM);
 	me->subscribe(DELEGATE_STOP_CFM);
+	
+	me->subscribe(INTERRUPT_START_CFM);
+	me->subscribe(INTERRUPT_STOP_CFM);
       
     return Q_TRAN(&System::Root);
 }
@@ -171,6 +174,11 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 			QF::PUBLISH(evt, me);
 #endif
 
+#if CONFIG_INTERRUPT
+			evt = new Evt(INTERRUPT_STOP_REQ);
+			QF::PUBLISH(evt, me);
+#endif
+
 //TODO: this should be broken out target specific sercoms
 #if CONFIG_SERCOM5			
 			evt = new Evt(SERCOM_STOP_REQ);
@@ -190,6 +198,7 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 		case DAC_STOP_CFM:
 		case SERCOM_STOP_CFM:
 		case I2C_SLAVE_STOP_CFM:
+		case INTERRUPT_STOP_CFM:
 		case DELEGATE_STOP_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);
@@ -241,6 +250,11 @@ QState System::Starting(System * const me, QEvt const * const e) {
 			QF::PUBLISH(evt, me);
 #endif
 
+#if CONFIG_INTERRUPT
+			evt = new Evt(INTERRUPT_START_REQ);
+			QF::PUBLISH(evt, me);
+#endif
+
 //TODO: this should be broken out target specific sercoms	
 #if CONFIG_SERCOM5
 			evt = new SercomStartReq(&me->m_sercom5RxFifo);
@@ -261,6 +275,7 @@ QState System::Starting(System * const me, QEvt const * const e) {
 		case DAC_START_CFM:
 		case SERCOM_START_CFM:
 		case I2C_SLAVE_START_CFM:
+		case INTERRUPT_START_CFM:
 		case DELEGATE_START_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);
@@ -291,14 +306,14 @@ QState System::Started(System * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
-            me->m_testTimer.armX(2000, 2000);
+            //me->m_testTimer.armX(2000, 2000);
 			
             status = Q_HANDLED();
             break;
         }
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
-            me->m_testTimer.disarm();
+            //me->m_testTimer.disarm();
             status = Q_HANDLED();
             break;
         }

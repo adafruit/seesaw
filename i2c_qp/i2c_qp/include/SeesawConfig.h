@@ -3,11 +3,20 @@
 
 #define CONFIG_VERSION 0x55
 
-#define CONFIG_ADC 0
+//pool sizes
+#define	EVT_SIZE_SMALL 32
+#define EVT_SIZE_MEDIUM 64
+#define	EVT_SIZE_LARGE 128
+#define	EVT_COUNT_SMALL 16
+#define	EVT_COUNT_MEDIUM 4
+#define	EVT_COUNT_LARGE 1
+
+#define CONFIG_ADC 1
 
 #define CONFIG_DAC 0
 
-#define CONFIG_INTERRUPT 0
+#define CONFIG_INTERRUPT 1
+#define CONFIG_INTERRUPT_PIN 7
 
 #define CONFIG_SERCOM0 0
 #define CONFIG_SERCOM1 0

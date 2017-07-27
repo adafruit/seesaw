@@ -28,6 +28,7 @@ const PinDescription g_APinDescription[]=
   { PORTB, 8 },
   { PORTA, 22 }, //SDA
   { PORTA, 23 }, //SCL
+  { PORTA, 14 }, //pin 3
 } ;
 
 

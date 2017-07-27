@@ -71,7 +71,7 @@ protected:
 	uint8_t m_cfmCount;
     char const * m_name;
 	
-    QTimeEvt m_testTimer;
+    //QTimeEvt m_testTimer;
 
 #if CONFIG_I2C_SLAVE
 	enum {

@@ -49,6 +49,8 @@ static Fifo *m_defaultOutFifo;
 
 volatile bool slave_busy;
 
+volatile uint8_t bytes_received, high_byte, low_byte;
+
 I2CSlave::I2CSlave( Sercom *sercom) :
     QActive((QStateHandler)&I2CSlave::InitialPseudoState), 
     m_id(I2C_SLAVE), m_name("I2C Slave"), m_sercom(sercom) {}
@@ -135,6 +137,7 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
 			m_inFifo = req.getInFifo();
 			m_defaultOutFifo = req.getOutFifo();
 			m_outFifo = m_defaultOutFifo;
+			bytes_received = 0;
 			
 			m_inFifo->Reset();
 			m_outFifo->Reset();
@@ -179,6 +182,12 @@ QState I2CSlave::Started(I2CSlave * const me, QEvt const * const e) {
 			status = Q_TRAN(I2CSlave::Stopped);
 			break;
 		}
+		case DELEGATE_DATA_READY:{
+			DelegateDataReady const &req = static_cast<DelegateDataReady const &>(*e);
+			if(req.getRequesterId() == me->m_id){
+				status = Q_HANDLED();
+			}
+		}
         default: {
             status = Q_SUPER(&I2CSlave::Root);
             break;
@@ -205,7 +214,21 @@ QState I2CSlave::Idle(I2CSlave * const me, QEvt const * const e) {
         }
 		case I2C_SLAVE_RECEIVE: {
 			LOG_EVENT(e);
-			status = Q_TRAN(&I2CSlave::Busy);
+			
+			I2CSlaveReceive const &req = static_cast<I2CSlaveReceive const &>(*e);
+			
+			//if there's no data bytes sent we're gonna be expecting a read
+			if(!req.getLen()){
+				Evt *evt = new DelegateProcessCommand(me->m_id, req.getHighByte(), req.getLowByte(), 0, m_defaultOutFifo);
+				QF::PUBLISH(evt, me);
+				status = Q_TRAN(&I2CSlave::Busy);
+			}
+			else{
+				Evt *evt = new DelegateProcessCommand(me->m_id, req.getHighByte(), req.getLowByte(), req.getLen(), m_inFifo);
+				QF::PUBLISH(evt, me);
+				status = Q_HANDLED();
+			}	
+			
 			break;
 		}
         default: {
@@ -220,25 +243,13 @@ QState I2CSlave::Busy(I2CSlave * const me, QEvt const * const e) {
 	QState status;
 	switch (e->sig) {
 		case Q_ENTRY_SIG: {
+			//TODO: set a timeout on entry to busy state
 			LOG_EVENT(e);
+			
+			slave_busy = true;
 			
 			//assume default output fifo
 			m_outFifo = m_defaultOutFifo;
-			m_outFifo->Reset();
-			
-			//grab the command bytes
-			m_inFifo->Read(me->m_cmd, 2);
-			
-			//send to the delegate to process write if there's any data
-			if(m_inFifo->GetUsedCount()){
-				Evt *evt = new DelegateProcessCommand(me->m_id, me->m_cmd[0], me->m_cmd[1], true, m_inFifo);
-				QF::PUBLISH(evt, me);
-			}
-			else {
-				//send to the delegate to get data to read
-				Evt *evt = new DelegateProcessCommand(me->m_id, me->m_cmd[0], me->m_cmd[1], false, m_outFifo);
-				QF::PUBLISH(evt, me);
-			}
 			
 			status = Q_HANDLED();
 			
@@ -267,8 +278,8 @@ QState I2CSlave::Busy(I2CSlave * const me, QEvt const * const e) {
 	return status;
 }
 
-void I2CSlave::ReceiveCallback(){
-	Evt *evt = new Evt(I2C_SLAVE_RECEIVE);
+void I2CSlave::ReceiveCallback(uint8_t highByte, uint8_t lowByte, uint8_t len){
+	Evt *evt = new I2CSlaveReceive(highByte, lowByte, len);
 	QF::PUBLISH(evt, 0);
 }
 
@@ -286,14 +297,15 @@ extern "C" {
 			prepareAckBitWIRE(CONFIG_I2C_SLAVE_SERCOM);
 			prepareCommandBitsWire(CONFIG_I2C_SLAVE_SERCOM, 0x03);
 			
-			slave_busy = true;
-			I2CSlave::ReceiveCallback();
+			I2CSlave::ReceiveCallback(high_byte, low_byte, bytes_received - 2);
 		}
 		else if(isAddressMatch(CONFIG_I2C_SLAVE_SERCOM))  //Address Match
 		{
 			//otherwise acknowledge right away to clear the interrupt
 			prepareAckBitWIRE(CONFIG_I2C_SLAVE_SERCOM);
 			prepareCommandBitsWire(CONFIG_I2C_SLAVE_SERCOM, 0x03);
+			
+			bytes_received = 0;
 			
 		}
 		else if(isDataReadyWIRE(CONFIG_I2C_SLAVE_SERCOM))
@@ -308,11 +320,19 @@ extern "C" {
 			}
 			else { //Received data
 				uint8_t c = readDataWIRE(CONFIG_I2C_SLAVE_SERCOM);
-				if ( m_inFifo->Write(&c, 1) ){
-					prepareAckBitWIRE(CONFIG_I2C_SLAVE_SERCOM);
-				}
-				else {
-					prepareNackBitWIRE(CONFIG_I2C_SLAVE_SERCOM);
+				
+				bytes_received++;
+				
+				if(bytes_received == 1) high_byte = c;
+				else if(bytes_received == 2) low_byte = c;
+				else{
+					if ( m_inFifo->Write(&c, 1) ){
+						prepareAckBitWIRE(CONFIG_I2C_SLAVE_SERCOM);
+					}
+					else {
+						prepareNackBitWIRE(CONFIG_I2C_SLAVE_SERCOM);
+						bytes_received--;
+					}
 				}
 
 				prepareCommandBitsWire(CONFIG_I2C_SLAVE_SERCOM, 0x03);

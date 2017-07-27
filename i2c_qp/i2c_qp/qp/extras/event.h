@@ -82,6 +82,13 @@ enum {
 	DAC_STOP_REQ,
 	DAC_STOP_CFM,
 	
+	INTERRUPT_START_REQ,
+	INTERRUPT_START_CFM,
+	INTERRUPT_STOP_REQ,
+	INTERRUPT_STOP_CFM,
+	INTERRUPT_SET_REQ,
+	INTERRUPT_CLEAR_REQ,
+	
 	SERCOM_START_REQ,
 	SERCOM_START_CFM,
 	SERCOM_STOP_REQ,
@@ -145,16 +152,16 @@ public:
 //* ==========================  DELEGATE ======================== *//
 class DelegateProcessCommand : public Evt {
 	public:
-		DelegateProcessCommand(uint8_t requesterId, uint8_t highByte, uint8_t lowByte, uint8_t rw, Fifo *fifo) :
-		Evt(DELEGATE_PROCESS_COMMAND), _requesterId(requesterId), _highByte(highByte), _lowByte(lowByte), _rw(rw), _fifo(fifo)  {}
+		DelegateProcessCommand(uint8_t requesterId, uint8_t highByte, uint8_t lowByte, uint8_t len, Fifo *fifo) :
+		Evt(DELEGATE_PROCESS_COMMAND), _requesterId(requesterId), _highByte(highByte), _lowByte(lowByte), _len(len), _fifo(fifo)  {}
 		
 		uint8_t getRequesterId() const { return _requesterId; }
 		uint8_t getHighByte() const { return _highByte; }
 		uint8_t getLowByte() const { return _lowByte; }
-		uint8_t getRw() const { return _rw; }
+		uint8_t getLen() const { return _len; }
 		Fifo *getFifo() const { return _fifo; }
 	private:
-		uint8_t _requesterId, _highByte, _lowByte, _rw;
+		uint8_t _requesterId, _highByte, _lowByte, _len;
 		Fifo *_fifo;
 };
 
@@ -225,6 +232,40 @@ class DACStopCfm : public ErrorEvt {
 	ErrorEvt(DAC_STOP_CFM, seq, error, reason) {}
 };
 
+//* ==========================  Interrupt ======================= *//
+
+class InterruptStartCfm : public ErrorEvt {
+	public:
+	InterruptStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(INTERRUPT_START_CFM, seq, error, reason) {}
+};
+
+class InterruptStopCfm : public ErrorEvt {
+	public:
+	InterruptStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(INTERRUPT_STOP_CFM, seq, error, reason) {}
+};
+
+class InterruptSetReq : public Evt {
+	public:
+	InterruptSetReq(uint32_t id) : 
+	Evt(INTERRUPT_SET_REQ), _id(id) {}
+	
+	uint32_t getId() const { return _id; }
+	private:
+	uint32_t _id;	
+};
+
+class InterruptClearReq : public Evt {
+	public:
+	InterruptClearReq(uint32_t id) :
+	Evt(INTERRUPT_CLEAR_REQ), _id(id) {}
+	
+	uint32_t getId() const { return _id; }
+	private:
+	uint32_t _id;
+};
+
 //* ==========================  SERCOM ======================= *//
 
 class SercomStartReq : public Evt {
@@ -287,6 +328,18 @@ class SercomReadRegReq : public Evt {
 	Fifo *_dest;	
 };
 
+class SercomWriteRegReq : public Evt {
+	public:
+	SercomWriteRegReq(uint8_t reg, uint8_t value) :
+	Evt(SERCOM_WRITE_REG_REQ), _reg(reg), _value(value) {}
+	
+	uint8_t getReg() const { return _reg; }
+	uint8_t getValue() const { return _value; }
+	
+	private:
+	uint8_t _reg, _value;
+};
+
 //* ==========================  I2C SLAVE ======================= *//
 
 class I2CSlaveStartReq : public Evt {
@@ -311,6 +364,19 @@ class I2CSlaveStopCfm : public ErrorEvt {
 	public:
 	I2CSlaveStopCfm(uint16_t seq, Error error, Reason reason = 0) :
 	ErrorEvt(I2C_SLAVE_STOP_CFM, seq, error, reason) {}
+};
+
+class I2CSlaveReceive : public Evt {
+	public:
+	I2CSlaveReceive(uint8_t highByte, uint8_t lowByte, uint8_t len) :
+	Evt(I2C_SLAVE_RECEIVE), _highByte(highByte), _lowByte(lowByte), _len(len) {}
+		
+	uint8_t getHighByte() const { return _highByte; }
+	uint8_t getLowByte() const { return _lowByte; }
+	uint8_t getLen() const { return _len; }
+		
+	private:
+	uint8_t _highByte, _lowByte, _len;
 };
 
 #endif

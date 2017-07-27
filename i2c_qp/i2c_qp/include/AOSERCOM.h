@@ -43,7 +43,7 @@ using namespace FW;
 
 class AOSERCOM : public QActive {
 public:
-    AOSERCOM( Sercom *sercom, uint8_t id);
+    AOSERCOM( Sercom *sercom, uint8_t id, uint8_t offset);
     void Start(uint8_t prio) {
         QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
     }
@@ -68,6 +68,7 @@ protected:
     char const * m_name;
 	
 	Sercom *m_sercom;
+	uint8_t m_offset;
 	
 	// The status register
     struct status {

@@ -37,6 +37,7 @@ enum {
 	AO_DAC,
 	AO_ADC,
 	AO_SERCOM5,
+	AO_INTERRUPT,
 };
 
 // Higher value corresponds to higher priority.
@@ -49,6 +50,7 @@ enum
 	PRIO_DAC		= 23,
 	PRIO_SERCOM		= 26,
 	PRIO_DELEGATE   = 31,
+	PRIO_INTERRUPT  = 28,
 };
 
 

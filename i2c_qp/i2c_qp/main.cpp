@@ -32,20 +32,16 @@
 #include "AODAC.h"
 #endif
 
+#if CONFIG_INTERRUPT
+#include "AOInterrupt.h"
+#endif
+
 #if CONFIG_SERCOM0 || CONFIG_SERCOM1 || CONFIG_SERCOM2 || CONFIG_SERCOM3 || CONFIG_SERCOM4 || CONFIG_SERCOM5
 #include "AOSERCOM.h"
 #endif
 
 using namespace QP;
 
-enum {
-	EVT_SIZE_SMALL = 32,
-	EVT_SIZE_MEDIUM = 64,
-	EVT_SIZE_LARGE = 128,
-	EVT_COUNT_SMALL = 16,
-	EVT_COUNT_MEDIUM = 4,
-	EVT_COUNT_LARGE = 1,
-};
 uint32_t evtPoolSmall[ROUND_UP_DIV_4(EVT_SIZE_SMALL * EVT_COUNT_SMALL)];
 uint32_t evtPoolMedium[ROUND_UP_DIV_4(EVT_SIZE_MEDIUM * EVT_COUNT_MEDIUM)];
 uint32_t evtPoolLarge[ROUND_UP_DIV_4(EVT_SIZE_LARGE * EVT_COUNT_LARGE)];
@@ -66,8 +62,12 @@ static AODAC dac;
 static AOADC adc;
 #endif
 
+#if CONFIG_INTERRUPT
+static AOInterrupt interrupt;
+#endif
+
 #if CONFIG_SERCOM5
-static AOSERCOM sercom5( SERCOM5, AO_SERCOM5 );
+static AOSERCOM sercom5( SERCOM5, AO_SERCOM5, 5 );
 #endif
 
 int main(void)
@@ -97,6 +97,10 @@ int main(void)
 
 #if CONFIG_DAC
 	dac.Start(PRIO_DAC);
+#endif
+
+#if CONFIG_INTERRUPT
+	interrupt.Start(PRIO_INTERRUPT);
 #endif
 
 #if CONFIG_SERCOM5

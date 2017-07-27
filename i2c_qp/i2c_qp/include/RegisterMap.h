@@ -92,4 +92,13 @@
 	//for reading and writing data
 	#define SEESAW_SERCOM_DATA 0x06
 
+//* ============== Interrupts =================== *//
+
+#define SEESAW_INTERRUPT_SERCOM0_DATA_RDY ( (uint32_t)(1 << 0) )
+#define SEESAW_INTERRUPT_SERCOM1_DATA_RDY ( (uint32_t)(1 << 1) )
+#define SEESAW_INTERRUPT_SERCOM2_DATA_RDY ( (uint32_t)(1 << 2) )
+#define SEESAW_INTERRUPT_SERCOM3_DATA_RDY ( (uint32_t)(1 << 3) )
+#define SEESAW_INTERRUPT_SERCOM4_DATA_RDY ( (uint32_t)(1 << 4) )
+#define SEESAW_INTERRUPT_SERCOM5_DATA_RDY ( (uint32_t)(1 << 5) )
+
 #endif

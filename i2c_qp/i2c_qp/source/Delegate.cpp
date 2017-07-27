@@ -144,8 +144,9 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 			DelegateProcessCommand const &req = static_cast<DelegateProcessCommand const &>(*e);
 			uint8_t highByte = req.getHighByte();
 			uint8_t lowByte = req.getLowByte();
+			uint8_t len = req.getLen();
 			
-			if(!req.getRw()){
+			if(!len){
 				//we are reading
 				switch(highByte){
 					
@@ -191,6 +192,9 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						break;
 					}
 					default:
+						//Unrecognized command or unreadable register. Do nothing.
+						Evt *evt = new DelegateDataReady(req.getRequesterId());
+						QF::PUBLISH(evt, me);
 						break;
 				}
 			}
@@ -215,6 +219,15 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						Fifo *fifo = req.getFifo();
 						uint8_t dataByte;
 						fifo->Read(&dataByte, 1);
+						len--;
+						
+						//read any extra bytes and discard
+						while(len > 0){
+							uint8_t dummy;
+							fifo->Read(&dummy, 1);
+							len--;
+						}
+						
 						switch(lowByte){
 							case SEESAW_GPIO_PINMODE_CMD: {
 								_PinDescription pin = g_APinDescription[SEESAW_GPIO_GET_PINMODE_PIN(dataByte)];
@@ -228,9 +241,6 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							}
 							//TODO: fill in more stuff
 						}
-						
-						Evt *evt = new DelegateDataReady(req.getRequesterId());
-						QF::PUBLISH(evt, me);
 						break;
 					}
 					case SEESAW_SERCOM0_BASE:
@@ -241,7 +251,29 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 					case SEESAW_SERCOM5_BASE:{
 						switch(lowByte){
 							//TODO: fix for more sercoms
+							case SEESAW_SERCOM_STATUS:
+							case SEESAW_SERCOM_INTEN:
+							case SEESAW_SERCOM_BAUD:{
+								Fifo *fifo = req.getFifo();
+								uint8_t dataByte;
+								
+								//read any extra bytes and discard
+								while(len > 0){
+									uint8_t dummy;
+									fifo->Read(&dummy, 1);
+									len--;
+								}
+								
+								Evt *evt = new SercomWriteRegReq(lowByte, dataByte);
+								QF::PUBLISH(evt, me);
+								
+								//ack immediately
+								evt = new DelegateDataReady(req.getRequesterId());
+								QF::PUBLISH(evt, me);
+								break;
+							}
 							case SEESAW_SERCOM_DATA:{
+								//TODO: this should take in number of bytes to write
 								Evt *evt = new SercomWriteDataReq(req.getRequesterId(), req.getFifo());
 								QF::PUBLISH(evt, me);
 								break;

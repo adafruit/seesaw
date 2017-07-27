@@ -27,50 +27,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-
-#ifndef I2C_SLAVE_H
-#define I2C_SLAVE_H
+#ifndef AO_INTERRUPT_H
+#define AO_INTERRUPT_H
 
 #include "qpcpp.h"
 #include "qp_extras.h"
 
 #include "hsm_id.h"
 
-#include "sam.h"
+#include "PinMap.h"
 
 using namespace QP;
 using namespace FW;
 
-class I2CSlave : public QActive {
+class AOInterrupt : public QActive {
 public:
-    I2CSlave( Sercom *sercom );
+    AOInterrupt();
     void Start(uint8_t prio) {
         QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
     }
-	
-	static void ReceiveCallback(uint8_t highByte, uint8_t lowByte, uint8_t len);
 
 protected:
-    static QState InitialPseudoState(I2CSlave * const me, QEvt const * const e);
-    static QState Root(I2CSlave * const me, QEvt const * const e);
-    static QState Stopped(I2CSlave * const me, QEvt const * const e);
-    static QState Started(I2CSlave * const me, QEvt const * const e);
+    static QState InitialPseudoState(AOInterrupt * const me, QEvt const * const e);
+    static QState Root(AOInterrupt * const me, QEvt const * const e);
+    static QState Stopped(AOInterrupt * const me, QEvt const * const e);
+    static QState Started(AOInterrupt * const me, QEvt const * const e);
 	
-    static QState Idle(I2CSlave * const me, QEvt const * const e);
-	static QState Busy(I2CSlave * const me, QEvt const * const e);
+	static QState Asserted(AOInterrupt * const me, QEvt const * const e);
+	static QState Unasserted(AOInterrupt * const me, QEvt const * const e);
 
     enum {
-        EVT_QUEUE_COUNT = 16,
+        EVT_QUEUE_COUNT = 8,
     };
     QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
     uint8_t m_id;
 	uint16_t m_nextSequence;
     char const * m_name;
 	
-	Sercom *m_sercom;
+	uint32_t m_intflag;
+	
+	_PinDescription m_pin;
 };
 
 
-#endif // I2C_SLAVE_H
-
-
+#endif // AO_INTERRUPT_H
