@@ -186,11 +186,11 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			//set up UART
 			pinPeripheral(CONFIG_SERCOM_UART_PIN_RX, 3);
 			pinPeripheral(CONfIG_SERCOM_UART_PIN_TX, 3);
-
+			
 			initUART(me->m_sercom, UART_INT_CLOCK, SAMPLE_RATE_x16, CONFIG_SERCOM_UART_BAUD_RATE);
 			initFrame(me->m_sercom, CONFIG_SERCOM_UART_CHAR_SIZE, LSB_FIRST, CONFIG_SERCOM_UART_PARITY, CONFIG_SERCOM_UART_STOP_BIT);
 			initPads(me->m_sercom, CONFIG_SERCOM_UART_PAD_TX, CONFIG_SERCOM_UART_PAD_RX);
-
+			
 			enableUART(me->m_sercom);
 			
 			status = Q_HANDLED();
@@ -333,26 +333,54 @@ void AOSERCOM::RxCallback(){
 }
 
 extern "C" {
+	
+void sercom_handler( Sercom * sercom )
+{
+	if( isEnabledUART( sercom ) ){
+		if (availableDataUART( sercom )) {
+			uint8_t c = readDataUART( sercom );
+			m_rxFifo->Write(&c, 1);
+			AOSERCOM::RxCallback();
+		}
+
+		if (isUARTError( sercom )) {
+			acknowledgeUARTError( sercom );
+			// TODO: if (sercom->isBufferOverflowErrorUART()) ....
+			// TODO: if (sercom->isFrameErrorUART()) ....
+			// TODO: if (sercom->isParityErrorUART()) ....
+			clearStatusUART( sercom );
+		}
+	}
+	//TODO: else if ( isEnabledSPI( sercom ) ) { }
+}
+#if defined(SERCOM0) && CONFIG_SERCOM0
+void SERCOM0_Handler(void){
+	QXK_ISR_ENTRY();
+	sercom_handler(SERCOM1);
+	QXK_ISR_EXIT();
+}
+#endif
+#if defined(SERCOM1) && CONFIG_SERCOM1
+void SERCOM1_Handler(void){
+	QXK_ISR_ENTRY();
+	sercom_handler(SERCOM1);
+	QXK_ISR_EXIT();
+}
+#endif
+#if defined(SERCOM2) && CONFIG_SERCOM2
+void SERCOM2_Handler(void){
+	QXK_ISR_ENTRY();
+	sercom_handler(SERCOM2);
+	QXK_ISR_EXIT();
+}
+#endif
+#if defined(SERCOM5) && CONFIG_SERCOM5
 	void SERCOM5_Handler(void){
 		QXK_ISR_ENTRY();
-		if( isEnabledUART( SERCOM5 ) ){
-			if (availableDataUART( SERCOM5 )) {
-				uint8_t c = readDataUART( SERCOM5 );
-				m_rxFifo->Write(&c, 1);
-				AOSERCOM::RxCallback();
-			}
-
-			if (isUARTError( SERCOM5 )) {
-				acknowledgeUARTError( SERCOM5 );
-				// TODO: if (sercom->isBufferOverflowErrorUART()) ....
-				// TODO: if (sercom->isFrameErrorUART()) ....
-				// TODO: if (sercom->isParityErrorUART()) ....
-				clearStatusUART( SERCOM5 );
-			}
-		}
-		//TODO: else if ( isEnabledSPI( SERCOM5 ) ) { }
+		sercom_handler(SERCOM5);
 		QXK_ISR_EXIT();
 	}
+#endif
 };
 
 /*

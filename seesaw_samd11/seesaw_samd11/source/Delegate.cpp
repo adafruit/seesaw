@@ -107,10 +107,7 @@ QState Delegate::Stopped(Delegate * const me, QEvt const * const e) {
 		}
 		case DELEGATE_START_REQ: {
 			LOG_EVENT(e);
-			DelegateStartReq const &req = static_cast<DelegateStartReq const &>(*e);
-			me->m_I2CSlaveInFifo = req.getI2CSlaveInFifo();
-			me->m_I2CSlaveOutFifo = req.getI2CSlaveOutFifo();
-			
+			Evt const &req = EVT_CAST(*e);
 			Evt *evt = new DelegateStartCfm(req.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
 			
@@ -260,11 +257,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len--;
 								
 								//read any extra bytes and discard
-								while(len > 0){
-									uint8_t dummy;
-									fifo->Read(&dummy, 1);
-									len--;
-								}
+								me->discard(fifo, len);
 								
 								Evt *evt = new SercomWriteRegReq(lowByte, dataByte);
 								QF::PUBLISH(evt, me);
@@ -278,6 +271,23 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								//TODO: this should take in number of bytes to write
 								Evt *evt = new SercomWriteDataReq(req.getRequesterId(), req.getFifo());
 								QF::PUBLISH(evt, me);
+								break;
+							}
+						}
+					}
+					case SEESAW_TIMER_BASE:{
+						switch(lowByte){
+							case SEESAW_TIMER_PWM: {
+								Fifo *fifo = req.getFifo();
+								uint8_t dataBytes[2];
+								fifo->Read(dataBytes, 2);
+								len -= 2;
+								
+								me->discard(fifo, len);
+								
+								Evt *evt = new TimerWritePWM(dataBytes[0], dataBytes[1]);
+								QF::PUBLISH(evt, me);
+								
 								break;
 							}
 						}
@@ -304,4 +314,14 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
         }
     }
     return status;
+}
+
+void Delegate::discard(Fifo *fifo, uint8_t len)
+{
+	//read any extra bytes and discard
+	while(len > 0){
+		uint8_t dummy;
+		fifo->Read(&dummy, 1);
+		len--;
+	}
 }
