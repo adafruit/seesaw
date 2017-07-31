@@ -17,32 +17,38 @@
 *             (0x80 for output, 0x00 for input) | (7 bit pin number) <--  1 Data byte
 */
 
-	#define SEESAW_GPIO_PINMODE_CMD 0x00
-
-	#define SEESAW_GPIO_PINMODE_BITS 0x80
-	#define SEESAW_GPIO_PINMODE_INPUT_VAL 0x00
-	#define SEESAW_GPIO_PINMODE_OUTPUT_VAL 0x01
-
-	#define SEESAW_GPIO_PIN_BITS 0x7F
-
-	#define SEESAW_GPIO_GET_PINMODE_MODE(_cmd) ( ( _cmd & SEESAW_GPIO_PINMODE_BITS ) >> 7 )
-	#define SEESAW_GPIO_GET_PINMODE_PIN(_cmd) ( _cmd & SEESAW_GPIO_PIN_BITS )
-
-	#define SEESAW_GPIO_WRITE_CMD 0x01
-
-	#define SEESAW_GPIO_WRITE_VAL_BITS 0x80
-	#define SEESAW_GPIO_WRITE_PIN_BITS 0x7F
-
-	#define SEESAW_GPIO_GET_WRITE_VAL(_cmd) ( ( _cmd & SEESAW_GPIO_WRITE_VAL_BITS ) >> 7 )
-	#define SEESAW_GPIO_GET_WRITE_PIN(_cmd) ( _cmd & SEESAW_GPIO_WRITE_PIN_BITS )
-
-	#define SEESAW_GPIO_READ_CMD 0x02
-	#define SEESAW_GPIO_READ_PIN_BITS 0x7F
-	#define SEESAW_GPIO_GET_READ_PIN(_cmd) ( _cmd & SEESAW_GPIO_READ_PIN_BITS )
-
-	#define SEESAW_GPIO_TOGGLE_CMD 0x03
-	#define SEESAW_GPIO_TOGGLE_PIN_BITS 0x7F
-	#define SEESAW_GPIO_GET_TOGGLE_PIN(_cmd) ( _cmd & SEESAW_GPIO_TOGGLE_PIN_BITS )
+	#define SEESAW_GPIO_PINMODE_SINGLE 0x00
+		#define SEESAW_GPIO_PINMODE_INPUT_VAL 0x00
+		#define SEESAW_GPIO_PINMODE_OUTPUT_VAL 0x01
+		
+	/****** SINGLE PIN *****/
+	/* read or write the value of a single pin */
+	#define SEESAW_GPIO_PIN_SINGLE 0x01
+	
+	/****** BULK PINMODE *****/
+	/* set pinmode of multiple pins
+	*/
+	#define SEESAW_GPIO_PINMODE_BULK 0x02
+	
+	/****** BULK *****/
+	/* Read or write multiple pins at once. 1 is set, 0 is cleared. 
+	*/
+	#define SEESAW_GPIO_BULK 0x03
+	
+	/****** BULK SET *****/
+	/* Set multiple pins at once. Writing a 1 to any bit sets the corresponding pin 
+	*/
+	#define SEESAW_GPIO_BULK_SET 0x04
+	
+	/****** BULK CLEAR *****/
+	/* Clear multiple pins at once. Writing a 1 to any bit clears the corresponding pin 
+	*/
+	#define SEESAW_GPIO_BULK_CLR 0x05
+	
+	/****** BULK TOGGLE *****/
+	/* Toggle multiple pins at once. Writing a 1 to any bit toggles the corresponding pin 
+	*/
+	#define SEESAW_GPIO_BULK_TOGGLE 0x06
 
 //* ============== SERCOM =================== *//
 
@@ -101,6 +107,7 @@
 	//this is asserted when this encorunters an error
 	#define SEESAW_TIMER_STATUS_ERROR_BITS 0x01
 	
+	/****** PWM *****/
 	#define SEESAW_TIMER_PWM 0x01
 
 

@@ -214,30 +214,60 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 					case SEESAW_GPIO_BASE: {
 					
 						Fifo *fifo = req.getFifo();
-						uint8_t dataByte;
-						fifo->Read(&dataByte, 1);
-						len--;
-						
-						//read any extra bytes and discard
-						while(len > 0){
-							uint8_t dummy;
-							fifo->Read(&dummy, 1);
-							len--;
-						}
-						
 						switch(lowByte){
-							case SEESAW_GPIO_PINMODE_CMD: {
-								_PinDescription pin = g_APinDescription[SEESAW_GPIO_GET_PINMODE_PIN(dataByte)];
-								gpio_init(pin.ulPort, pin.ulPin, SEESAW_GPIO_GET_PINMODE_MODE(dataByte));
+							case SEESAW_GPIO_PINMODE_SINGLE: {
+								uint8_t cmd[2];
+								fifo->Read(cmd, 2);
+								len-=2;
+								
+								PinDescription pin = g_APinDescription[cmd[0]];
+								gpio_init(pin.ulPort, pin.ulPin, cmd[1]);
+								
 								break;
 							}
-							case SEESAW_GPIO_TOGGLE_CMD: {
-								_PinDescription pin = g_APinDescription[SEESAW_GPIO_GET_TOGGLE_PIN(dataByte)];
-								gpio_toggle(pin.ulPort, pin.ulPin);
+							case SEESAW_GPIO_PIN_SINGLE: {
+								uint8_t cmd[2];
+								fifo->Read(cmd, 2);
+								len-=2;
+								
+								PinDescription pin = g_APinDescription[cmd[0]];
+								gpio_write(pin.ulPort, pin.ulPin, cmd[1]);
+								
 								break;
 							}
-							//TODO: fill in more stuff
+							case SEESAW_GPIO_PINMODE_BULK: {
+								uint8_t pins[4];
+								fifo->Read(pins, 4);
+								len-=4;
+								
+								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+								gpio_pinmode_bulk(PORTA, gpio_get_hw_reg(combined));
+								
+								break;
+							}
+							case SEESAW_GPIO_BULK_SET: {
+								uint8_t pins[4];
+								fifo->Read(pins, 4);
+								len-=4;
+								
+								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+								gpio_outset_bulk(PORTA, gpio_get_hw_reg(combined));
+								
+								break;
+							}
+							case SEESAW_GPIO_BULK_CLR: {
+								uint8_t pins[4];
+								fifo->Read(pins, 4);
+								len-=4;
+								
+								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+								gpio_outclr_bulk(PORTA, gpio_get_hw_reg(combined));
+								
+								break;
+							}
 						}
+						//discard any extra data
+						me->discard(fifo, len);
 						break;
 					}
 					case SEESAW_SERCOM0_BASE:

@@ -7,6 +7,7 @@
 #define PORTA 0
 #define PORTB 1
 #define PORTC 2
+#define NO_PORT 3
 
 //TODO: this will change once we figure out how we wanna number the pins
 /*
@@ -34,22 +35,33 @@ typedef struct _PinDescription
 	  { PORTA, 14 }, //pin 2
 	} ;
 
-#else
+#elif defined(__SAMD11D14AM__)
 
 	const PinDescription g_APinDescription[]=
 	{
-		{ PORTA, 11 },
-		{ PORTA, 10 },
-		{ PORTA, 17 },
+		{ NO_PORT, 0 }, //NOT A PIN
 		{ PORTA, 2 },
-		{ PORTB, 8 },
+		{ PORTA, 3 },
+		{ PORTA, 4 }, //TC1 WO0
+		{ PORTA, 5 }, //TC1 WO1
+		{ PORTA, 6 }, //TC2 WO0
+		{ PORTA, 7 }, //TC2 WO1
+		{ PORTA, 8 },
+		{ PORTA, 9 },
+		{ PORTA, 10 },
+		{ PORTA, 11 },
+		{ PORTA, 14 },
+		{ PORTA, 15 },
+		{ PORTA, 16 }, //LED
+		{ PORTA, 17 },
 		{ PORTA, 22 }, //SDA
 		{ PORTA, 23 }, //SCL
-		{ PORTA, 14 }, //pin 2
-		{ PORTA, 4	}, //TC1 WO0
-		{ PORTA, 5	}, //TC1 WO1
-		{ PORTA, 6	}, //TC2 WO0
-		{ PORTA, 7	}, //TC2 WO1
+		{ PORTA, 27 },
+		{ PORTA, 28 },
+		{ PORTA, 30 },
+		{ PORTA, 31 },
+		{ PORTA, 24 },
+		{ PORTA, 25 },
 	} ;
 
 #endif

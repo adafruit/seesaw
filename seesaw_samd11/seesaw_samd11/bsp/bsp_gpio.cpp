@@ -23,3 +23,14 @@ void pinPeripheral(uint8_t pin, uint32_t ulPeripheral){
 		PORT->Group[g_APinDescription[pin].ulPort].PINCFG[g_APinDescription[pin].ulPin].reg |= PORT_PINCFG_PMUXEN ; // Enable port mux
 	}
 }
+
+uint32_t gpio_get_hw_reg(uint32_t pmap)
+{
+	uint32_t hw_reg = 0;
+	for(uint32_t i=0; i<32; i++){
+		if( (pmap & (1 << i)) && g_APinDescription[i].ulPort == PORTA){
+			hw_reg |= (1 << g_APinDescription[i].ulPin);
+		}
+	}
+	return hw_reg;
+}
