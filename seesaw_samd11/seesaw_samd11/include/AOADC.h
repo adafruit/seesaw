@@ -51,6 +51,8 @@ protected:
     static QState Root(AOADC * const me, QEvt const * const e);
     static QState Stopped(AOADC * const me, QEvt const * const e);
     static QState Started(AOADC * const me, QEvt const * const e);
+	static QState Normal(AOADC * const me, QEvt const * const e);
+	static QState Freeruning(AOADC * const me, QEvt const * const e);
 
     enum {
         EVT_QUEUE_COUNT = 8,
@@ -59,6 +61,47 @@ protected:
     uint8_t m_id;
 	uint16_t m_nextSequence;
     char const * m_name;
+	
+	// The status register
+    struct status {
+           
+        /* 0: no error
+        *  1: error has occurred
+        */ 
+        uint8_t ERROR: 1;
+
+		/* gets set when the WINMON interrupt fires */
+        uint8_t WINMON: 1;
+
+        uint8_t get(){
+			return (WINMON << 1) | ERROR;
+        }
+    };
+    status m_status;
+	
+	struct inten {
+		uint8_t WINMON: 1;
+		
+		uint8_t get(){
+			return WINMON;
+		}
+		void set(uint8_t data){
+			WINMON = data & 0x01;
+		}
+		void clr(uint8_t data){
+			//TODO: clear the passed bits
+		}
+	};
+	inten m_inten;
+	
+	struct intclr {
+		uint8_t WINMON: 1;
+		
+		void set(uint8_t data){
+			WINMON = data & 0x01;
+		}
+	};
+	intclr m_intclr;
 };
 
 

@@ -109,6 +109,54 @@
 	
 	/****** PWM *****/
 	#define SEESAW_TIMER_PWM 0x01
+	
+//* ============== ADC =================== *//
+#define SEESAW_ADC_BASE 0x09
+
+	/****** STATUS *****/
+	#define SEESAW_ADC_STATUS 0x00
+
+	//this is asserted when this encorunters an error
+	#define SEESAW_ADC_STATUS_ERROR_BITS 0x01
+	
+	//this is asserted when window monitor interrupt occurs
+	#define SEESAW_ADC_STATUS_WINMON 0x02
+	
+	/****** INTENSET *****/
+	//writing a 1 to any of the bits in this register enables the interrupt
+	#define SEESAW_ADC_INTEN 0x02
+
+	// if this bit is set to 1, assert interrupt when window monitor conditions are met
+	#define SEESAW_ADC_INTEN_WINMON_BITS 0x01
+
+	/****** INTENCLR *****/
+	/* writing a 1 to any of these bits disables the interrupt.
+	 * this automatically updates the inten register
+	 */
+	#define SEESAW_ADC_INTENCLR 0x03
+
+	// writing a 1 disables the window monitor interrupt
+	#define SEESAW_ADC_INTENCLR_WINMON_BITS 0x01
+	
+	/****** WINMODE *****/
+	#define SEESAW_ADC_WINMODE 0x04
+		
+	/****** WINTHRESH *****/
+	//window monitor thresholds
+	#define SEESAW_ADC_WINTHRESH 0x05
+	
+	/****** INTCLR *****/
+	//writing a 1 to any of these bits clears the interrupt
+	#define SEESAW_ADC_INTCLR 0x06
+
+	#define SEESAW_ADC_INTCLR_WINMON 0x01
+	
+	/****** CHANNELS *****/
+	#define SEESAW_ADC_CHANNEL_0 0x07
+	#define SEESAW_ADC_CHANNEL_1 0x08
+	#define SEESAW_ADC_CHANNEL_2 0x09
+	#define SEESAW_ADC_CHANNEL_3 0x0A
+	#define SEESAW_ADC_CHANNEL_4 0x0B
 
 
 //* ============== Interrupts =================== *//

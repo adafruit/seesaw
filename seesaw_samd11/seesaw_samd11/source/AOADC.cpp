@@ -34,6 +34,12 @@
 #include "AOADC.h"
 #include "event.h"
 
+#include "bsp_adc.h"
+#include "bsp_gpio.h"
+
+#include "SeesawConfig.h"
+#include "RegisterMap.h"
+
 Q_DEFINE_THIS_FILE
 
 using namespace FW;
@@ -47,6 +53,10 @@ QState AOADC::InitialPseudoState(AOADC * const me, QEvt const * const e) {
 
     me->subscribe(ADC_START_REQ);
     me->subscribe(ADC_STOP_REQ);
+	
+	me->subscribe(ADC_WRITE_WINMON_REQ);
+	me->subscribe(ADC_WRITE_REG_REQ);
+	me->subscribe(ADC_READ_REG_REQ);
       
     return Q_TRAN(&AOADC::Root);
 }
@@ -104,6 +114,37 @@ QState AOADC::Stopped(AOADC * const me, QEvt const * const e) {
         }
         case ADC_START_REQ: {
             LOG_EVENT(e);
+			
+#if CONFIG_ADC_INPUT_0
+			pinPeripheral(CONFIG_ADC_INPUT_0_PIN, 1);
+#endif
+
+#if CONFIG_ADC_INPUT_1
+			pinPeripheral(CONFIG_ADC_INPUT_1_PIN, 1);
+#endif
+
+#if CONFIG_ADC_INPUT_2
+			pinPeripheral(CONFIG_ADC_INPUT_2_PIN, 1);
+#endif
+
+#if CONFIG_ADC_INPUT_3
+			pinPeripheral(CONFIG_ADC_INPUT_3_PIN, 1);
+#endif
+
+#if CONFIG_ADC_INPUT_3
+#define ADC_NUM_INPUT 4
+#elif CONFIG_ADC_INPUT_2
+#define ADC_NUM_INPUT 3
+#elif CONFIG_ADC_INPUT_1
+#define ADC_NUM_INPUT 2
+#elif CONFIG_ADC_INPUT_0
+#define ADC_NUM_INPUT 1
+#else
+			Q_ASSERT(0); //at least one ADC input must be defined
+#endif
+
+			adc_init();
+			
 			Evt const &req = EVT_CAST(*e);
 			Evt *evt = new ADCStartCfm(req.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
@@ -127,6 +168,10 @@ QState AOADC::Started(AOADC * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
+		case Q_INIT_SIG: {
+			status = Q_TRAN(&AOADC::Normal);
+			break;
+		}
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
             status = Q_HANDLED();
@@ -140,10 +185,148 @@ QState AOADC::Started(AOADC * const me, QEvt const * const e) {
 			status = Q_TRAN(AOADC::Stopped);
 			break;
 		}
+		case ADC_READ_REG_REQ: {
+			ADCReadRegReq const &req = static_cast<ADCReadRegReq const &>(*e);
+			Fifo *dest = req.getDest();
+			uint8_t reg = req.getReg();
+			
+			//there should be nothing in the destination pipe
+			Q_ASSERT(!dest->GetUsedCount());
+			
+			switch(reg){
+				case SEESAW_ADC_CHANNEL_0:
+				case SEESAW_ADC_CHANNEL_1:
+				case SEESAW_ADC_CHANNEL_2:
+				case SEESAW_ADC_CHANNEL_3:{
+					uint16_t valueRead = adc_read(reg - SEESAW_ADC_CHANNEL_0);
+					uint8_t ret[] = { (uint8_t)(valueRead >> 8), (uint8_t)valueRead & 0xFF };
+					dest->Write(ret, 2);
+				
+					break;
+				}
+				default:
+					//TODO: lets handle this error better
+					Q_ASSERT(0);
+					break;
+			}
+			
+			Evt *evt = new DelegateDataReady(req.getRequesterId());
+			QF::PUBLISH(evt, me);
+			status = Q_HANDLED();
+			break;
+		}
+		case ADC_WRITE_REG_REQ: {
+			ADCWriteRegReq const &req = static_cast<ADCWriteRegReq const &>(*e);
+			uint8_t reg = req.getReg();
+			
+			switch (reg){
+				case SEESAW_ADC_INTEN:{
+					me->m_inten.set(req.getValue());
+					ADC->INTENSET.bit.WINMON = me->m_inten.WINMON;
+					break;
+				}
+				case SEESAW_ADC_INTENCLR:{
+					me->m_inten.clr(req.getValue());
+					ADC->INTENSET.bit.WINMON = me->m_inten.WINMON;
+					break;
+				}
+				case SEESAW_ADC_WINMODE:{
+					ADC->WINCTRL.reg = req.getValue();
+					break;
+				}
+				default:
+				//TODO: lets handle this error better
+				Q_ASSERT(0);
+				break;
+			}
+			
+			status = Q_HANDLED();
+			break;
+		}
+		case ADC_WRITE_WINMON_REQ: {
+			ADCWriteWinmonThresh const &req = static_cast<ADCWriteWinmonThresh const &>(*e);
+			ADC->WINLT.reg = req.getLower();
+			ADC->WINUT.reg = req.getUpper();
+			status = Q_HANDLED();
+			break;
+		}
         default: {
             status = Q_SUPER(&AOADC::Root);
             break;
         }
     }
     return status;
+}
+
+QState AOADC::Normal(AOADC * const me, QEvt const * const e) {
+	QState status;
+	switch (e->sig) {
+		case Q_ENTRY_SIG: {
+			LOG_EVENT(e);
+			status = Q_HANDLED();
+			break;
+		}
+		case Q_EXIT_SIG: {
+			LOG_EVENT(e);
+			status = Q_HANDLED();
+			break;
+		}
+		default: {
+			status = Q_SUPER(&AOADC::Started);
+			break;
+		}
+	}
+	return status;
+}
+
+QState AOADC::Freeruning(AOADC * const me, QEvt const * const e) {
+	QState status;
+	switch (e->sig) {
+		case Q_ENTRY_SIG: {
+			LOG_EVENT(e);
+			adc_set_inputscan(ADC_NUM_INPUT - 1);
+			adc_set_freerunning(true);
+			adc_trigger();
+			status = Q_HANDLED();
+			break;
+		}
+		case Q_EXIT_SIG: {
+			LOG_EVENT(e);
+			adc_set_inputscan(0);
+			adc_set_freerunning(false);
+			status = Q_HANDLED();
+			break;
+		}
+		//TODO: not rly sure how this should work just yet
+		case ADC_READ_REG_REQ: {
+			ADCReadRegReq const &req = static_cast<ADCReadRegReq const &>(*e);
+			Fifo *dest = req.getDest();
+			uint8_t reg = req.getReg();
+			
+			//there should be nothing in the destination pipe
+			Q_ASSERT(!dest->GetUsedCount());
+
+			if(reg >= SEESAW_ADC_CHANNEL_0){
+				
+				ADC->INTFLAG.reg = ADC_INTFLAG_RESRDY;
+				//read the data
+				while (ADC->INTFLAG.bit.RESRDY == 0);   // Waiting for conversion to complete
+				uint16_t valueRead = ADC->RESULT.reg;
+				uint8_t ret[] = { (uint8_t)(valueRead >> 8), (uint8_t)valueRead & 0xFF };
+				dest->Write(ret, 2);
+				
+				Evt *evt = new DelegateDataReady(req.getRequesterId());
+				QF::PUBLISH(evt, me);
+				
+				status = Q_HANDLED();
+				
+				break;
+			}
+		}
+		default: {
+			status = Q_SUPER(&AOADC::Started);
+			break;
+		}
+	}
+	return status;
 }

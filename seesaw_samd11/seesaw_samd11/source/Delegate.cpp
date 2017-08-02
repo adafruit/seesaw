@@ -161,6 +161,23 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						}
 						break;
 					}
+					case SEESAW_ADC_BASE: {
+						switch(lowByte){
+							case SEESAW_ADC_WINMODE:
+							case SEESAW_ADC_INTEN:
+							case SEESAW_ADC_INTENCLR:
+							case SEESAW_ADC_CHANNEL_0:
+							case SEESAW_ADC_CHANNEL_1:
+							case SEESAW_ADC_CHANNEL_2:
+							case SEESAW_ADC_CHANNEL_3:
+							case SEESAW_ADC_CHANNEL_4:{
+								Evt *evt = new ADCReadRegReq(req.getRequesterId(), lowByte, req.getFifo());
+								QF::PUBLISH(evt, me);
+								break;
+							}
+						}
+						break;
+					}
 					case SEESAW_SERCOM0_BASE:
 					case SEESAW_SERCOM1_BASE:
 					case SEESAW_SERCOM2_BASE:
@@ -270,6 +287,43 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						me->discard(fifo, len);
 						break;
 					}
+					case SEESAW_ADC_BASE: {
+						switch(lowByte){
+							//these take 1 byte of data
+							case SEESAW_ADC_WINMODE:
+							case SEESAW_ADC_INTEN:
+							case SEESAW_ADC_INTENCLR:{
+								Fifo *fifo = req.getFifo();
+								uint8_t dataByte;
+								fifo->Read(&dataByte, 1);
+								len--;
+								
+								//read any extra bytes and discard
+								me->discard(fifo, len);
+								
+								Evt *evt = new ADCWriteRegReq(lowByte, dataByte);
+								QF::PUBLISH(evt, me);
+								break;
+							}
+							case SEESAW_ADC_WINTHRESH:{
+								Fifo *fifo = req.getFifo();
+								uint8_t data[4];
+								fifo->Read(data, 4);
+								len-=4;
+								
+								//read any extra bytes and discard
+								me->discard(fifo, len);
+								
+								uint16_t ht = ((uint16_t)data[0] << 8) | data[1];
+								uint16_t lt = ((uint16_t)data[2] << 8) | data[3];
+								
+								Evt *evt = new ADCWriteWinmonThresh(ht, lt);
+								QF::PUBLISH(evt, me);
+								break;
+							}
+						}
+						break;
+					}
 					case SEESAW_SERCOM0_BASE:
 					case SEESAW_SERCOM1_BASE:
 					case SEESAW_SERCOM2_BASE:
@@ -290,10 +344,6 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								me->discard(fifo, len);
 								
 								Evt *evt = new SercomWriteRegReq(lowByte, dataByte);
-								QF::PUBLISH(evt, me);
-								
-								//ack immediately
-								evt = new DelegateDataReady(req.getRequesterId());
 								QF::PUBLISH(evt, me);
 								break;
 							}

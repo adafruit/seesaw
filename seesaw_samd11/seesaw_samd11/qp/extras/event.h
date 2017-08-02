@@ -76,6 +76,9 @@ enum {
 	ADC_START_CFM,
 	ADC_STOP_REQ,
 	ADC_STOP_CFM,
+	ADC_READ_REG_REQ,
+	ADC_WRITE_REG_REQ,
+	ADC_WRITE_WINMON_REQ,
 	
 	TIMER_START_REQ,
 	TIMER_START_CFM,
@@ -210,6 +213,44 @@ class ADCStopCfm : public ErrorEvt {
 	public:
 	ADCStopCfm(uint16_t seq, Error error, Reason reason = 0) :
 	ErrorEvt(ADC_STOP_CFM, seq, error, reason) {}
+};
+
+class ADCReadRegReq : public Evt {
+	public:
+	ADCReadRegReq(uint8_t requesterId, uint8_t reg, Fifo *dest) :
+	Evt(ADC_READ_REG_REQ), _requesterId(requesterId), _reg(reg), _dest(dest) {}
+	
+	uint8_t getRequesterId() const { return _requesterId; }
+	uint8_t getReg() const { return _reg; }
+	Fifo *getDest() const { return _dest; }
+	
+	private:
+	uint8_t _requesterId, _reg;
+	Fifo *_dest;
+};
+
+class ADCWriteRegReq : public Evt {
+	public:
+	ADCWriteRegReq(uint8_t reg, uint8_t value) :
+	Evt(ADC_WRITE_REG_REQ), _reg(reg), _value(value) {}
+	
+	uint8_t getReg() const { return _reg; }
+	uint8_t getValue() const { return _value; }
+	
+	private:
+	uint8_t _reg, _value;
+};
+
+class ADCWriteWinmonThresh : public Evt {
+	public:
+	ADCWriteWinmonThresh(uint16_t upper, uint16_t lower) : 
+	Evt(ADC_WRITE_WINMON_REQ), _upper(upper), _lower(lower) {}
+		
+	uint16_t getUpper() const { return _upper; }
+	uint16_t getLower() const { return _lower; }
+		
+	private:
+	uint16_t _upper, _lower;
 };
 
 //* ==========================  Timer ======================= *//

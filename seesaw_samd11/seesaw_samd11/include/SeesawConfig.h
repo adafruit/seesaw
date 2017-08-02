@@ -3,7 +3,7 @@
 
 #define CONFIG_VERSION 0x55
 
-//pool sizes
+//* ============== POOL SIZES =================== *//
 #define	EVT_SIZE_SMALL 32
 #define EVT_SIZE_MEDIUM 64
 #define	EVT_SIZE_LARGE 128
@@ -11,11 +11,25 @@
 #define	EVT_COUNT_MEDIUM 2
 #define	EVT_COUNT_LARGE 1
 
-#define CONFIG_ADC 0
+//* ============== ADC =================== *//
+#define CONFIG_ADC 1
+#define CONFIG_ADC_INPUT_0 1
+#define CONFIG_ADC_INPUT_0_PIN 1
 
+#define CONFIG_ADC_INPUT_1 1
+#define CONFIG_ADC_INPUT_1_PIN 2
+
+#define CONFIG_ADC_INPUT_2 0
+#define CONFIG_ADC_INPUT_2_PIN 3
+
+#define CONFIG_ADC_INPUT_3 0
+#define CONFIG_ADC_INPUT_3_PIN 4
+
+//* ============== DAC =================== *//
 #define CONFIG_DAC 0
 
-#define CONFIG_TIMER 1
+//* ============== TIMER =================== *//
+#define CONFIG_TIMER 0
 
 #define CONFIG_TIMER_PWM_OUT0 1
 #define CONFIG_TIMER_PWM_OUT0_TC TC1
@@ -37,18 +51,11 @@
 #define CONFIG_TIMER_PWM_OUT3_WO 1
 #define CONFIG_TIMER_PWM_OUT3_PIN 6
 
+//* ============== INTERRUPT =================== *//
 #define CONFIG_INTERRUPT 1
 #define CONFIG_INTERRUPT_PIN 11
 
-#define CONFIG_SERCOM0 0
-#define CONFIG_SERCOM1 0
-#define CONFIG_SERCOM2 0
-
-//These are only available on samd21
-#define CONFIG_SERCOM3 0
-#define CONFIG_SERCOM4 0
-#define CONFIG_SERCOM5 0
-
+//* ============== I2C SLAVE =================== *//
 #define CONFIG_I2C_SLAVE 1
 
 #if defined(__SAMD21G18A__)
@@ -65,6 +72,16 @@
 #define CONFIG_I2C_SLAVE_PIN_SCL 16
 
 #define CONFIG_I2C_SLAVE_ADDR 0x49
+
+//* ============== SERCOM =================== *//
+#define CONFIG_SERCOM0 0
+#define CONFIG_SERCOM1 0
+#define CONFIG_SERCOM2 0
+
+//These are only available on samd21
+#define CONFIG_SERCOM3 0
+#define CONFIG_SERCOM4 0
+#define CONFIG_SERCOM5 0
 
 #define CONFIG_SERCOM_UART_PIN_RX 10
 #define CONfIG_SERCOM_UART_PIN_TX 9
