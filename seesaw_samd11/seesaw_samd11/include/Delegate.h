@@ -68,6 +68,7 @@ protected:
 	uint32_t m_intflag;
 	
 	void discard(Fifo *fifo, uint8_t len);
+	void break32Bit(uint32_t in, uint8_t *out);
 };
 
 

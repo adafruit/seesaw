@@ -165,6 +165,23 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								QF::PUBLISH(evt, me);
 								break;
 							}
+							case SEESAW_STATUS_VERSION: {
+								uint8_t ret[4];
+								me->break32Bit(CONFIG_VERSION, ret);
+								fifo->Write(ret, 4);
+								Evt *evt = new DelegateDataReady(req.getRequesterId());
+								QF::PUBLISH(evt, me);
+								break;
+							}
+							case SEESAW_STATUS_OPTIONS: {
+								uint32_t data = CONFIG_OPTIONS;
+								uint8_t ret[4];
+								me->break32Bit(data, ret);
+								fifo->Write(ret, 4);
+								Evt *evt = new DelegateDataReady(req.getRequesterId());
+								QF::PUBLISH(evt, me);
+								break;
+							}
 						}
 						break;
 					}
@@ -173,11 +190,8 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						switch(lowByte){
 							case SEESAW_GPIO_BULK: {
 								uint32_t data = gpio_read_bulk(PORTA);
-								uint8_t b3 = (data >> 24) & 0xFF;
-								uint8_t b2 = (data >> 16) & 0xFF;
-								uint8_t b1 = (data >> 8) & 0xFF;
-								uint8_t b0 = data & 0xFF;
-								uint8_t ret[] = {b3, b2, b1, b0};
+								uint8_t ret[4];
+								me->break32Bit(data, ret);
 								fifo->Write(ret, 4);
 								Evt *evt = new DelegateDataReady(req.getRequesterId());
 								QF::PUBLISH(evt, me);
@@ -192,11 +206,8 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								break;
 							}
 							case SEESAW_GPIO_INTFLAG: {
-								uint8_t b3 = (me->m_intflag >> 24) & 0xFF;
-								uint8_t b2 = (me->m_intflag >> 16) & 0xFF;
-								uint8_t b1 = (me->m_intflag >> 8) & 0xFF;
-								uint8_t b0 = me->m_intflag & 0xFF;
-								uint8_t ret[] = {b3, b2, b1, b0};
+								uint8_t ret[4];
+								me->break32Bit(me->m_intflag, ret);
 								fifo->Write(ret, 4);
 								Evt *evt = new DelegateDataReady(req.getRequesterId());
 								QF::PUBLISH(evt, me);
@@ -511,6 +522,19 @@ void Delegate::discard(Fifo *fifo, uint8_t len)
 		fifo->Read(&dummy, 1);
 		len--;
 	}
+}
+
+void Delegate::break32Bit(uint32_t in, uint8_t *out)
+{
+	uint8_t b3 = (in >> 24) & 0xFF;
+	uint8_t b2 = (in >> 16) & 0xFF;
+	uint8_t b1 = (in >> 8) & 0xFF;
+	uint8_t b0 = in & 0xFF;
+	
+	out[0] = b3;
+	out[1] = b2;
+	out[2] = b1;
+	out[3] = b0;
 }
 
 extern "C" {

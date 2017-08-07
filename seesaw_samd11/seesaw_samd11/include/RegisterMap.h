@@ -179,9 +179,16 @@
 	#define SEESAW_ADC_CHANNEL_2 0x09
 	#define SEESAW_ADC_CHANNEL_3 0x0A
 	#define SEESAW_ADC_CHANNEL_4 0x0B
+	
+//* ============== DAC =================== *//
+#define SEESAW_DAC_BASE 0x0A
+
+	/****** STATUS *****/
+	#define SEESAW_DAC_STATUS 0x00
 
 
 //* ============== Interrupts =================== *//
+#define SEESAW_INTERRUPT_BASE 0x0B
 
 #define SEESAW_INTERRUPT_GPIO			  ( (uint32_t)(1ul << 0) )
 #define SEESAW_INTERRUPT_SERCOM0_DATA_RDY ( (uint32_t)(1ul << 1) )
