@@ -4,9 +4,14 @@
 //* ============== STATUS =================== *//
 #define SEESAW_STATUS_BASE 0x00
 
-#define SEESAW_STATUS_VERSION 0x02
+	#define SEESAW_STATUS_HW_ID 0x01
+		#define SEESAW_STATUS_HW_ID_CODE 0x55
 
-#define SEESAW_STATUS_SWRST 0x7F
+	#define SEESAW_STATUS_VERSION 0x02
+	
+	#define SEESAW_STATUS_OPTIONS 0x03
+
+	#define SEESAW_STATUS_SWRST 0x7F
 
 //* ============== GPIO =================== *//
 #define SEESAW_GPIO_BASE 0x01
@@ -14,7 +19,6 @@
 /* to set pinmode
 * 0x01 <----------- high byte GPIO base
 *      0x00 <----------- low byte pinmode command
-*             (0x80 for output, 0x00 for input) | (7 bit pin number) <--  1 Data byte
 */
 
 	#define SEESAW_GPIO_PINMODE_SINGLE 0x00
@@ -54,7 +58,20 @@
 	/* Toggle multiple pins at once. Writing a 1 to any bit toggles the corresponding pin 
 	*/
 	#define SEESAW_GPIO_BULK_TOGGLE 0x07
-
+	
+	/****** INTENSET *****/
+	/* Writing a 1 to any of these bits enables the interrupt on that pin */
+	#define SEESAW_GPIO_INTENSET	0x08
+	
+	/****** INTENCLR *****/
+	/* Writing a 1 to any of these bits disables the interrupt on that pin */
+	#define SEESAW_GPIO_INTENCLR	0x09
+	
+	/****** INTFLAG *****/
+	/* these flags get set when an interrupt fires on a pin. Reading this register clears all interrupts. */
+	#define SEESAW_GPIO_INTFLAG	0x0A
+	
+	
 //* ============== SERCOM =================== *//
 
 #define SEESAW_SERCOM0_BASE 0x02
@@ -166,11 +183,12 @@
 
 //* ============== Interrupts =================== *//
 
-#define SEESAW_INTERRUPT_SERCOM0_DATA_RDY ( (uint32_t)(1 << 0) )
-#define SEESAW_INTERRUPT_SERCOM1_DATA_RDY ( (uint32_t)(1 << 1) )
-#define SEESAW_INTERRUPT_SERCOM2_DATA_RDY ( (uint32_t)(1 << 2) )
-#define SEESAW_INTERRUPT_SERCOM3_DATA_RDY ( (uint32_t)(1 << 3) )
-#define SEESAW_INTERRUPT_SERCOM4_DATA_RDY ( (uint32_t)(1 << 4) )
-#define SEESAW_INTERRUPT_SERCOM5_DATA_RDY ( (uint32_t)(1 << 5) )
+#define SEESAW_INTERRUPT_GPIO			  ( (uint32_t)(1ul << 0) )
+#define SEESAW_INTERRUPT_SERCOM0_DATA_RDY ( (uint32_t)(1ul << 1) )
+#define SEESAW_INTERRUPT_SERCOM1_DATA_RDY ( (uint32_t)(1ul << 2) )
+#define SEESAW_INTERRUPT_SERCOM2_DATA_RDY ( (uint32_t)(1ul << 3) )
+#define SEESAW_INTERRUPT_SERCOM3_DATA_RDY ( (uint32_t)(1ul << 4) )
+#define SEESAW_INTERRUPT_SERCOM4_DATA_RDY ( (uint32_t)(1ul << 5) )
+#define SEESAW_INTERRUPT_SERCOM5_DATA_RDY ( (uint32_t)(1ul << 6) )
 
 #endif

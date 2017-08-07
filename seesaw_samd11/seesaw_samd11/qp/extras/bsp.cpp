@@ -46,6 +46,7 @@
 void BspInit() {
 	//initialize some clocks
 #if defined(__SAMD21G18A__)
+	PM->APBAMASK.reg |= PM_APBAMASK_EIC;
 	PM->APBCMASK.reg |= PM_APBCMASK_SERCOM0 | PM_APBCMASK_SERCOM1 | PM_APBCMASK_SERCOM2 | PM_APBCMASK_SERCOM3 | PM_APBCMASK_SERCOM4 | PM_APBCMASK_SERCOM5 ;
 	PM->APBCMASK.reg |= PM_APBCMASK_TCC0 | PM_APBCMASK_TCC1 | PM_APBCMASK_TCC2 | PM_APBCMASK_TC3 | PM_APBCMASK_TC4 | PM_APBCMASK_TC5 ;
 #else
@@ -63,6 +64,11 @@ void BspInit() {
 #ifdef DAC
 	PM->APBCMASK.reg |= PM_APBCMASK_ADC | PM_APBCMASK_DAC ;
 #endif
+
+	GCLK->CLKCTRL.reg = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID(GCLK_CLKCTRL_ID_EIC_Val));
+	// Enable EIC
+	EIC->CTRL.bit.ENABLE = 1;
+	while (EIC->STATUS.bit.SYNCBUSY == 1) { }
 }
 
 void BspWrite(char const *buf, uint32_t len) {
@@ -94,8 +100,8 @@ void QF::onStartup(void) {
 	NVIC_SetPriority(PendSV_IRQn, 0xFF);
 	SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 	NVIC_SetPriority(SysTick_IRQn, SYSTICK_PRIO);
-	
 	NVIC_SetPriority(CONFIG_I2C_SLAVE_IRQn, I2C_SLAVE_ISR_PRIO);
+	NVIC_SetPriority(EIC_IRQn, EIC_ISR_PRIO);
 
 #if defined(SERCOM0)
 	NVIC_SetPriority(SERCOM0_IRQn, SERCOM_ISR_PRIO);
@@ -123,6 +129,7 @@ void QF::onStartup(void) {
 
     // enable IRQs...
     NVIC_EnableIRQ(SysTick_IRQn);
+	NVIC_EnableIRQ(EIC_IRQn);
 #if CONFIG_I2C_SLAVE
 	NVIC_EnableIRQ(CONFIG_I2C_SLAVE_IRQn);
 #endif

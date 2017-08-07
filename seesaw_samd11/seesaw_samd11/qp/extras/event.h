@@ -71,6 +71,8 @@ enum {
 	DELEGATE_STOP_REQ,
 	DELEGATE_STOP_CFM,
 	DELEGATE_DATA_READY,
+	
+	GPIO_INTERRUPT_RECEIVED,
     
 	ADC_START_REQ,
 	ADC_START_CFM,
@@ -199,6 +201,16 @@ class DelegateStopCfm : public ErrorEvt {
 	public:
 	DelegateStopCfm(uint16_t seq, Error error, Reason reason = 0) :
 	ErrorEvt(DELEGATE_STOP_CFM, seq, error, reason) {}
+};
+
+class GPIOInterruptReceived : public Evt {
+	public:
+	GPIOInterruptReceived(uint32_t intflag) :
+	Evt(GPIO_INTERRUPT_RECEIVED), _intflag(intflag) {}
+		
+	uint32_t getIntflag() const { return _intflag; }
+	private:
+	uint32_t _intflag;	
 };
 
 //* ==========================  ADC ======================= *//

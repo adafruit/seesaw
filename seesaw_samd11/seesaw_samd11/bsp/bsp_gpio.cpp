@@ -33,6 +33,39 @@ void gpio_set_inen(uint32_t mask, uint8_t port)
 	}
 }
 
+uint32_t gpio_intenset(uint32_t pins)
+{
+	uint32_t ret = 0;
+	for(uint32_t i=0; i<SEESAW_NUM_PINS; i++){
+		if( (pins & (1ul << i)) ){
+			EExt_Interrupts in = g_APinDescription[i].extin;
+			
+			ret |= (1ul << in);
+			EIC->WAKEUP.reg |= (1 << in);
+			pinPeripheral(i, 0);
+			
+			//rising and falling interrupt
+			EIC->CONFIG[0].reg |= EIC_CONFIG_SENSE0_BOTH_Val << (in << 2);
+			EIC->INTENSET.reg = EIC_INTENSET_EXTINT(1 << in);
+		}
+	}
+	return ret;
+}
+
+uint32_t gpio_intenclr(uint32_t pins)
+{
+	uint32_t ret = 0;
+	for(uint32_t i=0; i<SEESAW_NUM_PINS; i++){
+		if( (pins & (1ul << i)) ){
+			EExt_Interrupts in = g_APinDescription[i].extin;
+			ret |= (1ul << in);
+			EIC->INTENCLR.reg = EIC_INTENCLR_EXTINT(1 << in);
+			EIC->WAKEUP.reg &= ~(1 << in);
+		}
+	}
+	return ret;
+}
+
 //TODO: delete, this shouldn't be needed
 uint32_t gpio_get_hw_reg(uint32_t pmap)
 {

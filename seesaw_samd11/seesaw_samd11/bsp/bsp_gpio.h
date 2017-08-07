@@ -38,6 +38,10 @@ inline uint32_t gpio_read_bulk(int port){
 	return PORT->Group[port].IN.reg;
 }
 
+uint32_t gpio_intenset(uint32_t pins);
+
+uint32_t gpio_intenclr(uint32_t pins);
+
 inline void gpio_toggle(int port, int pin) { PORT->Group[port].OUTTGL.reg = (1<<pin); }
 	
 void pinPeripheral(uint8_t pin, uint32_t ulPeripheral);

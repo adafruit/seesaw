@@ -55,6 +55,7 @@ QState Delegate::InitialPseudoState(Delegate * const me, QEvt const * const e) {
 	me->subscribe(DELEGATE_STOP_REQ);
     
 	me->subscribe(DELEGATE_PROCESS_COMMAND);
+	me->subscribe(GPIO_INTERRUPT_RECEIVED);
 	
     return Q_TRAN(&Delegate::Root);
 }
@@ -99,6 +100,10 @@ QState Delegate::Stopped(Delegate * const me, QEvt const * const e) {
 		}
 		case DELEGATE_STOP_REQ: {
 			LOG_EVENT(e);
+			
+			me->m_inten = 0;
+			me->m_intflag = 0;
+			
 			Evt const &req = EVT_CAST(*e);
 			Evt *evt = new DelegateStopCfm(req.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
@@ -138,6 +143,8 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
         }
 		case DELEGATE_PROCESS_COMMAND: {
 			
+			//TODO: turn led on
+			
 			DelegateProcessCommand const &req = static_cast<DelegateProcessCommand const &>(*e);
 			uint8_t highByte = req.getHighByte();
 			uint8_t lowByte = req.getLowByte();
@@ -151,8 +158,8 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 					case SEESAW_STATUS_BASE: {
 						Fifo *fifo = req.getFifo();
 						switch(lowByte){
-							case SEESAW_STATUS_VERSION:{
-								uint8_t r = CONFIG_VERSION;
+							case SEESAW_STATUS_HW_ID:{
+								uint8_t r = SEESAW_STATUS_HW_ID_CODE;
 								fifo->Write(&r, 1);
 								Evt *evt = new DelegateDataReady(req.getRequesterId());
 								QF::PUBLISH(evt, me);
@@ -174,6 +181,32 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								fifo->Write(ret, 4);
 								Evt *evt = new DelegateDataReady(req.getRequesterId());
 								QF::PUBLISH(evt, me);
+								
+								//clear interrupt if interrupts are enabled
+								if(me->m_inten > 0 && me->m_intflag > 0){
+									me->m_intflag = 0;
+									Evt *evt = new InterruptClearReq( SEESAW_INTERRUPT_GPIO );
+									QF::PUBLISH(evt, me);
+								}
+								
+								break;
+							}
+							case SEESAW_GPIO_INTFLAG: {
+								uint8_t b3 = (me->m_intflag >> 24) & 0xFF;
+								uint8_t b2 = (me->m_intflag >> 16) & 0xFF;
+								uint8_t b1 = (me->m_intflag >> 8) & 0xFF;
+								uint8_t b0 = me->m_intflag & 0xFF;
+								uint8_t ret[] = {b3, b2, b1, b0};
+								fifo->Write(ret, 4);
+								Evt *evt = new DelegateDataReady(req.getRequesterId());
+								QF::PUBLISH(evt, me);
+								
+								//clear interrupt if interrupts are enabled
+								if(me->m_inten > 0){
+									me->m_intflag = 0;
+									Evt *evt = new InterruptClearReq( SEESAW_INTERRUPT_GPIO );
+									QF::PUBLISH(evt, me);
+								}
 								break;
 							}
 							default:
@@ -315,6 +348,24 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								
 								break;
 							}
+							case SEESAW_GPIO_INTENSET: {
+								uint8_t pins[4];
+								fifo->Read(pins, 4);
+								len-=4;
+								
+								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+								me->m_inten |= gpio_intenset(combined);
+								break;
+							}
+							case SEESAW_GPIO_INTENCLR: {
+								uint8_t pins[4];
+								fifo->Read(pins, 4);
+								len-=4;
+								
+								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+								me->m_inten &= !gpio_intenclr(combined);
+								break;
+							}
 						}
 						//discard any extra data
 						me->discard(fifo, len);
@@ -411,6 +462,23 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 			}
 			status = Q_HANDLED();
 			
+			//TODO: turn led off
+			
+			break;
+		}
+		case GPIO_INTERRUPT_RECEIVED: {
+			GPIOInterruptReceived const &req = static_cast<GPIOInterruptReceived const &>(*e);
+			uint32_t intflag = req.getIntflag();
+			
+			me->m_intflag |= (intflag & me->m_inten);
+			
+			Q_ASSERT(me->m_intflag > 0);
+			
+			Evt *evt = new InterruptSetReq( SEESAW_INTERRUPT_GPIO );
+			QF::PUBLISH(evt, me);
+			
+			NVIC_EnableIRQ(EIC_IRQn);
+			status = Q_HANDLED();
 			break;
 		}
 		case DELEGATE_STOP_REQ: {
@@ -429,6 +497,12 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
     return status;
 }
 
+void Delegate::intCallback(uint32_t intflag)
+{
+	Evt *evt = new GPIOInterruptReceived(intflag);
+	QF::PUBLISH(evt, 0);
+}
+
 void Delegate::discard(Fifo *fifo, uint8_t len)
 {
 	//read any extra bytes and discard
@@ -438,3 +512,14 @@ void Delegate::discard(Fifo *fifo, uint8_t len)
 		len--;
 	}
 }
+
+extern "C" {
+	void EIC_Handler(void)
+	{
+		QXK_ISR_ENTRY();
+		NVIC_DisableIRQ(EIC_IRQn);
+		Delegate::intCallback(EIC->INTFLAG.reg);
+		EIC->INTFLAG.reg = 0xFFFF;
+		QXK_ISR_ENTRY();
+	}
+};
