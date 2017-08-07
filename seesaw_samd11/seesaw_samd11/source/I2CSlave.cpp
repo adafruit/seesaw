@@ -124,6 +124,7 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
         case I2C_SLAVE_START_REQ: {
             LOG_EVENT(e);
 			
+			//TODO: read address pins, increment address if necessary
 			initSlaveWIRE( me->m_sercom, CONFIG_I2C_SLAVE_ADDR );
 			enableWIRE( me->m_sercom );
 			NVIC_ClearPendingIRQ( CONFIG_I2C_SLAVE_IRQn );

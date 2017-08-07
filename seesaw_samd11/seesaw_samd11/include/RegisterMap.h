@@ -25,30 +25,35 @@
 	/* read or write the value of a single pin */
 	#define SEESAW_GPIO_PIN_SINGLE 0x01
 	
-	/****** BULK PINMODE *****/
-	/* set pinmode of multiple pins
+	/****** BULK DIRSET *****/
+	/* set set multiple pins to output
 	*/
-	#define SEESAW_GPIO_PINMODE_BULK 0x02
+	#define SEESAW_GPIO_DIRSET_BULK 0x02
+	
+	/****** BULK DIRCLR *****/
+	/* set set multiple pins to input
+	*/
+	#define SEESAW_GPIO_DIRCLR_BULK 0x03
 	
 	/****** BULK *****/
 	/* Read or write multiple pins at once. 1 is set, 0 is cleared. 
 	*/
-	#define SEESAW_GPIO_BULK 0x03
+	#define SEESAW_GPIO_BULK 0x04
 	
 	/****** BULK SET *****/
 	/* Set multiple pins at once. Writing a 1 to any bit sets the corresponding pin 
 	*/
-	#define SEESAW_GPIO_BULK_SET 0x04
+	#define SEESAW_GPIO_BULK_SET 0x05
 	
 	/****** BULK CLEAR *****/
 	/* Clear multiple pins at once. Writing a 1 to any bit clears the corresponding pin 
 	*/
-	#define SEESAW_GPIO_BULK_CLR 0x05
+	#define SEESAW_GPIO_BULK_CLR 0x06
 	
 	/****** BULK TOGGLE *****/
 	/* Toggle multiple pins at once. Writing a 1 to any bit toggles the corresponding pin 
 	*/
-	#define SEESAW_GPIO_BULK_TOGGLE 0x06
+	#define SEESAW_GPIO_BULK_TOGGLE 0x07
 
 //* ============== SERCOM =================== *//
 

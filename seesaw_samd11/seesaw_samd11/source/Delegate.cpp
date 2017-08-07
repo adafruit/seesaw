@@ -161,6 +161,29 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						}
 						break;
 					}
+					case SEESAW_GPIO_BASE: {
+						Fifo *fifo = req.getFifo();
+						switch(lowByte){
+							case SEESAW_GPIO_BULK: {
+								uint32_t data = gpio_read_bulk(PORTA);
+								uint8_t b3 = (data >> 24) & 0xFF;
+								uint8_t b2 = (data >> 16) & 0xFF;
+								uint8_t b1 = (data >> 8) & 0xFF;
+								uint8_t b0 = data & 0xFF;
+								uint8_t ret[] = {b3, b2, b1, b0};
+								fifo->Write(ret, 4);
+								Evt *evt = new DelegateDataReady(req.getRequesterId());
+								QF::PUBLISH(evt, me);
+								break;
+							}
+							default:
+								//unrecognized command
+								Evt *evt = new DelegateDataReady(req.getRequesterId());
+								QF::PUBLISH(evt, me);
+								break;
+						}
+						break;
+					}
 					case SEESAW_ADC_BASE: {
 						switch(lowByte){
 							case SEESAW_ADC_WINMODE:
@@ -252,13 +275,23 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								
 								break;
 							}
-							case SEESAW_GPIO_PINMODE_BULK: {
+							case SEESAW_GPIO_DIRSET_BULK: {
 								uint8_t pins[4];
 								fifo->Read(pins, 4);
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_pinmode_bulk(PORTA, gpio_get_hw_reg(combined));
+								gpio_dirset_bulk(PORTA, combined);
+								
+								break;
+							}
+							case SEESAW_GPIO_DIRCLR_BULK: {
+								uint8_t pins[4];
+								fifo->Read(pins, 4);
+								len-=4;
+								
+								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+								gpio_dirclr_bulk(PORTA, combined);
 								
 								break;
 							}
@@ -268,7 +301,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_outset_bulk(PORTA, gpio_get_hw_reg(combined));
+								gpio_outset_bulk(PORTA, combined);
 								
 								break;
 							}
@@ -278,7 +311,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_outclr_bulk(PORTA, gpio_get_hw_reg(combined));
+								gpio_outclr_bulk(PORTA, combined);
 								
 								break;
 							}

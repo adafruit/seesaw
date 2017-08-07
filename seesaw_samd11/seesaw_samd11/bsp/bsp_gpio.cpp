@@ -24,6 +24,16 @@ void pinPeripheral(uint8_t pin, uint32_t ulPeripheral){
 	}
 }
 
+void gpio_set_inen(uint32_t mask, uint8_t port)
+{
+	for(uint32_t i=0; i<32; i++){
+		if( (mask & ((uint32_t)1 << i)) ){
+			PORT->Group[port].PINCFG[i].reg=(uint8_t)(PORT_PINCFG_INEN);
+		}
+	}
+}
+
+//TODO: delete, this shouldn't be needed
 uint32_t gpio_get_hw_reg(uint32_t pmap)
 {
 	uint32_t hw_reg = 0;

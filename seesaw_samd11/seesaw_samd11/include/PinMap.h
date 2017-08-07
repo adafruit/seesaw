@@ -9,6 +9,13 @@
 #define PORTC 2
 #define NO_PORT 3
 
+/* TODO
+*
+PA27 should be the default 'activity LED'
+PA16 and PA17 should be address select
+so whatever i2c address we pick, if PA16 is grounded it adds +1 and PA17 ground adds +2
+*/
+
 //TODO: this will change once we figure out how we wanna number the pins
 /*
  * Pins descriptions
@@ -35,7 +42,7 @@ typedef struct _PinDescription
 	  { PORTA, 14 }, //pin 2
 	} ;
 
-#elif defined(__SAMD11D14AM__)
+#elif defined(__SAMD11D14AM__) || defined(__SAMD09D14A__)
 
 	const PinDescription g_APinDescription[]=
 	{
