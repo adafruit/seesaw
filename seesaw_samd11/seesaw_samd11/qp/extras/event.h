@@ -203,16 +203,6 @@ class DelegateStopCfm : public ErrorEvt {
 	ErrorEvt(DELEGATE_STOP_CFM, seq, error, reason) {}
 };
 
-class GPIOInterruptReceived : public Evt {
-	public:
-	GPIOInterruptReceived(uint32_t intflag) :
-	Evt(GPIO_INTERRUPT_RECEIVED), _intflag(intflag) {}
-		
-	uint32_t getIntflag() const { return _intflag; }
-	private:
-	uint32_t _intflag;	
-};
-
 //* ==========================  ADC ======================= *//
 
 class ADCStartCfm : public ErrorEvt {

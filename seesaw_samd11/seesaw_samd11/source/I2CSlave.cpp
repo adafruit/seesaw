@@ -37,6 +37,7 @@
 
 #include "bsp_sercom.h"
 #include "SeesawConfig.h"
+#include "PinMap.h"
 
 Q_DEFINE_THIS_FILE
 
@@ -143,6 +144,8 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
 			m_inFifo->Reset();
 			m_outFifo->Reset();
 			
+			gpio_init(PORTA, PIN_ACTIVITY_LED, 1); //set as output
+			
 			Evt *evt = new I2CSlaveStartCfm(req.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
 			
@@ -210,6 +213,7 @@ QState I2CSlave::Idle(I2CSlave * const me, QEvt const * const e) {
         }
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
+			PORT->Group[PORTA].OUTSET.reg = (1ul<<PIN_ACTIVITY_LED); //activity led on
             status = Q_HANDLED();
             break;
         }
@@ -268,6 +272,7 @@ QState I2CSlave::Busy(I2CSlave * const me, QEvt const * const e) {
 		}
 		case Q_EXIT_SIG: {
 			LOG_EVENT(e);
+			PORT->Group[PORTA].OUTCLR.reg = (1ul<<PIN_ACTIVITY_LED); //activity led off
 			status = Q_HANDLED();
 			break;
 		}

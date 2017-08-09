@@ -71,6 +71,14 @@
 	/* these flags get set when an interrupt fires on a pin. Reading this register clears all interrupts. */
 	#define SEESAW_GPIO_INTFLAG	0x0A
 	
+	/****** PULLENSET *****/
+	/* Writing a 1 to any of these bits enables pull on that pin */
+	#define SEESAW_GPIO_PULLENSET 0x0B
+	
+	/****** PULLENCLR *****/
+	/* Writing a 1 to any of these bits disables pull on that pin */
+	#define SEESAW_GPIO_PULLENCLR 0x0C
+	
 	
 //* ============== SERCOM =================== *//
 

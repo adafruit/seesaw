@@ -46,7 +46,9 @@ public:
         QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
     }
 	
-	static void intCallback(uint32_t intflag);
+	static void intCallback();
+	static volatile uint32_t m_inten;
+	static volatile uint32_t m_intflag;
 
 protected:
     static QState InitialPseudoState(Delegate * const me, QEvt const * const e);
@@ -63,9 +65,6 @@ protected:
     uint8_t m_id;
 	uint16_t m_nextSequence;
     char const * m_name;
-    
-    uint32_t m_inten;
-	uint32_t m_intflag;
 	
 	void discard(Fifo *fifo, uint8_t len);
 	void break32Bit(uint32_t in, uint8_t *out);

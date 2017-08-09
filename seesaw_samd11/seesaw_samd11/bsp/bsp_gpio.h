@@ -8,9 +8,14 @@ inline void gpio_init(int port, int pin, int dir) {
 	PORT->Group[port].PINCFG[pin].reg=(uint8_t)(PORT_PINCFG_INEN);
 }
 
+inline void gpio_reset_eic(){
+	EIC->CTRL.bit.SWRST = 1;
+	while(EIC->CTRL.bit.SWRST || EIC->STATUS.bit.SYNCBUSY);
+}
+
 inline void gpio_write(int port, int pin, int val) {
-	if(val) PORT->Group[port].OUTSET.reg = (1<<pin);
-	else PORT->Group[port].OUTCLR.reg = (1<<pin);
+	if(val) PORT->Group[port].OUTSET.reg = (1ul<<pin);
+	else PORT->Group[port].OUTCLR.reg = (1ul<<pin);
 }
 
 uint32_t gpio_get_hw_reg(uint32_t pmap);
@@ -34,7 +39,11 @@ inline void gpio_outclr_bulk(int port, uint32_t mask) {
 	PORT->Group[port].OUTCLR.reg = mask;
 }
 
-inline uint32_t gpio_read_bulk(int port){
+void gpio_pullenset_bulk(uint32_t mask, uint8_t port = 0);
+
+void gpio_pullenclr_bulk(uint32_t mask, uint8_t port = 0);
+
+inline uint32_t gpio_read_bulk(int port = 0){
 	return PORT->Group[port].IN.reg;
 }
 
@@ -42,7 +51,7 @@ uint32_t gpio_intenset(uint32_t pins);
 
 uint32_t gpio_intenclr(uint32_t pins);
 
-inline void gpio_toggle(int port, int pin) { PORT->Group[port].OUTTGL.reg = (1<<pin); }
+inline void gpio_toggle(int port, int pin) { PORT->Group[port].OUTTGL.reg = (1ul<<pin); }
 	
 void pinPeripheral(uint8_t pin, uint32_t ulPeripheral);
 
