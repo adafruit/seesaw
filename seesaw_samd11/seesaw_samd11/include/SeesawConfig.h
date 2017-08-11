@@ -17,7 +17,7 @@
 #define	EVT_COUNT_LARGE 1
 
 //* ============== ADC =================== *//
-#define CONFIG_ADC 1
+#define CONFIG_ADC 0
 #define CONFIG_ADC_INPUT_0 1
 #define CONFIG_ADC_INPUT_0_PIN 2
 
@@ -46,18 +46,18 @@
 #define CONFIG_TIMER_PWM_OUT1_WO 1
 #define CONFIG_TIMER_PWM_OUT1_PIN 5
 
-#define CONFIG_TIMER_PWM_OUT2 1
+#define CONFIG_TIMER_PWM_OUT2 0
 #define CONFIG_TIMER_PWM_OUT2_TC TC2
 #define CONFIG_TIMER_PWM_OUT2_WO 0
 #define CONFIG_TIMER_PWM_OUT2_PIN 6
 
-#define CONFIG_TIMER_PWM_OUT3 1
+#define CONFIG_TIMER_PWM_OUT3 0
 #define CONFIG_TIMER_PWM_OUT3_TC TC2
 #define CONFIG_TIMER_PWM_OUT3_WO 1
 #define CONFIG_TIMER_PWM_OUT3_PIN 7
 
 //* ============== INTERRUPT =================== *//
-#define CONFIG_INTERRUPT 1
+#define CONFIG_INTERRUPT 0
 #define CONFIG_INTERRUPT_PIN 4
 
 //* ============== I2C SLAVE =================== *//

@@ -66,7 +66,7 @@ protected:
 	
 	uint32_t m_intflag;
 	
-	_PinDescription m_pin;
+	uint8_t m_pin;
 };
 
 

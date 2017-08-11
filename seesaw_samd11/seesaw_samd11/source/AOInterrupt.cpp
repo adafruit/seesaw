@@ -44,7 +44,7 @@ using namespace FW;
 
 AOInterrupt::AOInterrupt() :
     QActive((QStateHandler)&AOInterrupt::InitialPseudoState), 
-    m_id(AO_INTERRUPT), m_name("Interrupt"), m_pin(g_APinDescription[CONFIG_INTERRUPT_PIN]) {}
+    m_id(AO_INTERRUPT), m_name("Interrupt"), m_pin(CONFIG_INTERRUPT_PIN) {}
 
 QState AOInterrupt::InitialPseudoState(AOInterrupt * const me, QEvt const * const e) {
     (void)e;
@@ -95,8 +95,8 @@ QState AOInterrupt::Stopped(AOInterrupt * const me, QEvt const * const e) {
             LOG_EVENT(e);
 			me->m_intflag = 0;
 			
-			gpio_init(me->m_pin.ulPort, me->m_pin.ulPin, 1); //set as output
-			gpio_write(me->m_pin.ulPort, me->m_pin.ulPin, 1); //write high
+			gpio_init(PORTA, me->m_pin, 1); //set as output
+			gpio_write(PORTA, me->m_pin, 1); //write high
 			
             status = Q_HANDLED();
             break;
@@ -136,8 +136,8 @@ QState AOInterrupt::Started(AOInterrupt * const me, QEvt const * const e) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
 			
-			gpio_init(me->m_pin.ulPort, me->m_pin.ulPin, 1); //set as output
-			gpio_write(me->m_pin.ulPort, me->m_pin.ulPin, 1); //write high
+			gpio_init(PORTA, me->m_pin, 1); //set as output
+			gpio_write(PORTA, me->m_pin, 1); //write high
 			
             status = Q_HANDLED();
             break;
@@ -195,7 +195,7 @@ QState AOInterrupt::Unasserted(AOInterrupt * const me, QEvt const * const e) {
 		case Q_ENTRY_SIG: {
 			LOG_EVENT(e);
 			
-			gpio_write(me->m_pin.ulPort, me->m_pin.ulPin, 1); //write high
+			gpio_write(PORTA, me->m_pin, 1); //write high
 			
 			status = Q_HANDLED();
 			break;
@@ -219,7 +219,7 @@ QState AOInterrupt::Asserted(AOInterrupt * const me, QEvt const * const e) {
 		case Q_ENTRY_SIG: {
 			LOG_EVENT(e);
 			
-			gpio_write(me->m_pin.ulPort, me->m_pin.ulPin, 0); //write low
+			gpio_write(PORTA, me->m_pin, 0); //write low
 			
 			status = Q_HANDLED();
 			break;

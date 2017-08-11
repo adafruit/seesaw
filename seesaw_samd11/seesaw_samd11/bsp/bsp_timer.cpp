@@ -11,7 +11,7 @@ void initTimerPWM( Tc *TCx )
 	TCx->COUNT8.CTRLA.bit.ENABLE = 0;
 	syncTC_8(TCx);
 	// Set Timer counter Mode to 8 bits, normal PWM, prescaler 1/256
-	TCx->COUNT8.CTRLA.reg |= TC_CTRLA_MODE_COUNT8 | TC_CTRLA_WAVEGEN_NPWM | TC_CTRLA_PRESCALER_DIV256;
+	TCx->COUNT8.CTRLA.reg |= TC_CTRLA_MODE_COUNT8 | TC_CTRLA_WAVEGEN_NPWM | TC_CTRLA_PRESCALER_DIV64;
 	syncTC_8(TCx);
 	
 	// Set the initial values

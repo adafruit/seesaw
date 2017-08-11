@@ -309,8 +309,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								fifo->Read(cmd, 2);
 								len-=2;
 								
-								PinDescription pin = g_APinDescription[cmd[0]];
-								gpio_init(pin.ulPort, pin.ulPin, cmd[1]);
+								gpio_init(PORTA, cmd[0], cmd[1]);
 								
 								break;
 							}
@@ -319,8 +318,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								fifo->Read(cmd, 2);
 								len-=2;
 								
-								PinDescription pin = g_APinDescription[cmd[0]];
-								gpio_write(pin.ulPort, pin.ulPin, cmd[1]);
+								gpio_write(PORTA, cmd[0], cmd[1]);
 								
 								break;
 							}
