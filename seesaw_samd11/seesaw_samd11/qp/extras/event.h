@@ -357,7 +357,7 @@ class SERCOMStopCfm : public ErrorEvt {
 class SercomWriteDataReq : public Evt {
 	public:
 	SercomWriteDataReq(uint8_t requesterId, Fifo *source) :
-	Evt(SERCOM_WRITE_DATA_REQ), _source(source) {}
+	Evt(SERCOM_WRITE_DATA_REQ), _source(source){}
 	
 	uint8_t getRequesterId() const { return _requesterId; }
 	Fifo *getSource() const { return _source; }

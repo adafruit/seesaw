@@ -192,6 +192,8 @@
 //* ============== Interrupts =================== *//
 #define SEESAW_INTERRUPT_BASE 0x0B
 
+//TODO: open drain/push-pull, or inversion control register
+
 #define SEESAW_INTERRUPT_GPIO			  ( (uint32_t)(1ul << 0) )
 #define SEESAW_INTERRUPT_SERCOM0_DATA_RDY ( (uint32_t)(1ul << 1) )
 #define SEESAW_INTERRUPT_SERCOM1_DATA_RDY ( (uint32_t)(1ul << 2) )

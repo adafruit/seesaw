@@ -201,6 +201,7 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			SercomWriteDataReq const &req = static_cast<SercomWriteDataReq const &>(*e);
 			Fifo *source = req.getSource();
 			
+			//TODO: specify length?
 			uint8_t c;
 			while(source->Read(&c, 1)){
 				writeDataUART(me->m_sercom, c);

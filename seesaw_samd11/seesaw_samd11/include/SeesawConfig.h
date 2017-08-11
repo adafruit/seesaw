@@ -12,8 +12,8 @@
 #define	EVT_SIZE_SMALL 32
 #define EVT_SIZE_MEDIUM 64
 #define	EVT_SIZE_LARGE 128
-#define	EVT_COUNT_SMALL 8
-#define	EVT_COUNT_MEDIUM 2
+#define	EVT_COUNT_SMALL 16
+#define	EVT_COUNT_MEDIUM 4
 #define	EVT_COUNT_LARGE 1
 
 //* ============== ADC =================== *//

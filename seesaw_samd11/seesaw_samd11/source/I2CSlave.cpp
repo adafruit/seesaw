@@ -299,7 +299,6 @@ extern "C" {
 		else if(isStopDetectedWIRE( CONFIG_I2C_SLAVE_SERCOM ) ||
 		(isAddressMatch( CONFIG_I2C_SLAVE_SERCOM ) && isRestartDetectedWIRE( CONFIG_I2C_SLAVE_SERCOM ) && !isMasterReadOperationWIRE( CONFIG_I2C_SLAVE_SERCOM ))) //Stop or Restart detected
 		{
-			
 			prepareAckBitWIRE(CONFIG_I2C_SLAVE_SERCOM);
 			prepareCommandBitsWire(CONFIG_I2C_SLAVE_SERCOM, 0x03);
 			
