@@ -6,24 +6,6 @@
 #define I2C_SLAVE_OPERATION 0x4u
 #define I2C_MASTER_OPERATION 0x5u
 
-#ifdef __SAMD21G18A__
-	#define GCM_SERCOMx_SLOW          (0x13U)
-	#define GCM_SERCOM0_CORE          (0x14U)
-	#define GCM_SERCOM1_CORE          (0x15U)
-	#define GCM_SERCOM2_CORE          (0x16U)
-	#define GCM_SERCOM3_CORE          (0x17U)
-	#define GCM_SERCOM4_CORE          (0x18U)
-	#define GCM_SERCOM5_CORE          (0x19U)
-#else
-	#define GCM_SERCOMx_SLOW          (13)
-	#define GCM_SERCOM0_CORE          (14)
-	#define GCM_SERCOM1_CORE          (15)
-	#define GCM_SERCOM2_CORE          (16)
-	#define GCM_SERCOM3_CORE          (17)
-	#define GCM_SERCOM4_CORE          (18)
-	#define GCM_SERCOM5_CORE          (19)
-#endif
-
 typedef enum
 {
 	UART_EXT_CLOCK = 0,

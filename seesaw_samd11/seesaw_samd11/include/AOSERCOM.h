@@ -113,15 +113,6 @@ protected:
 		}
 	};
 	intenclr m_intenclr;
-	
-	struct intclr {
-		uint8_t DATA_RDY: 1;
-		
-		void set(uint8_t data){
-			DATA_RDY = data & 0x01;
-		}
-	};
-	intclr m_intclr;
 };
 
 

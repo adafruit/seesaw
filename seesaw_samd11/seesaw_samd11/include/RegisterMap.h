@@ -92,18 +92,18 @@
 	/****** STATUS *****/
 	#define SEESAW_SERCOM_STATUS 0x00
 
-	//this is asserted when the sercom encorunters an error
-	#define SEESAW_SERCOM_STATUS_ERROR_BITS 0x01
+		//this is asserted when the sercom encorunters an error
+		#define SEESAW_SERCOM_STATUS_ERROR_BITS 0x01
 
-	//this flag gets set when there is data available in the RX fifo
-	#define SEESAW_SERCOM_STATUS_DATA_RDY_BITS 0x02
+		//this flag gets set when there is data available in the RX fifo
+		#define SEESAW_SERCOM_STATUS_DATA_RDY_BITS 0x02
 
 	/****** INTEN *****/
 	//writing a 1 to any of the bits in this register enables the interrupt
 	#define SEESAW_SERCOM_INTEN 0x02
 
-	// if this bit is set to 1, assert interrupt when data is ready in the rx fifo
-	#define SEESAW_SERCOM_INTEN_DATA_RDY_BITS 0x01
+		// if this bit is set to 1, assert interrupt when data is ready in the rx fifo
+		#define SEESAW_SERCOM_INTEN_DATA_RDY_BITS 0x01
 
 	/****** INTENCLR *****/
 	/* writing a 1 to any of these bits disables the interrupt.
@@ -111,22 +111,16 @@
 	 */
 	#define SEESAW_SERCOM_INTENCLR 0x03
 
-	// writing a 1 disables the data rdy interrupt
-	#define SEESAW_SERCOM_INTENCLR_DATA_RDY_BITS 0x01
+		// writing a 1 disables the data rdy interrupt
+		#define SEESAW_SERCOM_INTENCLR_DATA_RDY_BITS 0x01
 
 	/****** BAUD *****/
 	//this register sets the baud rate
 	#define SEESAW_SERCOM_BAUD 0x04
 
-	/****** INTCLR *****/
-	//writing a 1 to any of these bits clears the interrupt
-	#define SEESAW_SERCOM_INTCLR 0x05
-
-	#define SEESAW_SERCOM_INTCLR_DATA_RDY 0x01
-
 	/****** DATA *****/
 	//for reading and writing data
-	#define SEESAW_SERCOM_DATA 0x06
+	#define SEESAW_SERCOM_DATA 0x05
 	
 //* ================ Timer ===================== *//
 #define SEESAW_TIMER_BASE 0x08

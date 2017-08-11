@@ -65,7 +65,7 @@ void board_init(void)
                         SYSCTRL_OSC32K_ENABLE;
 #else
   SYSCTRL->OSC32K.reg = SYSCTRL_OSC32K_CALIB(calib) |
-					  SYSCTRL_OSC32K_STARTUP( 0 ) |
+					  SYSCTRL_OSC32K_STARTUP( 0x6u ) |
 					  SYSCTRL_OSC32K_EN32K |
 					  SYSCTRL_OSC32K_ENABLE;
 #endif
@@ -161,6 +161,7 @@ void board_init(void)
 
 #if defined(CRYSTALLESS)
 
+#if defined(__SAMD21G18A__)
   #define NVM_SW_CALIB_DFLL48M_COARSE_VAL 58
   #define NVM_SW_CALIB_DFLL48M_FINE_VAL   64
 
@@ -178,6 +179,12 @@ void board_init(void)
 
   SYSCTRL->DFLLVAL.bit.COARSE = coarse;
   SYSCTRL->DFLLVAL.bit.FINE = fine;
+#else
+	#define CONF_DEFAULT_CORASE ((FUSES_DFLL48M_COARSE_CAL_Msk & (*((uint32_t *)FUSES_DFLL48M_COARSE_CAL_ADDR))) >> FUSES_DFLL48M_COARSE_CAL_Pos)
+
+	SYSCTRL->DFLLVAL.reg = SYSCTRL_DFLLVAL_COARSE(((CONF_DEFAULT_CORASE) == 0x3F) ? 0x1F : (CONF_DEFAULT_CORASE)) | SYSCTRL_DFLLVAL_FINE(512);
+#endif
+
   /* Write full configuration to DFLL control register */
   SYSCTRL->DFLLCTRL.reg =  SYSCTRL_DFLLCTRL_USBCRM | /* USB correction */
                            SYSCTRL_DFLLCTRL_CCDIS |

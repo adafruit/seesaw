@@ -1,5 +1,6 @@
 ﻿#include "bsp_timer.h"
 #include "PinMap.h"
+#include "SeesawConfig.h"
 
 //TODO: this will probably change based on the use of the timer
 void initTimerPWM( Tc *TCx )
@@ -26,9 +27,11 @@ void initTimerPWM( Tc *TCx )
 	enableTimer(TCx);
 }
 
+#if CONFIG_TIMER
 void PWMWrite( uint8_t pwm, uint8_t value)
 {
 	_PWM p = g_pwms[pwm];
 	p.tc->COUNT8.CC[p.wo].reg = value;
 	syncTC_8(p.tc);
 }
+#endif

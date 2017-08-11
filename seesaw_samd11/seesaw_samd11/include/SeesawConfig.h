@@ -57,7 +57,7 @@
 #define CONFIG_TIMER_PWM_OUT3_PIN 7
 
 //* ============== INTERRUPT =================== *//
-#define CONFIG_INTERRUPT 0
+#define CONFIG_INTERRUPT 1
 #define CONFIG_INTERRUPT_PIN 4
 
 //* ============== I2C SLAVE =================== *//
@@ -79,7 +79,7 @@
 #define CONFIG_I2C_SLAVE_ADDR 0x49
 
 //* ============== SERCOM =================== *//
-#define CONFIG_SERCOM0 0
+#define CONFIG_SERCOM0 1
 #define CONFIG_SERCOM1 0
 #define CONFIG_SERCOM2 0
 

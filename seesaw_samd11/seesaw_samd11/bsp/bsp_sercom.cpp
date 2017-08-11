@@ -77,17 +77,17 @@ void initClock( Sercom *sercom )
 
 	if(sercom == SERCOM0)
 	{
-		clockId = GCM_SERCOM0_CORE;
+		clockId = GCLK_CLKCTRL_ID_SERCOM0_CORE;
 	}
 	else if(sercom == SERCOM1)
 	{
-		clockId = GCM_SERCOM1_CORE;
+		clockId = GCLK_CLKCTRL_ID_SERCOM1_CORE;
 	}
 
 #if defined(SERCOM2)
 	else if(sercom == SERCOM2)
 	{
-		clockId = GCM_SERCOM2_CORE;
+		clockId = GCLK_CLKCTRL_ID_SERCOM2_CORE;
 	}
 #endif
 
@@ -95,15 +95,15 @@ void initClock( Sercom *sercom )
 
 	else if(sercom == SERCOM3)
 	{
-		clockId = GCM_SERCOM3_CORE;
+		clockId = GCLK_CLKCTRL_ID_SERCOM3_CORE;
 	}
 	else if(sercom == SERCOM4)
 	{
-		clockId = GCM_SERCOM4_CORE;
+		clockId = GCLK_CLKCTRL_ID_SERCOM4_CORE;
 	}
 	else if(sercom == SERCOM5)
 	{
-		clockId = GCM_SERCOM5_CORE;
+		clockId = GCLK_CLKCTRL_ID_SERCOM5_CORE;
 }
 #endif
 
@@ -112,7 +112,7 @@ void initClock( Sercom *sercom )
 	GCLK_CLKCTRL_GEN_GCLK0 | // Generic Clock Generator 0 is source
 	GCLK_CLKCTRL_CLKEN ;
 	
-	GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID( GCM_SERCOMx_SLOW ) |
+	GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID( GCLK_CLKCTRL_ID_SERCOMX_SLOW ) |
 	GCLK_CLKCTRL_GEN_GCLK1 |
 	GCLK_CLKCTRL_CLKEN ;
 

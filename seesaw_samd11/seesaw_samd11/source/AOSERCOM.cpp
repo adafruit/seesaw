@@ -126,7 +126,6 @@ QState AOSERCOM::Stopped(AOSERCOM * const me, QEvt const * const e) {
 			me->m_status.set(0x00);
 			me->m_inten.set(0x00);
 			me->m_intenclr.set(0x00);
-			me->m_intclr.set(0x00);
 			
 			Evt const &r = EVT_CAST(*e);
 			Evt *evt = new SERCOMStartCfm(r.GetSeq(), ERROR_SUCCESS);
@@ -184,8 +183,8 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			LOG_EVENT(e);
 			
 			//set up UART
-			pinPeripheral(CONFIG_SERCOM_UART_PIN_RX, 3);
-			pinPeripheral(CONfIG_SERCOM_UART_PIN_TX, 3);
+			pinPeripheral(CONFIG_SERCOM_UART_PIN_RX, 2);
+			pinPeripheral(CONfIG_SERCOM_UART_PIN_TX, 2);
 			
 			initUART(me->m_sercom, UART_INT_CLOCK, SAMPLE_RATE_x16, CONFIG_SERCOM_UART_BAUD_RATE);
 			initFrame(me->m_sercom, CONFIG_SERCOM_UART_CHAR_SIZE, LSB_FIRST, CONFIG_SERCOM_UART_PARITY, CONFIG_SERCOM_UART_STOP_BIT);
@@ -356,7 +355,7 @@ void sercom_handler( Sercom * sercom )
 #if defined(SERCOM0) && CONFIG_SERCOM0
 void SERCOM0_Handler(void){
 	QXK_ISR_ENTRY();
-	sercom_handler(SERCOM1);
+	sercom_handler(SERCOM0);
 	QXK_ISR_EXIT();
 }
 #endif
