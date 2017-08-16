@@ -188,7 +188,6 @@
 	/****** STATUS *****/
 	#define SEESAW_DAC_STATUS 0x00
 
-
 //* ============== Interrupts =================== *//
 #define SEESAW_INTERRUPT_BASE 0x0B
 
@@ -201,5 +200,8 @@
 #define SEESAW_INTERRUPT_SERCOM3_DATA_RDY ( (uint32_t)(1ul << 4) )
 #define SEESAW_INTERRUPT_SERCOM4_DATA_RDY ( (uint32_t)(1ul << 5) )
 #define SEESAW_INTERRUPT_SERCOM5_DATA_RDY ( (uint32_t)(1ul << 6) )
+
+//* ============== DAP =================== *//
+#define SEESAW_DAP_BASE 0x0C
 
 #endif

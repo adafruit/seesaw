@@ -5,7 +5,12 @@
 //TODO: this will probably change based on the use of the timer
 void initTimerPWM( Tc *TCx )
 {
+	#ifdef GCLK_CLKCTRL_ID_TC1_TC2
 	GCLK->CLKCTRL.reg = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID(GCLK_CLKCTRL_ID_TC1_TC2));
+	#else
+	//TODO: for samd21
+	//GCLK->CLKCTRL.reg = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID(GCLK_CLKCTRL_ID_TC3_TC4));
+	#endif
 	while (GCLK->STATUS.bit.SYNCBUSY == 1);
 	
 	// Disable TCx

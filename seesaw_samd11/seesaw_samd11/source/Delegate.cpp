@@ -233,6 +233,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						}
 						break;
 					}
+#if CONFIG_ADC
 					case SEESAW_ADC_BASE: {
 						switch(lowByte){
 							case SEESAW_ADC_WINMODE:
@@ -250,6 +251,9 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						}
 						break;
 					}
+#endif //ADC
+
+#if CONFIG_SERCOM0 || CONFIG_SERCOM1 || CONFIG_SERCOM2 || CONFIG_SERCOM3 || CONFIG_SERCOM4 || CONFIG_SERCOM5 
 					case SEESAW_SERCOM0_BASE:
 					case SEESAW_SERCOM1_BASE:
 					case SEESAW_SERCOM2_BASE:
@@ -277,6 +281,17 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						}
 						break;
 					}
+#endif //SERCOM
+
+#if CONFIG_DAP
+					case SEESAW_DAP_BASE:{
+						Evt *evt = new DAPRead(req.getRequesterId());
+						QF::PUBLISH(evt, me);
+						break;
+					}
+
+#endif //DAP
+
 					default:
 						//Unrecognized command or unreadable register. Do nothing.
 						Evt *evt = new DelegateDataReady(req.getRequesterId());
@@ -403,6 +418,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						me->discard(fifo, len);
 						break;
 					}
+#if CONFIG_ADC
 					case SEESAW_ADC_BASE: {
 						switch(lowByte){
 							//these take 1 byte of data
@@ -440,6 +456,9 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						}
 						break;
 					}
+#endif // ADC
+					
+#if CONFIG_SERCOM0 || CONFIG_SERCOM1 || CONFIG_SERCOM2 || CONFIG_SERCOM3 || CONFIG_SERCOM4 || CONFIG_SERCOM5 
 					case SEESAW_SERCOM0_BASE:
 					case SEESAW_SERCOM1_BASE:
 					case SEESAW_SERCOM2_BASE:
@@ -471,6 +490,9 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							}
 						}
 					}
+#endif //SERCOM
+
+#if CONFIG_TIMER
 					case SEESAW_TIMER_BASE:{
 						switch(lowByte){
 							case SEESAW_TIMER_PWM: {
@@ -488,6 +510,17 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							}
 						}
 					}
+#endif //TIMER
+
+#if CONFIG_DAP
+					case SEESAW_DAP_BASE:{
+						Evt *evt = new DAPRequest(req.getRequesterId(), req.getFifo(), req.getLen());
+						QF::PUBLISH(evt, me);
+						break;
+					}
+
+#endif //DAP
+
 					default:
 						break;
 				}

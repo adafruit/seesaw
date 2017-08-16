@@ -93,6 +93,13 @@ enum {
 	DAC_STOP_REQ,
 	DAC_STOP_CFM,
 	
+	DAP_START_REQ,
+	DAP_START_CFM,
+	DAP_STOP_REQ,
+	DAP_STOP_CFM,
+	DAP_REQUEST,
+	DAP_READ,
+	
 	INTERRUPT_START_REQ,
 	INTERRUPT_START_CFM,
 	INTERRUPT_STOP_REQ,
@@ -293,6 +300,54 @@ class DACStopCfm : public ErrorEvt {
 	public:
 	DACStopCfm(uint16_t seq, Error error, Reason reason = 0) :
 	ErrorEvt(DAC_STOP_CFM, seq, error, reason) {}
+};
+
+//* ==========================  DAP ======================= *//
+
+class DAPStartReq : public Evt {
+	public:
+	DAPStartReq(Fifo *rxFifo) :
+	Evt(DAP_START_REQ), _rx_fifo(rxFifo) {}
+	
+	Fifo *getRxFifo() const { return _rx_fifo; }
+	private:
+	Fifo *_rx_fifo;
+};
+
+class DAPStartCfm : public ErrorEvt {
+	public:
+	DAPStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(DAP_START_CFM, seq, error, reason) {}
+};
+
+class DAPStopCfm : public ErrorEvt {
+	public:
+	DAPStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(DAP_STOP_CFM, seq, error, reason) {}
+};
+
+class DAPRequest : public Evt {
+	public:
+	DAPRequest(uint8_t requesterId, Fifo *source, uint8_t len) :
+	Evt(DAP_REQUEST), _requesterId(requesterId), _source(source), _len(len) {}
+	
+	uint8_t getRequesterId() const { return _requesterId; }
+	Fifo *getSource() const { return _source; }
+	uint8_t getLen() const { return _len; }
+	private:
+	uint8_t _requesterId;
+	Fifo *_source;
+	uint8_t _len;
+};
+
+class DAPRead : public Evt {
+	public:
+	DAPRead(uint8_t requesterId) :
+	Evt(DAP_READ), _requesterId(requesterId) {}
+	
+	uint8_t getRequesterId() const { return _requesterId; }
+	private:
+	uint8_t _requesterId;
 };
 
 //* ==========================  Interrupt ======================= *//

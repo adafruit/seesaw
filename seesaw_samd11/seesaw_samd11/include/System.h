@@ -88,6 +88,10 @@ protected:
 	enum {
 		SERCOM_FIFO_ORDER = 5,
 	};
+	
+	enum {
+		DAP_FIFO_ORDER = 7,
+	};
 
 #if CONFIG_SERCOM0
 	uint8_t m_sercom0RxFifoStor[1 << SERCOM_FIFO_ORDER];
@@ -107,6 +111,11 @@ protected:
 #if CONFIG_SERCOM5
 	uint8_t m_sercom5RxFifoStor[1 << SERCOM_FIFO_ORDER];
 	Fifo m_sercom5RxFifo;
+#endif
+
+#if CONFIG_DAP
+	uint8_t m_DAPRxFifoStor[1 << DAP_FIFO_ORDER];
+	Fifo m_DAPRxFifo;
 #endif
 
 

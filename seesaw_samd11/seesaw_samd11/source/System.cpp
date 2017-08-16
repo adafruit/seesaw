@@ -64,6 +64,10 @@ System::System() :
 #if CONFIG_SERCOM5
 	,m_sercom5RxFifo(m_sercom5RxFifoStor, SERCOM_FIFO_ORDER)
 #endif
+
+#if CONFIG_DAP
+	,m_DAPRxFifo(m_DAPRxFifoStor, DAP_FIFO_ORDER)
+#endif
 	{}
 
 QState System::InitialPseudoState(System * const me, QEvt const * const e) {
@@ -76,26 +80,43 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
     me->subscribe(SYSTEM_DONE);
     me->subscribe(SYSTEM_FAIL);
 	
+#if CONFIG_I2C_SLAVE
 	me->subscribe(I2C_SLAVE_START_CFM);
 	me->subscribe(I2C_SLAVE_STOP_CFM);
-	
+#endif
+
+#if CONFIG_SERCOM0 || CONFIG_SERCOM1 || CONFIG_SERCOM2 || CONFIG_SERCOM3 || CONFIG_SERCOM4 || CONFIG_SERCOM5
 	me->subscribe(SERCOM_START_CFM);
 	me->subscribe(SERCOM_STOP_CFM);
+#endif
 	
+#if CONFIG_ADC
 	me->subscribe(ADC_START_CFM);
 	me->subscribe(ADC_STOP_CFM);
+#endif
 	
+#if CONFIG_TIMER
 	me->subscribe(TIMER_START_CFM);
 	me->subscribe(TIMER_STOP_CFM);
-	
+#endif	
+
+#if CONFIG_DAC
 	me->subscribe(DAC_START_CFM);
 	me->subscribe(DAC_STOP_CFM);
+#endif
 	
 	me->subscribe(DELEGATE_START_CFM);
 	me->subscribe(DELEGATE_STOP_CFM);
 	
+#if CONFIG_INTERRUPT
 	me->subscribe(INTERRUPT_START_CFM);
 	me->subscribe(INTERRUPT_STOP_CFM);
+#endif
+	
+#if CONFIG_DAP
+	me->subscribe(DAP_START_CFM);
+	me->subscribe(DAP_STOP_CFM);
+#endif
       
     return Q_TRAN(&System::Root);
 }
@@ -219,6 +240,11 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 			evt = new Evt(SERCOM_STOP_REQ);
 			QF::PUBLISH(evt, me);
 #endif
+
+#if CONFIG_DAP
+			evt = new Evt(DAP_STOP_REQ);
+			QF::PUBLISH(evt, me);
+#endif
 			
 			status = Q_HANDLED();
 			break;
@@ -235,6 +261,7 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 		case SERCOM_STOP_CFM:
 		case I2C_SLAVE_STOP_CFM:
 		case INTERRUPT_STOP_CFM:
+		case DAP_STOP_CFM:
 		case DELEGATE_STOP_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);
@@ -317,6 +344,11 @@ QState System::Starting(System * const me, QEvt const * const e) {
 			QF::PUBLISH(evt, me);
 #endif
 
+#if CONFIG_DAP
+			evt = new DAPStartReq(&me->m_DAPRxFifo);
+			QF::PUBLISH(evt, me);
+#endif
+
 			status = Q_HANDLED();
 			break;
 		}
@@ -333,6 +365,7 @@ QState System::Starting(System * const me, QEvt const * const e) {
 		case SERCOM_START_CFM:
 		case I2C_SLAVE_START_CFM:
 		case INTERRUPT_START_CFM:
+		case DAP_START_CFM:
 		case DELEGATE_START_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);

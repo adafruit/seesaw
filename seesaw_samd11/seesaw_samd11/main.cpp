@@ -25,6 +25,7 @@
 #include "AOTimer.h"
 #include "AOInterrupt.h"
 #include "AOSERCOM.h"
+#include "AODAP.h"
 
 using namespace QP;
 
@@ -70,6 +71,10 @@ static AOSERCOM sercom2( SERCOM2, AO_SERCOM2, 2 );
 
 #if CONFIG_SERCOM5
 static AOSERCOM sercom5( SERCOM5, AO_SERCOM5, 5 );
+#endif
+
+#if CONFIG_DAP
+static AODAP dap;
 #endif
 
 int main(void)
@@ -123,6 +128,10 @@ int main(void)
 
 #if CONFIG_SERCOM5
 	sercom5.Start(PRIO_SERCOM);
+#endif
+
+#if CONFIG_DAP
+	dap.Start(PRIO_DAP);
 #endif
 	
 	//publish a start request
