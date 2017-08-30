@@ -54,7 +54,8 @@ volatile uint8_t bytes_received, high_byte, low_byte;
 
 I2CSlave::I2CSlave( Sercom *sercom) :
     QActive((QStateHandler)&I2CSlave::InitialPseudoState), 
-    m_id(I2C_SLAVE), m_name("I2C Slave"), m_sercom(sercom) {}
+    m_id(I2C_SLAVE), m_name("I2C Slave"), m_sercom(sercom),
+	m_timeout(this, I2C_SLAVE_TIMEOUT) {}
 
 QState I2CSlave::InitialPseudoState(I2CSlave * const me, QEvt const * const e) {
     (void)e;
@@ -65,6 +66,7 @@ QState I2CSlave::InitialPseudoState(I2CSlave * const me, QEvt const * const e) {
 	me->subscribe(I2C_SLAVE_REQUEST);
 	me->subscribe(I2C_SLAVE_RECEIVE);
 	me->subscribe(I2C_SLAVE_STOP_CONDITION);
+	me->subscribe(I2C_SLAVE_TIMEOUT);
 	
 	me->subscribe(DELEGATE_DATA_READY);
 	  
@@ -125,8 +127,20 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
         case I2C_SLAVE_START_REQ: {
             LOG_EVENT(e);
 			
-			//TODO: read address pins, increment address if necessary
-			initSlaveWIRE( me->m_sercom, CONFIG_I2C_SLAVE_ADDR );
+			uint32_t mask = (1ul << PIN_ADDR_0) | (1ul << PIN_ADDR_1);
+			gpio_dirclr_bulk(PORTA, mask);
+			gpio_pullenset_bulk(mask);
+			gpio_outset_bulk(PORTA, mask);
+			
+			//wait for everything to settle
+			for(int i=0; i<50000ul; i++){
+				asm("nop");
+			}
+			
+			uint32_t val = (gpio_read_bulk() >> PIN_ADDR_0);
+			val ^= 0x03;
+			
+			initSlaveWIRE( me->m_sercom, CONFIG_I2C_SLAVE_ADDR + (val & 0x03) );
 			enableWIRE( me->m_sercom );
 			NVIC_ClearPendingIRQ( CONFIG_I2C_SLAVE_IRQn );
 			
@@ -188,9 +202,17 @@ QState I2CSlave::Started(I2CSlave * const me, QEvt const * const e) {
 		}
 		case DELEGATE_DATA_READY:{
 			DelegateDataReady const &req = static_cast<DelegateDataReady const &>(*e);
+			
+			//a timeout must have occured, toss out any data
 			if(req.getRequesterId() == me->m_id){
+				if(req.getFifo() != NULL){
+					Fifo * f = req.getFifo();
+					f->Reset();
+				}
+				else m_outFifo->Reset();
 				status = Q_HANDLED();
 			}
+			break;
 		}
         default: {
             status = Q_SUPER(&I2CSlave::Root);
@@ -248,8 +270,8 @@ QState I2CSlave::Busy(I2CSlave * const me, QEvt const * const e) {
 	QState status;
 	switch (e->sig) {
 		case Q_ENTRY_SIG: {
-			//TODO: set a timeout on entry to busy state
 			LOG_EVENT(e);
+			me->m_timeout.armX(100, 100);
 			
 			slave_busy = true;
 			
@@ -270,9 +292,14 @@ QState I2CSlave::Busy(I2CSlave * const me, QEvt const * const e) {
 			}
 			break;
 		}
+		case I2C_SLAVE_TIMEOUT: {
+			status = Q_TRAN(&I2CSlave::Idle);
+			break;
+		}
 		case Q_EXIT_SIG: {
 			LOG_EVENT(e);
 			PORT->Group[PORTA].OUTCLR.reg = (1ul<<PIN_ACTIVITY_LED); //activity led off
+			me->m_timeout.disarm();
 			status = Q_HANDLED();
 			break;
 		}

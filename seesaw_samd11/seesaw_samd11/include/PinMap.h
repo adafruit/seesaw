@@ -9,14 +9,9 @@
 #define PORTC 2
 #define NO_PORT 3
 
-/* TODO
-*
-PA27 should be the default 'activity LED'
-PA16 and PA17 should be address select
-so whatever i2c address we pick, if PA16 is grounded it adds +1 and PA17 ground adds +2
-*/
-
 #define PIN_ACTIVITY_LED 27
+#define PIN_ADDR_0 16
+#define PIN_ADDR_1 17
 
 #if CONFIG_TIMER
 	typedef struct _PWM

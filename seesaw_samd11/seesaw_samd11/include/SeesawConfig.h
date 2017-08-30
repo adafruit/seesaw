@@ -17,7 +17,7 @@
 #define	EVT_COUNT_LARGE 1
 
 //* ============== ADC =================== *//
-#define CONFIG_ADC 0
+#define CONFIG_ADC 1
 #define CONFIG_ADC_INPUT_0 1
 #define CONFIG_ADC_INPUT_0_PIN 2
 
@@ -80,7 +80,7 @@
 #endif
 
 //* ============== INTERRUPT =================== *//
-#define CONFIG_INTERRUPT 0
+#define CONFIG_INTERRUPT 1
 #define CONFIG_INTERRUPT_PIN 4
 
 //* ============== I2C SLAVE =================== *//
@@ -124,7 +124,7 @@
 #define CONFIG_SERCOM_UART_STOP_BIT SERCOM_STOP_BIT_1
 
 //* ============== DAP =================== *//
-#define CONFIG_DAP 1
+#define CONFIG_DAP 0
 
 	#define CONFIG_DAP_SWCLK 11
 	#define CONFIG_DAP_SWDIO 10

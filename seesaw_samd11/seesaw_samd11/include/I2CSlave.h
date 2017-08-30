@@ -67,6 +67,8 @@ protected:
 	uint16_t m_nextSequence;
     char const * m_name;
 	
+	QTimeEvt m_timeout;
+	
 	Sercom *m_sercom;
 };
 

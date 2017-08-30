@@ -187,6 +187,11 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								QF::PUBLISH(evt, me);
 								break;
 							}
+							default:
+								//Unrecognized command or unreadable register. Do nothing.
+								Evt *evt = new DelegateDataReady(req.getRequesterId());
+								QF::PUBLISH(evt, me);
+								break;
 						}
 						break;
 					}
