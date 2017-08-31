@@ -204,4 +204,9 @@
 //* ============== DAP =================== *//
 #define SEESAW_DAP_BASE 0x0C
 
+//* ============== EEPROM =================== *//
+#define SEESAW_EEPROM_BASE 0x0D
+
+#define SEESAW_EEPROM_I2C_ADDR 0x3F
+
 #endif

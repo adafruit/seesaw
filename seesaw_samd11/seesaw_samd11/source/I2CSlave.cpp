@@ -38,6 +38,7 @@
 #include "bsp_sercom.h"
 #include "SeesawConfig.h"
 #include "PinMap.h"
+#include "bsp_nvmctrl.h"
 
 Q_DEFINE_THIS_FILE
 
@@ -127,6 +128,10 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
         case I2C_SLAVE_START_REQ: {
             LOG_EVENT(e);
 			
+			//see if there is an I2C addr set
+			uint8_t addr = eeprom_read_byte(SEESAW_EEPROM_I2C_ADDR);
+			addr = (addr == 0xFF ? CONFIG_I2C_SLAVE_ADDR : addr);
+			
 			uint32_t mask = (1ul << PIN_ADDR_0) | (1ul << PIN_ADDR_1);
 			gpio_dirclr_bulk(PORTA, mask);
 			gpio_pullenset_bulk(mask);
@@ -140,7 +145,7 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
 			uint32_t val = (gpio_read_bulk() >> PIN_ADDR_0);
 			val ^= 0x03;
 			
-			initSlaveWIRE( me->m_sercom, CONFIG_I2C_SLAVE_ADDR + (val & 0x03) );
+			initSlaveWIRE( me->m_sercom, addr + (val & 0x03) );
 			enableWIRE( me->m_sercom );
 			NVIC_ClearPendingIRQ( CONFIG_I2C_SLAVE_IRQn );
 			

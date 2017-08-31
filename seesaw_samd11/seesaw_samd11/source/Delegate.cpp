@@ -40,6 +40,8 @@
 
 #include "bsp_gpio.h"
 
+#include "bsp_nvmctrl.h"
+
 Q_DEFINE_THIS_FILE
 
 using namespace FW;
@@ -297,6 +299,14 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 
 #endif //DAP
 
+					case SEESAW_EEPROM_BASE:{
+						Fifo *fifo = req.getFifo();
+						uint8_t r = eeprom_read_byte(lowByte);
+						fifo->Write(&r, 1);
+						Evt *evt = new DelegateDataReady(req.getRequesterId());
+						QF::PUBLISH(evt, me);
+						break;
+					}
 					default:
 						//Unrecognized command or unreadable register. Do nothing.
 						Evt *evt = new DelegateDataReady(req.getRequesterId());
@@ -525,6 +535,14 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 					}
 
 #endif //DAP
+
+					case SEESAW_EEPROM_BASE:{
+						Fifo *fifo = req.getFifo();
+						uint8_t c[req.getLen()];
+						fifo->Read(c, req.getLen());
+						eeprom_write(lowByte, c, req.getLen());
+						break;
+					}
 
 					default:
 						break;

@@ -35,6 +35,7 @@
 //#include <string.h>
 #include "qpcpp.h"
 #include "bsp.h"
+#include "bsp_nvmctrl.h"
 #include "sam.h"
 #include "bsp_gpio.h"
 
@@ -67,6 +68,8 @@ void BspInit() {
 #ifdef DAC
 	PM->APBCMASK.reg |= PM_APBCMASK_ADC | PM_APBCMASK_DAC ;
 #endif
+
+	eeprom_init();
 
 /*
 	GCLK->CLKCTRL.reg = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID(GCLK_CLKCTRL_ID_EIC_Val));
@@ -115,7 +118,7 @@ void QF::onStartup(void) {
 	SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 	NVIC_SetPriority(SysTick_IRQn, SYSTICK_PRIO);
 	NVIC_SetPriority(CONFIG_I2C_SLAVE_IRQn, I2C_SLAVE_ISR_PRIO);
-	//NVIC_SetPriority(EIC_IRQn, EIC_ISR_PRIO);
+	//NVIC_SetPriority(NVMCTRL_IRQn, NVMCTRL_ISR_PRIO);
 
 #if defined(SERCOM0)
 	NVIC_SetPriority(SERCOM0_IRQn, SERCOM_ISR_PRIO);
@@ -143,7 +146,7 @@ void QF::onStartup(void) {
 
     // enable IRQs...
     NVIC_EnableIRQ(SysTick_IRQn);
-	//NVIC_EnableIRQ(EIC_IRQn);
+	//NVIC_EnableIRQ(NVMCTRL_IRQn);
 #if CONFIG_I2C_SLAVE
 	NVIC_EnableIRQ(CONFIG_I2C_SLAVE_IRQn);
 #endif
