@@ -207,6 +207,27 @@
 //* ============== EEPROM =================== *//
 #define SEESAW_EEPROM_BASE 0x0D
 
-#define SEESAW_EEPROM_I2C_ADDR 0x3F
+	#define SEESAW_EEPROM_I2C_ADDR 0x3F
+
+//* ============== NEOPIXEL =================== *//
+#define SEESAW_NEOPIXEL_BASE 0x0E
+
+	/****** STATUS *****/
+	#define SEESAW_NEOPIXEL_STATUS 0x00
+	
+	/****** PIN *****/
+	#define SEESAW_NEOPIXEL_PIN 0x01
+	
+	/****** SPEED *****/
+	#define SEESAW_NEOPIXEL_SPEED 0x02
+	
+	/****** BUFFER LENGTH *****/
+	#define SEESAW_NEOPIXEL_BUF_LENGTH 0x03
+	
+	/****** BUFFER DATA *****/
+	#define SEESAW_NEOPIXEL_BUF 0x04
+	
+	/****** SHOW *****/
+	#define SEESAW_NEOPIXEL_SHOW 0x05
 
 #endif

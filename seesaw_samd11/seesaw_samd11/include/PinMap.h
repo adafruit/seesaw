@@ -13,6 +13,9 @@
 #define PIN_ADDR_0 16
 #define PIN_ADDR_1 17
 
+static volatile uint32_t *set = &(PORT->Group[PORTA].OUTSET.reg),
+*clr = &(PORT->Group[PORTA].OUTCLR.reg);
+
 #if CONFIG_TIMER
 	typedef struct _PWM
 	{

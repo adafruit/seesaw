@@ -101,6 +101,16 @@ enum {
 	DAP_REQUEST,
 	DAP_READ,
 	
+	NEOPIXEL_START_REQ,
+	NEOPIXEL_START_CFM,
+	NEOPIXEL_STOP_REQ,
+	NEOPIXEL_STOP_CFM,
+	NEOPIXEL_SET_SPEED_REQ,
+	NEOPIXEL_SET_PIN_REQ,
+	NEOPIXEL_SET_BUFFER_REQ,
+	NEOPIXEL_SET_BUFFER_LEN_REQ,
+	NEOPIXEL_SHOW_REQ,
+	
 	INTERRUPT_START_REQ,
 	INTERRUPT_START_CFM,
 	INTERRUPT_STOP_REQ,
@@ -349,6 +359,62 @@ class DAPRead : public Evt {
 	uint8_t getRequesterId() const { return _requesterId; }
 	private:
 	uint8_t _requesterId;
+};
+
+//* ==========================  Neopixel ======================= *//
+
+class NeopixelStartCfm : public ErrorEvt {
+	public:
+	NeopixelStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(NEOPIXEL_START_CFM, seq, error, reason) {}
+};
+
+class NeopixelStopCfm : public ErrorEvt {
+	public:
+	NeopixelStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(NEOPIXEL_STOP_CFM, seq, error, reason) {}
+};
+
+class NeopixelSetPinReq : public Evt {
+	public:
+	NeopixelSetPinReq(uint8_t pin) :
+	Evt(NEOPIXEL_SET_PIN_REQ), _pin(pin) {}
+	
+	uint8_t getPin() const { return _pin; }
+	private:
+	uint8_t _pin;
+};
+
+class NeopixelSetSpeedReq : public Evt {
+	public:
+	NeopixelSetSpeedReq(uint8_t speed) :
+	Evt(NEOPIXEL_SET_SPEED_REQ), _speed(speed) {}
+	
+	uint8_t getSpeed() const { return _speed; }
+	private:
+	uint8_t _speed;
+};
+
+class NeopixelSetBufferLengthReq : public Evt {
+	public:
+	NeopixelSetBufferLengthReq(uint16_t len) :
+	Evt(NEOPIXEL_SET_BUFFER_LEN_REQ), _len(len) {}
+	
+	uint8_t getLen() const { return _len; }
+	private:
+	uint8_t _len;
+};
+
+class NeopixelSetBufferReq : public Evt {
+	public:
+	NeopixelSetBufferReq(uint16_t addr, Fifo *source) :
+	Evt(NEOPIXEL_SET_BUFFER_REQ), _addr(addr), _source(source){}
+	
+	uint16_t getAddr() const { return _addr; }
+	Fifo *getSource() const { return _source; }
+	private:
+	uint16_t _addr;
+	Fifo *_source;
 };
 
 //* ==========================  Interrupt ======================= *//

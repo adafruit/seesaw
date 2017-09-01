@@ -266,6 +266,9 @@
     <Compile Include="include\I2CSlave.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="include\Neopixel.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="include\PinMap.h">
       <SubType>compile</SubType>
     </Compile>
@@ -456,6 +459,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="source\I2CSlave.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="source\Neopixel.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="source\System.cpp">

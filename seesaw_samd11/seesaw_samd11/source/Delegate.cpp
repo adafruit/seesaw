@@ -307,6 +307,21 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						QF::PUBLISH(evt, me);
 						break;
 					}
+					
+					case SEESAW_NEOPIXEL_BASE:{
+						switch(lowByte){
+							case SEESAW_NEOPIXEL_SHOW:{
+								Evt *evt = new Evt(NEOPIXEL_SHOW_REQ);
+								QF::PUBLISH(evt, me);
+								
+								evt = new DelegateDataReady(req.getRequesterId());
+								QF::PUBLISH(evt, me);
+								break;
+							}
+						}
+					}
+					
+					
 					default:
 						//Unrecognized command or unreadable register. Do nothing.
 						Evt *evt = new DelegateDataReady(req.getRequesterId());
@@ -542,6 +557,50 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						fifo->Read(c, req.getLen());
 						eeprom_write(lowByte, c, req.getLen());
 						break;
+					}
+					
+					case SEESAW_NEOPIXEL_BASE: {
+						Fifo *fifo = req.getFifo();
+						switch(lowByte){
+						
+							case SEESAW_NEOPIXEL_PIN:{
+								uint8_t pin;
+								fifo->Read(&pin, 1);
+								Evt *evt = new NeopixelSetPinReq(pin);
+								QF::PUBLISH(evt, me);
+								me->discard(fifo, req.getLen());
+								break;
+							}
+							
+							case SEESAW_NEOPIXEL_SPEED:{
+								uint8_t speed;
+								fifo->Read(&speed, 1);
+								Evt *evt = new NeopixelSetSpeedReq(speed);
+								QF::PUBLISH(evt, me);
+								me->discard(fifo, req.getLen());
+								break;
+							}
+							
+							case SEESAW_NEOPIXEL_BUF_LENGTH:{
+								uint8_t d[2];
+								fifo->Read(d, 2);
+								
+								Evt *evt = new NeopixelSetBufferLengthReq( ((uint16_t)d[0] << 8) | (uint16_t)d[1]);
+								QF::PUBLISH(evt, me);
+								
+								me->discard(fifo, req.getLen());
+								break;
+							}
+							
+							case SEESAW_NEOPIXEL_BUF:{
+								uint8_t d[2];
+								fifo->Read(d, 2);
+								
+								Evt *evt = new NeopixelSetBufferReq( ((uint16_t)d[0] << 8) | (uint16_t)d[1], fifo);
+								QF::PUBLISH(evt, me);
+							}
+							break;
+						}
 					}
 
 					default:

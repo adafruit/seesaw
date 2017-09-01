@@ -6,14 +6,14 @@
 #define VERSION_MAJOR 0x00
 #define VERSION_MINOR 0x01
 #define VERSION_SUB 0x01
-#define CONFIG_VERSION (uint32_t)( ( (uint32_t)VERSION_MAJOR << 16 ) | ((uint32_t)VERSION_MINOR << 8) | VERSION_SUB & 0xFF )
+#define CONFIG_VERSION (uint32_t)( ( (uint32_t)VERSION_MAJOR << 16 ) | ((uint32_t)VERSION_MINOR << 8) | (VERSION_SUB & 0xFF) )
 
 //* ============== POOL SIZES =================== *//
-#define	EVT_SIZE_SMALL 32
-#define EVT_SIZE_MEDIUM 64
-#define	EVT_SIZE_LARGE 128
+#define	EVT_SIZE_SMALL 16
+#define EVT_SIZE_MEDIUM 32
+#define	EVT_SIZE_LARGE 64
 #define	EVT_COUNT_SMALL 16
-#define	EVT_COUNT_MEDIUM 4
+#define	EVT_COUNT_MEDIUM 8
 #define	EVT_COUNT_LARGE 1
 
 //* ============== ADC =================== *//
@@ -34,7 +34,7 @@
 #define CONFIG_DAC 0
 
 //* ============== TIMER =================== *//
-#define CONFIG_TIMER 0
+#define CONFIG_TIMER 1
 
 //TODO: fix timers for samd21
 #if defined(__SAMD21G18A__)
@@ -132,8 +132,13 @@
 	#define CONFIG_DAP_TDO 20
 	#define CONFIG_DAP_nTRST 21
 	#define CONFIG_DAP_nRESET 14
+	
+//* =========== NEOPIXEL ================ *//
+#define CONFIG_NEOPIXEL 0
 
-#define CONFIG_NUM_AO (1 + CONFIG_ADC + CONFIG_DAC + CONFIG_TIMER + CONFIG_INTERRUPT + CONFIG_SERCOM0 + CONFIG_SERCOM1 + CONFIG_SERCOM2 + CONFIG_SERCOM3 + CONFIG_SERCOM4 + CONFIG_SERCOM5 + CONFIG_I2C_SLAVE + CONFIG_DAP)
+#define CONFIG_NEOPIXEL_BUF_MAX 1024
+
+#define CONFIG_NUM_AO (1 + CONFIG_ADC + CONFIG_DAC + CONFIG_TIMER + CONFIG_INTERRUPT + CONFIG_SERCOM0 + CONFIG_SERCOM1 + CONFIG_SERCOM2 + CONFIG_SERCOM3 + CONFIG_SERCOM4 + CONFIG_SERCOM5 + CONFIG_I2C_SLAVE + CONFIG_DAP + CONFIG_NEOPIXEL)
 
 #define CONFIG_OPTIONS (uint32_t)( (0x03ul) | ((uint32_t)CONFIG_DAC << SEESAW_DAC_BASE) \
 			| ((uint32_t)CONFIG_ADC << SEESAW_ADC_BASE) \

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) Lawrence Lo (https://github.com/galliumstudio). 
+ * Copyright (C) Dean Miller
  * All rights reserved.
  *
  * This program is open source software: you can redistribute it and/or
@@ -27,35 +27,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
+
+#ifndef AO_NEOPIX_H
+#define AO_NEOPIX_H
+
 #include "qpcpp.h"
-#include "event.h"
 #include "qp_extras.h"
 
-Q_DEFINE_THIS_FILE
+#include "hsm_id.h"
 
-#ifdef ENABLE_LOGGING
+using namespace QP;
+using namespace FW;
 
-char const * const eventName[] = {
-    "NULL",
-    "ENTRY",
-    "EXIT",
-    "INIT",
-    "SYSTEM_START_REQ",
-    "SYSTEM_START_CFM",
-    "SYSTEM_STOP_REQ",
-    "SYSTEM_STOP_CFM",
-    "SYSTEM_TEST_TIMER",
-    "SYSTEM_DONE",
-    "SYSTEM_FAIL",
-	//TODO: add these if we actually want logging and have enough flash
-};  
-  
-char const * GetEvtName(QP::QSignal sig) {
-    Q_ASSERT(sig < ARRAY_COUNT(eventName));
-    if (sig < MAX_PUB_SIG) {
-      return eventName[sig];
+class Neopixel : public QActive {
+public:
+    Neopixel();
+    void Start(uint8_t prio) {
+        QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
     }
-    return "(UNKNOWN)";
-}
 
-#endif
+protected:
+    static QState InitialPseudoState(Neopixel * const me, QEvt const * const e);
+    static QState Root(Neopixel * const me, QEvt const * const e);
+    static QState Stopped(Neopixel * const me, QEvt const * const e);
+    static QState Started(Neopixel * const me, QEvt const * const e);
+	static QState NEO_KHZ400(Neopixel * const me, QEvt const * const e);
+	static QState NEO_KHZ800(Neopixel * const me, QEvt const * const e);
+
+    enum {
+        EVT_QUEUE_COUNT = 8,
+    };
+    QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
+    uint8_t m_id;
+	uint16_t m_nextSequence;
+    char const * m_name;
+	
+	uint8_t m_pin;
+	uint16_t m_pixelDataSize;
+};
+
+
+#endif // AO_NEOPIX_H
+
+

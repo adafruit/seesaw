@@ -26,6 +26,7 @@
 #include "AOInterrupt.h"
 #include "AOSERCOM.h"
 #include "AODAP.h"
+#include "Neopixel.h"
 
 using namespace QP;
 
@@ -75,6 +76,10 @@ static AOSERCOM sercom5( SERCOM5, AO_SERCOM5, 5 );
 
 #if CONFIG_DAP
 static AODAP dap;
+#endif
+
+#if CONFIG_NEOPIXEL
+static Neopixel neopixel;
 #endif
 
 int main(void)
@@ -132,6 +137,10 @@ int main(void)
 
 #if CONFIG_DAP
 	dap.Start(PRIO_DAP);
+#endif
+
+#if CONFIG_NEOPIXEL
+	neopixel.Start(PRIO_NEOPIXEL);
 #endif
 	
 	//publish a start request

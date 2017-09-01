@@ -117,6 +117,11 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
 	me->subscribe(DAP_START_CFM);
 	me->subscribe(DAP_STOP_CFM);
 #endif
+
+#if CONFIG_NEOPIXEL
+	me->subscribe(NEOPIXEL_START_CFM);
+	me->subscribe(NEOPIXEL_STOP_CFM);
+#endif
       
     return Q_TRAN(&System::Root);
 }
@@ -245,6 +250,11 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 			evt = new Evt(DAP_STOP_REQ);
 			QF::PUBLISH(evt, me);
 #endif
+
+#if CONFIG_NEOPIXEL
+			evt = new Evt(NEOPIXEL_STOP_REQ);
+			QF::PUBLISH(evt, me);
+#endif
 			
 			status = Q_HANDLED();
 			break;
@@ -262,6 +272,7 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 		case I2C_SLAVE_STOP_CFM:
 		case INTERRUPT_STOP_CFM:
 		case DAP_STOP_CFM:
+		case NEOPIXEL_STOP_CFM:
 		case DELEGATE_STOP_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);
@@ -349,6 +360,11 @@ QState System::Starting(System * const me, QEvt const * const e) {
 			QF::PUBLISH(evt, me);
 #endif
 
+#if CONFIG_NEOPIXEL
+			evt = new Evt(NEOPIXEL_START_REQ);
+			QF::PUBLISH(evt, me);
+#endif
+
 			status = Q_HANDLED();
 			break;
 		}
@@ -366,6 +382,7 @@ QState System::Starting(System * const me, QEvt const * const e) {
 		case I2C_SLAVE_START_CFM:
 		case INTERRUPT_START_CFM:
 		case DAP_START_CFM:
+		case NEOPIXEL_START_CFM:
 		case DELEGATE_START_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);
