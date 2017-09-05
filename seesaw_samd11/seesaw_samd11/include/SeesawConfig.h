@@ -7,6 +7,8 @@
 	#include "samd09Breakout.h"
 #elif defined(BOARD_CHARLCD)
 	#include "charLCD.h"
+#else
+	#include "debug.h"
 #endif
 
 #include "RegisterMap.h"

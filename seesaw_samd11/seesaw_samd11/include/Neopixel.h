@@ -51,8 +51,6 @@ protected:
     static QState Root(Neopixel * const me, QEvt const * const e);
     static QState Stopped(Neopixel * const me, QEvt const * const e);
     static QState Started(Neopixel * const me, QEvt const * const e);
-	static QState NEO_KHZ400(Neopixel * const me, QEvt const * const e);
-	static QState NEO_KHZ800(Neopixel * const me, QEvt const * const e);
 
     enum {
         EVT_QUEUE_COUNT = 8,
@@ -60,6 +58,7 @@ protected:
     QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
     uint8_t m_id;
 	uint16_t m_nextSequence;
+	uint8_t m_speed;
     char const * m_name;
 	
 	uint8_t m_pin;

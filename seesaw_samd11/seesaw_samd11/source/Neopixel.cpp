@@ -117,6 +117,7 @@ QState Neopixel::Stopped(Neopixel * const me, QEvt const * const e) {
         }
         case NEOPIXEL_START_REQ: {
             LOG_EVENT(e);
+			me->m_speed = SEESAW_NEOPIXEL_800KHZ;
 			memset(PixelData, 0, CONFIG_NEOPIXEL_BUF_MAX);
 			Evt const &req = EVT_CAST(*e);
 			Evt *evt = new NeopixelStartCfm(req.GetSeq(), ERROR_SUCCESS);
@@ -141,10 +142,6 @@ QState Neopixel::Started(Neopixel * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
-		case Q_INIT_SIG: {
-			status = Q_TRAN(&Neopixel::NEO_KHZ800);
-			break;
-		}
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
             status = Q_HANDLED();
@@ -169,21 +166,8 @@ QState Neopixel::Started(Neopixel * const me, QEvt const * const e) {
 		case NEOPIXEL_SET_SPEED_REQ: {
 			NeopixelSetSpeedReq const &req = static_cast<NeopixelSetSpeedReq const &>(*e);
 			
-			switch(req.getSpeed()){
-				case SEESAW_NEOPIXEL_400KHZ:{
-					status = Q_TRAN(&Neopixel::NEO_KHZ400);
-					break;
-				}
-				case SEESAW_NEOPIXEL_800KHZ:{
-					status = Q_TRAN(&Neopixel::NEO_KHZ800);
-					break;
-				}
-				default: {
-					//unrecognized speed
-					status = Q_HANDLED();
-					break;
-				}
-			}
+			me->m_speed = req.getSpeed();
+			status = Q_HANDLED();
 			
 			break;
 		}
@@ -213,74 +197,25 @@ QState Neopixel::Started(Neopixel * const me, QEvt const * const e) {
 			status = Q_HANDLED();
 			break;
 		}
+		case NEOPIXEL_SHOW_REQ: {
+			QF_CRIT_STAT_TYPE crit;
+			QF_CRIT_ENTRY(crit);
+			switch(me->m_speed){
+				case SEESAW_NEOPIXEL_800KHZ:
+					neopix_show_800k(me->m_pin, PixelData, me->m_pixelDataSize);
+					break;
+				case SEESAW_NEOPIXEL_400KHZ:
+					neopix_show_400k(me->m_pin, PixelData, me->m_pixelDataSize);
+					break;
+				default:
+					break;
+			}
+			QF_CRIT_EXIT(crit);
+		}
         default: {
             status = Q_SUPER(&Neopixel::Root);
             break;
         }
     }
     return status;
-}
-
-QState Neopixel::NEO_KHZ400(Neopixel * const me, QEvt const * const e) {
-	QState status;
-	switch (e->sig) {
-		case Q_ENTRY_SIG: {
-			LOG_EVENT(e);
-			
-			status = Q_HANDLED();
-			break;
-		}
-		case Q_EXIT_SIG: {
-			LOG_EVENT(e);
-			status = Q_HANDLED();
-			break;
-		}
-		case NEOPIXEL_SHOW_REQ: {
-			
-			QF_CRIT_STAT_TYPE crit;
-			QF_CRIT_ENTRY(crit);
-			neopix_show_400k(me->m_pin, PixelData, me->m_pixelDataSize);
-			QF_CRIT_EXIT(crit);
-			
-			status = Q_HANDLED();
-			break;
-		}
-		default: {
-			status = Q_SUPER(&Neopixel::Started);
-			break;
-		}
-	}
-	return status;
-}
-
-QState Neopixel::NEO_KHZ800(Neopixel * const me, QEvt const * const e) {
-	QState status;
-	switch (e->sig) {
-		case Q_ENTRY_SIG: {
-			LOG_EVENT(e);
-			
-			status = Q_HANDLED();
-			break;
-		}
-		case Q_EXIT_SIG: {
-			LOG_EVENT(e);
-			status = Q_HANDLED();
-			break;
-		}
-		case NEOPIXEL_SHOW_REQ: {
-			
-			QF_CRIT_STAT_TYPE crit;
-			QF_CRIT_ENTRY(crit);
-			neopix_show_800k(me->m_pin, PixelData, me->m_pixelDataSize);
-			QF_CRIT_EXIT(crit);
-			
-			status = Q_HANDLED();
-			break;
-		}
-		default: {
-			status = Q_SUPER(&Neopixel::Started);
-			break;
-		}
-	}
-	return status;
 }
