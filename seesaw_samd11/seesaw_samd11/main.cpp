@@ -1,5 +1,5 @@
 /*
- * i2c_qp.cpp
+ * main.cpp
  *
  * Created: 7/17/2017 3:26:42 PM
  * Author : deanm

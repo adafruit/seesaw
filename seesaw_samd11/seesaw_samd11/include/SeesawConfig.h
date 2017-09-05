@@ -1,6 +1,14 @@
 #ifndef SEESAW_CONFIG_H
 #define SEESAW_CONFIG_H
 
+#if defined(BOARD_JOYFEATHER)
+	#include "joyFeather.h"
+#elif defined(BOARD_SAMD09BREAKOUT)
+	#include "samd09Breakout.h"
+#elif defined(BOARD_CHARLCD)
+	#include "charLCD.h"
+#endif
+
 #include "RegisterMap.h"
 
 #define VERSION_MAJOR 0x00
@@ -8,83 +16,61 @@
 #define VERSION_SUB 0x01
 #define CONFIG_VERSION (uint32_t)( ( (uint32_t)VERSION_MAJOR << 16 ) | ((uint32_t)VERSION_MINOR << 8) | (VERSION_SUB & 0xFF) )
 
-//* ============== POOL SIZES =================== *//
-#define	EVT_SIZE_SMALL 16
-#define EVT_SIZE_MEDIUM 32
-#define	EVT_SIZE_LARGE 64
-#define	EVT_COUNT_SMALL 16
-#define	EVT_COUNT_MEDIUM 8
-#define	EVT_COUNT_LARGE 1
-
 //* ============== ADC =================== *//
-#define CONFIG_ADC 1
-#define CONFIG_ADC_INPUT_0 1
 #define CONFIG_ADC_INPUT_0_PIN 2
 
-#define CONFIG_ADC_INPUT_1 1
 #define CONFIG_ADC_INPUT_1_PIN 3
 
-#define CONFIG_ADC_INPUT_2 0
 #define CONFIG_ADC_INPUT_2_PIN 4
 
-#define CONFIG_ADC_INPUT_3 0
 #define CONFIG_ADC_INPUT_3_PIN 5
 
 //* ============== DAC =================== *//
-#define CONFIG_DAC 0
 
 //* ============== TIMER =================== *//
-#define CONFIG_TIMER 1
 
 //TODO: fix timers for samd21
 #if defined(__SAMD21G18A__)
-	#define CONFIG_TIMER_PWM_OUT0 1
+	
 	#define CONFIG_TIMER_PWM_OUT0_TC TC3
 	#define CONFIG_TIMER_PWM_OUT0_WO 0
 	#define CONFIG_TIMER_PWM_OUT0_PIN 4
 
-	#define CONFIG_TIMER_PWM_OUT1 1
+	
 	#define CONFIG_TIMER_PWM_OUT1_TC TC3
 	#define CONFIG_TIMER_PWM_OUT1_WO 1
 	#define CONFIG_TIMER_PWM_OUT1_PIN 5
 
-	#define CONFIG_TIMER_PWM_OUT2 0
+	
 	#define CONFIG_TIMER_PWM_OUT2_TC TC4
 	#define CONFIG_TIMER_PWM_OUT2_WO 0
 	#define CONFIG_TIMER_PWM_OUT2_PIN 6
 
-	#define CONFIG_TIMER_PWM_OUT3 0
+	
 	#define CONFIG_TIMER_PWM_OUT3_TC TC4
 	#define CONFIG_TIMER_PWM_OUT3_WO 1
 	#define CONFIG_TIMER_PWM_OUT3_PIN 7
 #else
-	#define CONFIG_TIMER_PWM_OUT0 1
 	#define CONFIG_TIMER_PWM_OUT0_TC TC1
 	#define CONFIG_TIMER_PWM_OUT0_WO 0
 	#define CONFIG_TIMER_PWM_OUT0_PIN 4
 
-	#define CONFIG_TIMER_PWM_OUT1 1
 	#define CONFIG_TIMER_PWM_OUT1_TC TC1
 	#define CONFIG_TIMER_PWM_OUT1_WO 1
 	#define CONFIG_TIMER_PWM_OUT1_PIN 5
 
-	#define CONFIG_TIMER_PWM_OUT2 0
 	#define CONFIG_TIMER_PWM_OUT2_TC TC2
 	#define CONFIG_TIMER_PWM_OUT2_WO 0
 	#define CONFIG_TIMER_PWM_OUT2_PIN 6
 
-	#define CONFIG_TIMER_PWM_OUT3 0
 	#define CONFIG_TIMER_PWM_OUT3_TC TC2
 	#define CONFIG_TIMER_PWM_OUT3_WO 1
 	#define CONFIG_TIMER_PWM_OUT3_PIN 7
 #endif
 
 //* ============== INTERRUPT =================== *//
-#define CONFIG_INTERRUPT 1
-#define CONFIG_INTERRUPT_PIN 4
 
 //* ============== I2C SLAVE =================== *//
-#define CONFIG_I2C_SLAVE 1
 
 #if defined(__SAMD21G18A__)
 	#define CONFIG_I2C_SLAVE_SERCOM SERCOM3
@@ -102,14 +88,6 @@
 #define CONFIG_I2C_SLAVE_ADDR 0x49
 
 //* ============== SERCOM =================== *//
-#define CONFIG_SERCOM0 0
-#define CONFIG_SERCOM1 0
-#define CONFIG_SERCOM2 0
-
-//These are only available on samd21
-#define CONFIG_SERCOM3 0
-#define CONFIG_SERCOM4 0
-#define CONFIG_SERCOM5 0
 
 #define CONFIG_SERCOM_UART_PIN_RX 11
 #define CONfIG_SERCOM_UART_PIN_TX 10
@@ -124,7 +102,6 @@
 #define CONFIG_SERCOM_UART_STOP_BIT SERCOM_STOP_BIT_1
 
 //* ============== DAP =================== *//
-#define CONFIG_DAP 0
 
 	#define CONFIG_DAP_SWCLK 11
 	#define CONFIG_DAP_SWDIO 10
@@ -134,9 +111,6 @@
 	#define CONFIG_DAP_nRESET 14
 	
 //* =========== NEOPIXEL ================ *//
-#define CONFIG_NEOPIXEL 0
-
-#define CONFIG_NEOPIXEL_BUF_MAX 1024
 
 #define CONFIG_NUM_AO (1 + CONFIG_ADC + CONFIG_DAC + CONFIG_TIMER + CONFIG_INTERRUPT + CONFIG_SERCOM0 + CONFIG_SERCOM1 + CONFIG_SERCOM2 + CONFIG_SERCOM3 + CONFIG_SERCOM4 + CONFIG_SERCOM5 + CONFIG_I2C_SLAVE + CONFIG_DAP + CONFIG_NEOPIXEL)
 
