@@ -249,8 +249,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							case SEESAW_ADC_CHANNEL_0:
 							case SEESAW_ADC_CHANNEL_1:
 							case SEESAW_ADC_CHANNEL_2:
-							case SEESAW_ADC_CHANNEL_3:
-							case SEESAW_ADC_CHANNEL_4:{
+							case SEESAW_ADC_CHANNEL_3:{
 								Evt *evt = new ADCReadRegReq(req.getRequesterId(), lowByte, req.getFifo());
 								QF::PUBLISH(evt, me);
 								break;
