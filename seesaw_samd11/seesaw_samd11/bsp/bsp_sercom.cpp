@@ -200,37 +200,34 @@ bool isDataRegisterEmptyUART( Sercom * sercom )
 	return sercom->USART.INTFLAG.bit.DRE;
 }
 
-void initUART( Sercom * sercom, SercomUartMode mode, SercomUartSampleRate sampleRate, uint32_t baudrate)
+void initUART( Sercom * sercom, SercomUartSampleRate sampleRate, uint32_t baudrate)
 {
   initClock(sercom);
   resetUART(sercom);
 
   //Setting the CTRLA register
-  sercom->USART.CTRLA.reg =	SERCOM_USART_CTRLA_MODE(mode) |
+  sercom->USART.CTRLA.reg =	SERCOM_USART_CTRLA_MODE(0x01) |
                 SERCOM_USART_CTRLA_SAMPR(sampleRate);
 
   //Setting the Interrupt register
   sercom->USART.INTENSET.reg =	SERCOM_USART_INTENSET_RXC |  //Received complete
                                 SERCOM_USART_INTENSET_ERROR; //All others errors
 
-  if ( mode == UART_INT_CLOCK )
-  {
-    uint16_t sampleRateValue;
+	uint16_t sampleRateValue;
 
-    if (sampleRate == SAMPLE_RATE_x16) {
-      sampleRateValue = 16;
-    } else {
-      sampleRateValue = 8;
-    }
+	if (sampleRate == SAMPLE_RATE_x16) {
+		sampleRateValue = 16;
+	} else {
+		sampleRateValue = 8;
+	}
 
-    // Asynchronous fractional mode (Table 24-2 in datasheet)
-    //   BAUD = fref / (sampleRateValue * fbaud)
-    // (multiply by 8, to calculate fractional piece)
-    uint32_t baudTimes8 = (SystemCoreClock * 8) / (sampleRateValue * baudrate);
+	// Asynchronous fractional mode (Table 24-2 in datasheet)
+	//   BAUD = fref / (sampleRateValue * fbaud)
+	// (multiply by 8, to calculate fractional piece)
+	uint32_t baudTimes8 = (SystemCoreClock * 8) / (sampleRateValue * baudrate);
 
-    sercom->USART.BAUD.FRAC.FP   = (baudTimes8 % 8);
-    sercom->USART.BAUD.FRAC.BAUD = (baudTimes8 / 8);
-  }
+	sercom->USART.BAUD.FRAC.FP   = (baudTimes8 % 8);
+	sercom->USART.BAUD.FRAC.BAUD = (baudTimes8 / 8);
 }
 void initFrame( Sercom * sercom , SercomUartCharSize charSize, SercomDataOrder dataOrder, SercomParityMode parityMode, SercomNumberStopBit nbStopBits)
 {
@@ -273,4 +270,30 @@ void enableUART( Sercom * sercom )
 
 	//Wait for then enable bit from SYNCBUSY is equal to 0;
 	while(sercom->USART.SYNCBUSY.bit.ENABLE);
+}
+
+void disableUART( Sercom *sercom )
+{
+	while(sercom->USART.SYNCBUSY.bit.ENABLE || sercom->USART.SYNCBUSY.bit.SWRST);
+	
+	//Setting  the enable bit to 0
+	sercom->USART.CTRLA.bit.ENABLE = 0;
+
+	//Wait for then enable bit from SYNCBUSY is equal to 0;
+	while(sercom->USART.SYNCBUSY.bit.ENABLE);
+}
+
+void setUARTBaud( Sercom *sercom, uint32_t baudrate )
+{
+	disableUART(sercom);
+	
+	// Asynchronous fractional mode (Table 24-2 in datasheet)
+	//   BAUD = fref / (sampleRateValue * fbaud)
+	// (multiply by 8, to calculate fractional piece)
+	uint32_t baudTimes8 = (SystemCoreClock * 8) / (16 * baudrate);
+
+	sercom->USART.BAUD.FRAC.FP   = (baudTimes8 % 8);
+	sercom->USART.BAUD.FRAC.BAUD = (baudTimes8 / 8);
+	
+	enableUART(sercom);
 }

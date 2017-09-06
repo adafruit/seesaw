@@ -8,12 +8,6 @@
 
 typedef enum
 {
-	UART_EXT_CLOCK = 0,
-	UART_INT_CLOCK = 0x1u
-} SercomUartMode;
-
-typedef enum
-{
 	SPI_SLAVE_OPERATION = 0x2u,
 	SPI_MASTER_OPERATION = 0x3u
 } SercomSpiMode;
@@ -201,13 +195,17 @@ void resetUART( Sercom * sercom );
 
 bool isDataRegisterEmptyUART( Sercom * sercom );
 
-void initUART( Sercom * sercom, SercomUartMode mode, SercomUartSampleRate sampleRate, uint32_t baudrate);
+void initUART( Sercom * sercom, SercomUartSampleRate sampleRate, uint32_t baudrate);
 
 void initFrame( Sercom * sercom , SercomUartCharSize charSize, SercomDataOrder dataOrder, SercomParityMode parityMode, SercomNumberStopBit nbStopBits);
 
 void initPads( Sercom * sercom , SercomUartTXPad txPad, SercomRXPad rxPad);
 
 void enableUART( Sercom * sercom );
+
+void disableUART( Sercom *sercom );
+
+void setUARTBaud( Sercom *sercom, uint32_t baudrate );
 
 inline void flushUART( Sercom * sercom )
 {

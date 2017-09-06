@@ -70,6 +70,8 @@ protected:
 	Sercom *m_sercom;
 	uint8_t m_offset;
 	
+	uint32_t m_baud;
+	
 	// The status register
     struct status {
            

@@ -35,7 +35,7 @@
 
 //* ============== INTERRUPT =================== *//
 #define CONFIG_INTERRUPT 1
-#define CONFIG_INTERRUPT_PIN 8
+#define CONFIG_INTERRUPT_PIN 4
 
 //* ============== I2C SLAVE =================== *//
 #define CONFIG_I2C_SLAVE 1

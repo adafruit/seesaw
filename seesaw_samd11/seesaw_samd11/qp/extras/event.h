@@ -478,14 +478,14 @@ class SERCOMStopCfm : public ErrorEvt {
 
 class SercomWriteDataReq : public Evt {
 	public:
-	SercomWriteDataReq(uint8_t requesterId, Fifo *source) :
-	Evt(SERCOM_WRITE_DATA_REQ), _source(source){}
+	SercomWriteDataReq(Fifo *source, uint8_t len) :
+	Evt(SERCOM_WRITE_DATA_REQ), _source(source), _len(len){}
 	
-	uint8_t getRequesterId() const { return _requesterId; }
 	Fifo *getSource() const { return _source; }
+	uint8_t getLen() const { return _len; }
 	private:
-	uint8_t _requesterId;
 	Fifo *_source;
+	uint8_t _len;
 };
 
 class SercomReadDataReq : public Evt {
@@ -515,14 +515,15 @@ class SercomReadRegReq : public Evt {
 
 class SercomWriteRegReq : public Evt {
 	public:
-	SercomWriteRegReq(uint8_t reg, uint8_t value) :
+	SercomWriteRegReq(uint8_t reg, uint32_t value) :
 	Evt(SERCOM_WRITE_REG_REQ), _reg(reg), _value(value) {}
 	
 	uint8_t getReg() const { return _reg; }
-	uint8_t getValue() const { return _value; }
+	uint32_t getValue() const { return _value; }
 	
 	private:
-	uint8_t _reg, _value;
+	uint8_t _reg;
+	uint32_t _value;
 };
 
 //* ==========================  I2C SLAVE ======================= *//

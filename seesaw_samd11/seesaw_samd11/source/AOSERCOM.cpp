@@ -127,6 +127,8 @@ QState AOSERCOM::Stopped(AOSERCOM * const me, QEvt const * const e) {
 			me->m_inten.set(0x00);
 			me->m_intenclr.set(0x00);
 			
+			me->m_baud = CONFIG_SERCOM_UART_BAUD_RATE;
+			
 			Evt const &r = EVT_CAST(*e);
 			Evt *evt = new SERCOMStartCfm(r.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
@@ -186,7 +188,7 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			pinPeripheral(CONFIG_SERCOM_UART_PIN_RX, 2);
 			pinPeripheral(CONfIG_SERCOM_UART_PIN_TX, 2);
 			
-			initUART(me->m_sercom, UART_INT_CLOCK, SAMPLE_RATE_x16, CONFIG_SERCOM_UART_BAUD_RATE);
+			initUART(me->m_sercom, SAMPLE_RATE_x16, me->m_baud);
 			initFrame(me->m_sercom, CONFIG_SERCOM_UART_CHAR_SIZE, LSB_FIRST, CONFIG_SERCOM_UART_PARITY, CONFIG_SERCOM_UART_STOP_BIT);
 			initPads(me->m_sercom, CONFIG_SERCOM_UART_PAD_TX, CONFIG_SERCOM_UART_PAD_RX);
 			
@@ -201,14 +203,11 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			SercomWriteDataReq const &req = static_cast<SercomWriteDataReq const &>(*e);
 			Fifo *source = req.getSource();
 			
-			//TODO: specify length?
-			uint8_t c;
-			while(source->Read(&c, 1)){
+			uint8_t c = 0;
+			for(int i=0; i<req.getLen(); i++){
+				source->Read(&c, 1);
 				writeDataUART(me->m_sercom, c);
 			}
-			
-			Evt *evt = new DelegateDataReady(req.getRequesterId());
-			QF::PUBLISH(evt, me);
 			
 			status = Q_HANDLED();
 			break;	
@@ -269,6 +268,11 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			switch (reg){
 				case SEESAW_SERCOM_INTEN:{
 					me->m_inten.set(req.getValue());
+					break;
+				}
+				case SEESAW_SERCOM_BAUD:{
+					me->m_baud = req.getValue();
+					setUARTBaud(me->m_sercom, me->m_baud);
 					break;
 				}
 				default:

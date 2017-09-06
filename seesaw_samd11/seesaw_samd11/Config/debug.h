@@ -34,14 +34,14 @@
 #define CONFIG_TIMER_PWM_OUT3 0
 
 //* ============== INTERRUPT =================== *//
-#define CONFIG_INTERRUPT 0
+#define CONFIG_INTERRUPT 1
 #define CONFIG_INTERRUPT_PIN 8
 
 //* ============== I2C SLAVE =================== *//
 #define CONFIG_I2C_SLAVE 1
 
 //* ============== SERCOM =================== *//
-#define CONFIG_SERCOM0 0
+#define CONFIG_SERCOM0 1
 #define CONFIG_SERCOM1 0
 #define CONFIG_SERCOM2 0
 
@@ -54,7 +54,7 @@
 #define CONFIG_DAP 0
 
 //* =========== NEOPIXEL ================ *//
-#define CONFIG_NEOPIXEL 1
+#define CONFIG_NEOPIXEL 0
 
 #define CONFIG_NEOPIXEL_BUF_MAX 1024
 

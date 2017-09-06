@@ -472,7 +472,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 					}
 #endif // ADC
 					
-#if CONFIG_SERCOM0 || CONFIG_SERCOM1 || CONFIG_SERCOM2 || CONFIG_SERCOM3 || CONFIG_SERCOM4 || CONFIG_SERCOM5 
+#if ( CONFIG_SERCOM0 | CONFIG_SERCOM1 | CONFIG_SERCOM2 | CONFIG_SERCOM3 | CONFIG_SERCOM4 | CONFIG_SERCOM5 )
 					case SEESAW_SERCOM0_BASE:
 					case SEESAW_SERCOM1_BASE:
 					case SEESAW_SERCOM2_BASE:
@@ -482,8 +482,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						switch(lowByte){
 							//TODO: fix for more sercoms
 							case SEESAW_SERCOM_STATUS:
-							case SEESAW_SERCOM_INTEN:
-							case SEESAW_SERCOM_BAUD:{
+							case SEESAW_SERCOM_INTEN:{
 								Fifo *fifo = req.getFifo();
 								uint8_t dataByte;
 								fifo->Read(&dataByte, 1);
@@ -496,13 +495,29 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								QF::PUBLISH(evt, me);
 								break;
 							}
+							case SEESAW_SERCOM_BAUD:{
+								Fifo *fifo = req.getFifo();
+								uint8_t baud[4];
+								fifo->Read(baud, 4);
+								len-=4;
+								
+								uint32_t combined = ((uint32_t)baud[0] << 24) | ((uint32_t)baud[1] << 16) | ((uint32_t)baud[2] << 8) | (uint32_t)baud[3];
+								
+								//read any extra bytes and discard
+								me->discard(fifo, len);
+								
+								Evt *evt = new SercomWriteRegReq(lowByte, combined);
+								QF::PUBLISH(evt, me);
+								break;
+							}
 							case SEESAW_SERCOM_DATA:{
 								//TODO: this should take in number of bytes to write
-								Evt *evt = new SercomWriteDataReq(req.getRequesterId(), req.getFifo());
+								Evt *evt = new SercomWriteDataReq(req.getFifo(), req.getLen());
 								QF::PUBLISH(evt, me);
 								break;
 							}
 						}
+						break;
 					}
 #endif //SERCOM
 
