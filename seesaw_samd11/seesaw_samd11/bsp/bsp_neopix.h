@@ -6,7 +6,7 @@
 static void neopix_show_400k(uint32_t pin, uint8_t *pixels, uint16_t numBytes)
 {
 
-	uint8_t  *ptr, *end, p, bitMask, portNum;
+	uint8_t  *ptr, *end, p, bitMask;
 	uint32_t  pinMask;
 
 	pinMask =  1ul << pin;
@@ -47,7 +47,7 @@ static void neopix_show_400k(uint32_t pin, uint8_t *pixels, uint16_t numBytes)
 
 static void neopix_show_800k(uint32_t pin, uint8_t *pixels, uint16_t numBytes)
 {
-	uint8_t  *ptr, *end, p, bitMask, portNum;
+	uint8_t  *ptr, *end, p, bitMask;
 	uint32_t  pinMask;
 
 	pinMask =  1ul << pin;
