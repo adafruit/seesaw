@@ -306,7 +306,8 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						QF::PUBLISH(evt, me);
 						break;
 					}
-					
+
+#if CONFIG_NEOPIXEL					
 					case SEESAW_NEOPIXEL_BASE:{
 						switch(lowByte){
 							case SEESAW_NEOPIXEL_SHOW:{
@@ -319,6 +320,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							}
 						}
 					}
+#endif
 					
 					
 					default:
@@ -348,31 +350,13 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 					
 						Fifo *fifo = req.getFifo();
 						switch(lowByte){
-							case SEESAW_GPIO_PINMODE_SINGLE: {
-								uint8_t cmd[2];
-								fifo->Read(cmd, 2);
-								len-=2;
-								
-								gpio_init(PORTA, cmd[0], cmd[1]);
-								
-								break;
-							}
-							case SEESAW_GPIO_PIN_SINGLE: {
-								uint8_t cmd[2];
-								fifo->Read(cmd, 2);
-								len-=2;
-								
-								gpio_write(PORTA, cmd[0], cmd[1]);
-								
-								break;
-							}
 							case SEESAW_GPIO_DIRSET_BULK: {
 								uint8_t pins[4];
 								fifo->Read(pins, 4);
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_dirset_bulk(PORTA, combined);
+								gpio_dirset_bulk(PORTA, combined & CONFIG_GPIO_MASK);
 								
 								break;
 							}
@@ -382,7 +366,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_dirclr_bulk(PORTA, combined);
+								gpio_dirclr_bulk(PORTA, combined & CONFIG_GPIO_MASK);
 								
 								break;
 							}
@@ -392,7 +376,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_outset_bulk(PORTA, combined);
+								gpio_outset_bulk(PORTA, combined & CONFIG_GPIO_MASK);
 								
 								break;
 							}
@@ -402,7 +386,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_outclr_bulk(PORTA, combined);
+								gpio_outclr_bulk(PORTA, combined & CONFIG_GPIO_MASK);
 								
 								break;
 							}
@@ -412,7 +396,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								Delegate::m_inten |= combined;
+								Delegate::m_inten |= (combined  & CONFIG_GPIO_MASK);
 								break;
 							}
 							case SEESAW_GPIO_INTENCLR: {
@@ -421,6 +405,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+								combined &= CONFIG_GPIO_MASK;
 								Delegate::m_inten &= !combined;
 								break;
 							}
@@ -430,7 +415,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_pullenset_bulk(combined);
+								gpio_pullenset_bulk(combined & CONFIG_GPIO_MASK);
 								break;
 							}
 							case SEESAW_GPIO_PULLENCLR: {
@@ -439,7 +424,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_pullenclr_bulk(combined);
+								gpio_pullenclr_bulk(combined & CONFIG_GPIO_MASK);
 								break;
 							}
 						}
@@ -612,6 +597,8 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 			
 			break;
 		}
+		
+#if CONFIG_INTERRUPT
 		case GPIO_INTERRUPT_RECEIVED: {
 			Q_ASSERT(Delegate::m_intflag > 0);
 			
@@ -622,6 +609,8 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 			status = Q_HANDLED();
 			break;
 		}
+#endif
+
 		case DELEGATE_STOP_REQ: {
 			LOG_EVENT(e);
 			Evt const &req = EVT_CAST(*e);

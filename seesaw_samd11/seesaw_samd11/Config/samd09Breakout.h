@@ -15,7 +15,7 @@
 
 #define CONFIG_ADC_INPUT_1 1
 
-#define CONFIG_ADC_INPUT_2 0
+#define CONFIG_ADC_INPUT_2 1
 
 #define CONFIG_ADC_INPUT_3 0
 
@@ -25,13 +25,13 @@
 //* ============== TIMER =================== *//
 #define CONFIG_TIMER 1
 
-#define CONFIG_TIMER_PWM_OUT0 1
+#define CONFIG_TIMER_PWM_OUT0 0
 
 #define CONFIG_TIMER_PWM_OUT1 1
 
-#define CONFIG_TIMER_PWM_OUT2 0
+#define CONFIG_TIMER_PWM_OUT2 1
 
-#define CONFIG_TIMER_PWM_OUT3 0
+#define CONFIG_TIMER_PWM_OUT3 1
 
 //* ============== INTERRUPT =================== *//
 #define CONFIG_INTERRUPT 1
@@ -54,8 +54,8 @@
 #define CONFIG_DAP 0
 
 //* =========== NEOPIXEL ================ *//
-#define CONFIG_NEOPIXEL 0
+#define CONFIG_NEOPIXEL 1
 
-#define CONFIG_NEOPIXEL_BUF_MAX 1024
+#define CONFIG_NEOPIXEL_BUF_MAX 512
 
 #endif

@@ -12,25 +12,10 @@
 #define PIN_ACTIVITY_LED 27
 #define PIN_ADDR_0 16
 #define PIN_ADDR_1 17
+#define PIN_USB_DM 24
+#define PIN_USB_DP 25
 
 static volatile uint32_t *set = &(PORT->Group[PORTA].OUTSET.reg),
 *clr = &(PORT->Group[PORTA].OUTCLR.reg);
-
-#if CONFIG_TIMER
-	typedef struct _PWM
-	{
-		Tc*				tc ;
-		uint8_t			wo ;
-		uint8_t			pin;
-	} _PWM ;
-
-	const _PWM g_pwms[]=
-	{
-		{ CONFIG_TIMER_PWM_OUT0_TC, CONFIG_TIMER_PWM_OUT0_WO, CONFIG_TIMER_PWM_OUT0_PIN },
-		{ CONFIG_TIMER_PWM_OUT1_TC, CONFIG_TIMER_PWM_OUT1_WO, CONFIG_TIMER_PWM_OUT1_PIN },
-		{ CONFIG_TIMER_PWM_OUT2_TC, CONFIG_TIMER_PWM_OUT2_WO, CONFIG_TIMER_PWM_OUT2_PIN },
-		{ CONFIG_TIMER_PWM_OUT3_TC, CONFIG_TIMER_PWM_OUT3_WO, CONFIG_TIMER_PWM_OUT3_PIN },
-	};
-#endif
 
 #endif
