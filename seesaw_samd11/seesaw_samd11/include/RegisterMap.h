@@ -169,12 +169,6 @@
 	//window monitor thresholds
 	#define SEESAW_ADC_WINTHRESH 0x05
 	
-	/****** INTCLR *****/
-	//writing a 1 to any of these bits clears the interrupt
-	#define SEESAW_ADC_INTCLR 0x06
-
-	#define SEESAW_ADC_INTCLR_WINMON 0x01
-	
 	/****** CHANNELS *****/
 	#define SEESAW_ADC_CHANNEL_0 0x07
 	#define SEESAW_ADC_CHANNEL_1 0x08

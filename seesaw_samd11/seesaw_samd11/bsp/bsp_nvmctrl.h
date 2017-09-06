@@ -95,7 +95,7 @@ static void eeprom_program(uint8_t *buf, uint8_t size)
 static void eeprom_write(uint8_t addr, uint8_t *buf, uint8_t size)
 {
 	uint8_t  tmp_buffer[NVMCTRL_PAGE_SIZE];
-	eeprom_read(EEPROM_ADDR, tmp_buffer, NVMCTRL_PAGE_SIZE);
+	eeprom_read(0, tmp_buffer, NVMCTRL_PAGE_SIZE);
 	
 	memcpy(tmp_buffer + addr, buf, size);
 

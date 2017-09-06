@@ -94,14 +94,6 @@ protected:
 	};
 	inten m_inten;
 	
-	struct intclr {
-		uint8_t WINMON: 1;
-		
-		void set(uint8_t data){
-			WINMON = data & 0x01;
-		}
-	};
-	intclr m_intclr;
 };
 
 

@@ -558,6 +558,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						break;
 					}
 					
+#if CONFIG_NEOPIXEL					
 					case SEESAW_NEOPIXEL_BASE: {
 						Fifo *fifo = req.getFifo();
 						switch(lowByte){
@@ -601,6 +602,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							break;
 						}
 					}
+#endif //NEOPIXEL
 
 					default:
 						break;
