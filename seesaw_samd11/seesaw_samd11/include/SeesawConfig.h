@@ -19,6 +19,10 @@
 #define VERSION_SUB 0x01
 #define CONFIG_VERSION (uint32_t)( ( (uint32_t)VERSION_MAJOR << 16 ) | ((uint32_t)VERSION_MINOR << 8) | (VERSION_SUB & 0xFF) )
 
+#ifndef CONFIG_USB
+#define CONFIG_USB 1ul
+#endif
+
 //* ============== ADC =================== *//
 #define CONFIG_ADC_INPUT_0_PIN 2
 
@@ -135,7 +139,7 @@
 
 //* ============== GPIO ================= *//
 
-#define CONFIG_GPIO_MASK ((0xFFFFFFFFul) ^ (( (1ul << PIN_USB_DM) | (1ul << PIN_USB_DP) | (1ul << PIN_ADDR_0) | (1ul << PIN_ADDR_1) | (1ul << PIN_ACTIVITY_LED) ) \
+#define CONFIG_GPIO_MASK ((0xFFFFFFFFul) ^ (( (CONFIG_USB << PIN_USB_DM) | (CONFIG_USB << PIN_USB_DP) | (1ul << PIN_ADDR_0) | (1ul << PIN_ADDR_1) | (1ul << PIN_ACTIVITY_LED) ) \
 		| ((uint32_t)(CONFIG_ADC_INPUT_0 & CONFIG_ADC) << CONFIG_ADC_INPUT_0_PIN) \
 		| ((uint32_t)(CONFIG_ADC_INPUT_1 & CONFIG_ADC) << CONFIG_ADC_INPUT_1_PIN) \
 		| ((uint32_t)(CONFIG_ADC_INPUT_2 & CONFIG_ADC) << CONFIG_ADC_INPUT_2_PIN) \
