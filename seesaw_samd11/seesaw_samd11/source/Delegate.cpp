@@ -620,7 +620,6 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 			Evt *evt = new InterruptSetReq( SEESAW_INTERRUPT_GPIO );
 			QF::PUBLISH(evt, me);
 			
-			NVIC_EnableIRQ(EIC_IRQn);
 			status = Q_HANDLED();
 			break;
 		}
