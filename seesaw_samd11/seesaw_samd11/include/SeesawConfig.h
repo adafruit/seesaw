@@ -13,11 +13,14 @@
 
 #include "RegisterMap.h"
 #include "PinMap.h"
+#include "build_date.h"
 
-#define VERSION_MAJOR 0x00
-#define VERSION_MINOR 0x01
-#define VERSION_SUB 0x01
-#define CONFIG_VERSION (uint32_t)( ( (uint32_t)VERSION_MAJOR << 16 ) | ((uint32_t)VERSION_MINOR << 8) | (VERSION_SUB & 0xFF) )
+#define DATE_CODE (uint32_t)( (  (uint32_t)__YEAR__ << 9) \
+		| ( (uint32_t)__MONTH__ << 5 ) \
+		| ( (uint32_t)__DAY__ & 0x1F ) )
+
+#define CONFIG_VERSION (uint32_t)( ( (uint32_t)PRODUCT_CODE << 16 ) \
+		| ( (uint16_t)DATE_CODE & 0x0000FFFF) )
 
 #ifndef CONFIG_USB
 #define CONFIG_USB 1ul
