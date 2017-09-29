@@ -16,7 +16,7 @@ void adc_init()
 	
 	while( ADC->STATUS.bit.SYNCBUSY == 1 || ADC->CTRLA.bit.SWRST == 1);
 
-	ADC->CTRLB.reg = ADC_CTRLB_PRESCALER_DIV32 |    // Divide Clock by 64.
+	ADC->CTRLB.reg = ADC_CTRLB_PRESCALER_DIV64 |    // Divide Clock by 64.
 					ADC_CTRLB_RESSEL_10BIT;         // 10 bits resolution as default
 
 	ADC->SAMPCTRL.reg = 0x3f;                        // Set max Sampling Time Length
