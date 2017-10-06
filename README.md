@@ -2,11 +2,11 @@
 # Introduction
 
 Seesaw is an open source microcontroller friend for other chips. It provides a
-variety of capabilities such as USB, ADC and DAC to chips that don't have them.
+variety of capabilities such as UART, ADC, DAC, extra GPIO, etc. to chips that don't have them.
 
 # Build
 
-TBD
+Load seesaw.atsln with Atmel Studio 7 and build 
 
 # Contributing
 
