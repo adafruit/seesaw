@@ -6,6 +6,8 @@
 #define I2C_SLAVE_OPERATION 0x4u
 #define I2C_MASTER_OPERATION 0x5u
 
+#define SERCOM_FREQ_REF 48000000ul
+
 typedef enum
 {
 	SPI_SLAVE_OPERATION = 0x2u,
@@ -268,5 +270,21 @@ inline bool isEnabledUART( Sercom * sercom )
 }
 
 int writeDataUART( Sercom * sercom ,uint8_t data);
+
+void initSPI( Sercom * sercom, SercomSpiTXPad mosi, SercomRXPad miso, SercomSpiCharSize charSize, SercomDataOrder dataOrder) ;
+void initSPIClock( Sercom * sercom, SercomSpiClockMode clockMode, uint32_t baudrate) ;
+
+void resetSPI( Sercom * sercom ) ;
+void enableSPI( Sercom * sercom ) ;
+void disableSPI( Sercom * sercom ) ;
+void setDataOrderSPI( Sercom * sercom, SercomDataOrder dataOrder) ;
+SercomDataOrder getDataOrderSPI( Sercom * sercom ) ;
+void setBaudrateSPI( Sercom * sercom, uint8_t divider) ;
+void setClockModeSPI( Sercom * sercom, SercomSpiClockMode clockMode) ;
+uint8_t transferDataSPI( Sercom * sercom, uint8_t data) ;
+bool isBufferOverflowErrorSPI( Sercom * sercom ) ;
+bool isDataRegisterEmptySPI( Sercom * sercom ) ;
+bool isTransmitCompleteSPI( Sercom * sercom ) ;
+bool isReceiveCompleteSPI( Sercom * sercom ) ;
 
 #endif

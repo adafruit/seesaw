@@ -297,3 +297,171 @@ void setUARTBaud( Sercom *sercom, uint32_t baudrate )
 	
 	enableUART(sercom);
 }
+
+/*	=========================
+ *	===== Sercom SPI
+ *	=========================
+*/
+
+uint8_t calculateBaudrateSynchronous(uint32_t baudrate)
+{
+	return SERCOM_FREQ_REF / (2 * baudrate) - 1;
+}
+
+void initSPI( Sercom *sercom, SercomSpiTXPad mosi, SercomRXPad miso, SercomSpiCharSize charSize, SercomDataOrder dataOrder)
+{
+  resetSPI(sercom);
+  initClock(sercom);
+
+  //Setting the CTRLA register
+  sercom->SPI.CTRLA.reg =	SERCOM_SPI_CTRLA_MODE_SPI_MASTER |
+                          SERCOM_SPI_CTRLA_DOPO(mosi) |
+                          SERCOM_SPI_CTRLA_DIPO(miso) |
+                          dataOrder << SERCOM_SPI_CTRLA_DORD_Pos;
+
+  //Setting the CTRLB register
+  sercom->SPI.CTRLB.reg = SERCOM_SPI_CTRLB_CHSIZE(charSize) |
+                          SERCOM_SPI_CTRLB_RXEN;	//Active the SPI receiver.
+
+
+}
+
+void initSPIClock( Sercom *sercom, SercomSpiClockMode clockMode, uint32_t baudrate)
+{
+  //Extract data from clockMode
+  int cpha, cpol;
+
+  if((clockMode & (0x1ul)) == 0 )
+    cpha = 0;
+  else
+    cpha = 1;
+
+  if((clockMode & (0x2ul)) == 0)
+    cpol = 0;
+  else
+    cpol = 1;
+
+  //Setting the CTRLA register
+  sercom->SPI.CTRLA.reg |=	( cpha << SERCOM_SPI_CTRLA_CPHA_Pos ) |
+                            ( cpol << SERCOM_SPI_CTRLA_CPOL_Pos );
+
+  //Synchronous arithmetic
+  sercom->SPI.BAUD.reg = calculateBaudrateSynchronous(baudrate);
+}
+
+void resetSPI( Sercom *sercom )
+{
+  //Setting the Software Reset bit to 1
+  sercom->SPI.CTRLA.bit.SWRST = 1;
+
+  //Wait both bits Software Reset from CTRLA and SYNCBUSY are equal to 0
+  while(sercom->SPI.CTRLA.bit.SWRST || sercom->SPI.SYNCBUSY.bit.SWRST);
+}
+
+void enableSPI( Sercom *sercom )
+{
+  //Setting the enable bit to 1
+  sercom->SPI.CTRLA.bit.ENABLE = 1;
+
+  while(sercom->SPI.SYNCBUSY.bit.ENABLE)
+  {
+    //Waiting then enable bit from SYNCBUSY is equal to 0;
+  }
+}
+
+void disableSPI( Sercom *sercom )
+{
+  while(sercom->SPI.SYNCBUSY.bit.ENABLE)
+  {
+    //Waiting then enable bit from SYNCBUSY is equal to 0;
+  }
+
+  //Setting the enable bit to 0
+  sercom->SPI.CTRLA.bit.ENABLE = 0;
+}
+
+void setDataOrderSPI( Sercom *sercom, SercomDataOrder dataOrder)
+{
+  //Register enable-protected
+  disableSPI(sercom);
+
+  sercom->SPI.CTRLA.bit.DORD = dataOrder;
+
+  enableSPI(sercom);
+}
+
+SercomDataOrder getDataOrderSPI( Sercom *sercom )
+{
+  return (sercom->SPI.CTRLA.bit.DORD ? LSB_FIRST : MSB_FIRST);
+}
+
+void setBaudrateSPI( Sercom *sercom, uint8_t divider)
+{
+  //Can't divide by 0
+  if(divider == 0)
+    return;
+
+  //Register enable-protected
+  disableSPI(sercom);
+
+  sercom->SPI.BAUD.reg = calculateBaudrateSynchronous( SERCOM_FREQ_REF / divider );
+
+  enableSPI(sercom);
+}
+
+void setClockModeSPI( Sercom *sercom, SercomSpiClockMode clockMode)
+{
+  int cpha, cpol;
+  if((clockMode & (0x1ul)) == 0)
+    cpha = 0;
+  else
+    cpha = 1;
+
+  if((clockMode & (0x2ul)) == 0)
+    cpol = 0;
+  else
+    cpol = 1;
+
+  //Register enable-protected
+  disableSPI(sercom);
+
+  sercom->SPI.CTRLA.bit.CPOL = cpol;
+  sercom->SPI.CTRLA.bit.CPHA = cpha;
+
+  enableSPI(sercom);
+}
+
+uint8_t transferDataSPI( Sercom *sercom, uint8_t data)
+{
+  sercom->SPI.DATA.bit.DATA = data; // Writing data into Data register
+
+  while( sercom->SPI.INTFLAG.bit.RXC == 0 )
+  {
+    // Waiting Complete Reception
+  }
+
+  return sercom->SPI.DATA.bit.DATA;  // Reading data
+}
+
+bool isBufferOverflowErrorSPI( Sercom *sercom )
+{
+  return sercom->SPI.STATUS.bit.BUFOVF;
+}
+
+bool isDataRegisterEmptySPI( Sercom *sercom )
+{
+  //DRE : Data Register Empty
+  return sercom->SPI.INTFLAG.bit.DRE;
+}
+
+//bool isTransmitCompleteSPI()
+//{
+//	//TXC : Transmit complete
+//	return sercom->SPI.INTFLAG.bit.TXC;
+//}
+//
+//bool isReceiveCompleteSPI()
+//{
+//	//RXC : Receive complete
+//	return sercom->SPI.INTFLAG.bit.RXC;
+//}

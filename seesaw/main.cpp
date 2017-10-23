@@ -14,6 +14,8 @@
 
 #include "event.h"
 #include "bsp.h"
+#include "bsp_gpio.h"
+#include "bsp_sercom.h"
 
 #include "SeesawConfig.h"
 
@@ -27,6 +29,9 @@
 #include "AOSERCOM.h"
 #include "AODAP.h"
 #include "Neopixel.h"
+
+//TODO: remove
+#include "dsp_fw.h"
 
 using namespace QP;
 
@@ -82,6 +87,19 @@ static AODAP dap;
 static Neopixel neopixel;
 #endif
 
+static inline void doNothing(int delay)
+{
+	while (delay > 0){
+		asm("nop");
+		--delay;
+	}
+}
+
+static inline bool spiRdy()
+{
+	return (gpio_read_bulk() & (1ul << 22)) == 0;
+}
+
 int main(void)
 {
     /* Initialize the SAM system */
@@ -95,6 +113,51 @@ int main(void)
 	QP::QF::psInit(subscrSto, Q_DIM(subscrSto)); // init publish-subscribe
 	
 	BspInit();
+	
+	pinPeripheral(16, 2);
+	pinPeripheral(18, 2);
+	pinPeripheral(19, 2);
+	
+	disableSPI(SERCOM1);
+	initSPI( SERCOM1, SPI_PAD_2_SCK_3, SERCOM_RX_PAD_0, SPI_CHAR_SIZE_8_BITS, MSB_FIRST);
+	initSPIClock(SERCOM1, SERCOM_SPI_MODE_0, 4000000ul);
+	enableSPI(SERCOM1);
+	
+	//dsp !reset
+	gpio_init(PORTA, 23, 1);
+	gpio_write(PORTA, 23, 1);
+	
+	//dsp CS (output)
+	gpio_init(PORTA, 17, 1);
+	gpio_write(PORTA, 17, 1);
+	
+	//dsp SPIRDY (input)
+	gpio_dirclr_bulk(PORTA, (1ul << 22));
+	
+
+	//pulse reset
+	doNothing(10000ul);
+	gpio_write(PORTA, 23, 0);
+	doNothing(10000ul);
+	gpio_write(PORTA, 23, 1);
+	doNothing(10000ul);
+	
+	//DSP FEATHER SPECIFIC: start clock output
+	pinPeripheral(27, 7);
+	
+	/*
+	doNothing(10000ul);
+	while(!spiRdy());
+	
+	gpio_write(PORTA, 17, 0);
+	//write fw here to test that it's working
+	for(int i=0; i<sizeof(binfile); i++){
+		while(!spiRdy());
+		transferDataSPI(SERCOM1, binfile[i]);
+	}
+	gpio_write(PORTA, 17, 1);
+	*/
+	
 	//Start active objects.
 	sys.Start(PRIO_SYSTEM);
 	del.Start(PRIO_DELEGATE);

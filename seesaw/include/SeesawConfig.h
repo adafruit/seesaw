@@ -7,6 +7,8 @@
 	#include "samd09Breakout.h"
 #elif defined(BOARD_CHARLCD)
 	#include "charLCD.h"
+#elif defined(BOARD_DSPFEATHER)
+	#include "dspFeather.h"
 #else
 	#include "debug.h"
 #endif
@@ -40,7 +42,7 @@
 //* ============== TIMER =================== *//
 
 //TODO: fix timers for samd21
-#if defined(__SAMD21G18A__)
+#if defined(__SAMD21G18A__) || defined(__SAMD21E17A__)
 	
 	#define CONFIG_TIMER_PWM_OUT0_TC TC3
 	#define CONFIG_TIMER_PWM_OUT0_WO 0
@@ -99,7 +101,7 @@
 
 //* ============== I2C SLAVE =================== *//
 
-#if defined(__SAMD21G18A__)
+#if defined(__SAMD21G18A__) || defined(__SAMD21E17A__)
 	#define CONFIG_I2C_SLAVE_SERCOM SERCOM3
 	#define CONFIG_I2C_SLAVE_HANDLER SERCOM3_Handler
 	#define CONFIG_I2C_SLAVE_IRQn SERCOM3_IRQn

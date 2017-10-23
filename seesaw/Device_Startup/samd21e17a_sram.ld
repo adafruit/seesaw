@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Linker script for running in internal SRAM on the SAMD09D14A
+ * \brief Linker script for running in internal SRAM on the SAMD21E17A
  *
  * Copyright (c) 2016 Atmel Corporation,
  *                    a wholly owned subsidiary of Microchip Technology Inc.
@@ -34,11 +34,11 @@ SEARCH_DIR(.)
 /* Memory Spaces Definitions */
 MEMORY
 {
-  ram      (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00001000
+  ram      (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00004000
 }
 
 /* The stack size used by the application. NOTE: you need to adjust according to your application. */
-STACK_SIZE = DEFINED(STACK_SIZE) ? STACK_SIZE : DEFINED(__stack_size__) ? __stack_size__ : 0x400;
+STACK_SIZE = DEFINED(STACK_SIZE) ? STACK_SIZE : DEFINED(__stack_size__) ? __stack_size__ : 0x1000;
 
 /* Section Definitions */
 SECTIONS
