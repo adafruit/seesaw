@@ -11,8 +11,8 @@ Global
 		dspFeather|ARM = dspFeather|ARM
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|ARM.ActiveCfg = samd09Breakout|ARM
-		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|ARM.Build.0 = samd09Breakout|ARM
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|ARM.ActiveCfg = dspFeather|ARM
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|ARM.Build.0 = dspFeather|ARM
 		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.dspFeather|ARM.ActiveCfg = dspFeather|ARM
 		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.dspFeather|ARM.Build.0 = dspFeather|ARM
 	EndGlobalSection

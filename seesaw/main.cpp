@@ -120,7 +120,7 @@ int main(void)
 	
 	disableSPI(SERCOM1);
 	initSPI( SERCOM1, SPI_PAD_2_SCK_3, SERCOM_RX_PAD_0, SPI_CHAR_SIZE_8_BITS, MSB_FIRST);
-	initSPIClock(SERCOM1, SERCOM_SPI_MODE_0, 4000000ul);
+	initSPIClock(SERCOM1, SERCOM_SPI_MODE_1, 8000000ul);
 	enableSPI(SERCOM1);
 	
 	//dsp !reset
@@ -134,29 +134,25 @@ int main(void)
 	//dsp SPIRDY (input)
 	gpio_dirclr_bulk(PORTA, (1ul << 22));
 	
-
-	//pulse reset
-	doNothing(10000ul);
-	gpio_write(PORTA, 23, 0);
-	doNothing(10000ul);
-	gpio_write(PORTA, 23, 1);
-	doNothing(10000ul);
-	
 	//DSP FEATHER SPECIFIC: start clock output
 	pinPeripheral(27, 7);
 	
-	/*
-	doNothing(10000ul);
+	//pulse reset
+	doNothing(100ul);
+	gpio_write(PORTA, 23, 0);
+	doNothing(100ul);
+	gpio_write(PORTA, 23, 1);
+	
 	while(!spiRdy());
 	
 	gpio_write(PORTA, 17, 0);
+	transferDataSPI(SERCOM1, 0x03);
 	//write fw here to test that it's working
 	for(int i=0; i<sizeof(binfile); i++){
 		while(!spiRdy());
 		transferDataSPI(SERCOM1, binfile[i]);
 	}
 	gpio_write(PORTA, 17, 1);
-	*/
 	
 	//Start active objects.
 	sys.Start(PRIO_SYSTEM);

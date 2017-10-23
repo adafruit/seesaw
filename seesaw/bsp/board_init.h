@@ -244,7 +244,7 @@ void board_init(void)
                       GCLK_GENCTRL_SRC_DFLL48M | // Selected source is DFLL 48MHz
                       GCLK_GENCTRL_OE | // Output clock to a pin for tests
                       GCLK_GENCTRL_IDC | // Set 50/50 duty cycle
-					  GCLK_GENCTRL_DIVSEL | 
+					  //GCLK_GENCTRL_DIVSEL | //divide by 2
                       GCLK_GENCTRL_GENEN ;
 
   while ( GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY )
