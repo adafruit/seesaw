@@ -5,7 +5,10 @@
 #include "string.h"
 
 #define EEPROM_SIZE 256
-#define EEPROM_ADDR (FLASH_SIZE - EEPROM_SIZE)
+
+//DSP FEATHER SPECIFIC: FW is stored in EEPROM 
+//#define EEPROM_ADDR (FLASH_SIZE - EEPROM_SIZE)
+#define EEPROM_ADDR 0xF000
 
 #define NVM_MEMORY ((volatile uint16_t *)FLASH_ADDR)
 
@@ -31,7 +34,7 @@ static void eeprom_erase()
 	NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMD_ER | NVMCTRL_CTRLA_CMDEX_KEY;
 }
 
-static void eeprom_read(uint8_t addr, uint8_t *buf, uint8_t size)
+static void eeprom_read(uint16_t addr, uint8_t *buf, uint16_t size)
 {
 	uint32_t src_addr = (EEPROM_ADDR  + addr);
 	uint32_t nvm_address = src_addr / 2;

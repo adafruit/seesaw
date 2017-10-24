@@ -34,7 +34,7 @@ SEARCH_DIR(.)
 /* Memory Spaces Definitions */
 MEMORY
 {
-  rom      (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00020000
+  rom      (rx)  : ORIGIN = 0x00002000, LENGTH = 0x00020000-0x2000
   ram      (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00004000
 }
 
@@ -46,7 +46,10 @@ SECTIONS
 {
     .text :
     {
-        . = ALIGN(4);
+		__text_start__ = .;
+        KEEP(*(.sketch_boot))
+
+		. = ALIGN(0x2000);
         _sfixed = .;
         KEEP(*(.vectors .vectors.*))
         *(.text .text.* .gnu.linkonce.t.*)

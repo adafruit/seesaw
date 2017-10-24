@@ -16,6 +16,7 @@
 #include "bsp.h"
 #include "bsp_gpio.h"
 #include "bsp_sercom.h"
+#include "bsp_nvmctrl.h"
 
 #include "SeesawConfig.h"
 
@@ -30,8 +31,15 @@
 #include "AODAP.h"
 #include "Neopixel.h"
 
-//TODO: remove
+#ifdef FROM_HEADER
 #include "dsp_fw.h"
+#endif
+
+//TODO: set to correct firmware size (68 kB?)
+#define FW_SIZE 0x4000
+#define FW_BUFSIZE 256
+
+static uint8_t fw_buf[FW_BUFSIZE];
 
 using namespace QP;
 
@@ -147,11 +155,25 @@ int main(void)
 	
 	gpio_write(PORTA, 17, 0);
 	transferDataSPI(SERCOM1, 0x03);
-	//write fw here to test that it's working
+
+#ifndef FROM_HEADER
+	for(int i=0; i<FW_SIZE; i+=FW_BUFSIZE){
+		
+		//read firmware from flash	
+		eeprom_read(i, fw_buf, FW_BUFSIZE);
+		
+		for(int j=0; j<FW_BUFSIZE; j++){
+			while(!spiRdy());
+			transferDataSPI(SERCOM1, fw_buf[j]);
+		}
+	}
+#else
+	
 	for(int i=0; i<sizeof(binfile); i++){
 		while(!spiRdy());
 		transferDataSPI(SERCOM1, binfile[i]);
 	}
+#endif
 	gpio_write(PORTA, 17, 1);
 	
 	//Start active objects.
