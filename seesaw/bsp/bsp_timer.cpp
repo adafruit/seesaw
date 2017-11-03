@@ -14,29 +14,40 @@ void initTimerPWM( Tc *TCx )
 	while (GCLK->STATUS.bit.SYNCBUSY == 1);
 	
 	// Disable TCx
-	TCx->COUNT8.CTRLA.bit.ENABLE = 0;
-	syncTC_8(TCx);
-	// Set Timer counter Mode to 8 bits, normal PWM, prescaler 1/256
-	TCx->COUNT8.CTRLA.reg |= TC_CTRLA_MODE_COUNT8 | TC_CTRLA_WAVEGEN_NPWM | TC_CTRLA_PRESCALER_DIV64;
-	syncTC_8(TCx);
+	TCx->COUNT16.CTRLA.bit.ENABLE = 0;
+	syncTC_16(TCx);
+	// Set Timer counter Mode to 16 bits, normal PWM, prescaler 1/256
+	TCx->COUNT16.CTRLA.reg |= TC_CTRLA_MODE_COUNT16 | TC_CTRLA_WAVEGEN_NPWM | TC_CTRLA_PRESCALER_DIV16;
+	syncTC_16(TCx);
 	
 	// Set the initial values
-	TCx->COUNT8.CC[0].reg = 0x00;
-	TCx->COUNT8.CC[1].reg = 0x00;
-	syncTC_8(TCx);
+	TCx->COUNT16.CC[0].reg = 0x00;
+	TCx->COUNT16.CC[1].reg = 0x00;
+	syncTC_16(TCx);
 	
 	// Set PER to maximum counter value (resolution : 0xFF)
-	TCx->COUNT8.PER.reg = 0xFF;
-	syncTC_8(TCx);
+	// in 16 bit mode this is fixed
+	//TCx->COUNT16.PER.reg = 0xFF;
+	//syncTC_16(TCx);
 	
 	enableTimer(TCx);
 }
 
 #if CONFIG_TIMER
-void PWMWrite( uint8_t pwm, uint8_t value)
+void PWMWrite( uint8_t pwm, uint16_t value)
 {
 	_PWM p = g_pwms[pwm];
-	p.tc->COUNT8.CC[p.wo].reg = value;
-	syncTC_8(p.tc);
+	p.tc->COUNT16.CC[p.wo].reg = value;
+	syncTC_16(p.tc);
+}
+
+void setFreq( uint8_t pwm, uint8_t freq )
+{
+	_PWM p = g_pwms[pwm];
+	
+	p.tc->COUNT16.CTRLA.bit.ENABLE = 0;
+	syncTC_16(p.tc);
+	p.tc->COUNT16.CTRLA.bit.PRESCALER = freq;
+	enableTimer(p.tc);
 }
 #endif

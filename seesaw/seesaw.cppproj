@@ -346,93 +346,90 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'samd09Breakout' ">
     <ToolchainSettings>
       <ArmGccCpp>
-        <armgcc.common.outputfiles.hex>True</armgcc.common.outputfiles.hex>
-        <armgcc.common.outputfiles.lss>True</armgcc.common.outputfiles.lss>
-        <armgcc.common.outputfiles.eep>True</armgcc.common.outputfiles.eep>
-        <armgcc.common.outputfiles.bin>True</armgcc.common.outputfiles.bin>
-        <armgcc.common.outputfiles.srec>True</armgcc.common.outputfiles.srec>
-        <armgcc.compiler.directories.IncludePaths>
-          <ListValues>
-            <Value>../bsp</Value>
-            <Value>../Config</Value>
-            <Value>../include</Value>
-            <Value>../qp/extras</Value>
-            <Value>../qp/include</Value>
-            <Value>../qp/ports/arm-cm/qxk/gnu</Value>
-            <Value>%24(PackRepoDir)\atmel\SAMD09_DFP\1.1.69\include</Value>
-            <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
-            <Value>..</Value>
-          </ListValues>
-        </armgcc.compiler.directories.IncludePaths>
-        <armgcc.compiler.optimization.level>Optimize for size (-Os)</armgcc.compiler.optimization.level>
-        <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
-        <armgcc.compiler.optimization.PrepareDataForGarbageCollection>True</armgcc.compiler.optimization.PrepareDataForGarbageCollection>
-        <armgcc.compiler.optimization.EnableLongCalls>False</armgcc.compiler.optimization.EnableLongCalls>
-        <armgcc.compiler.warnings.AllWarnings>False</armgcc.compiler.warnings.AllWarnings>
-        <armgcccpp.compiler.directories.IncludePaths>
-          <ListValues>
-            <Value>../qp/extras</Value>
-            <Value>../bsp</Value>
-            <Value>../Config</Value>
-            <Value>../include</Value>
-            <Value>../qp/include</Value>
-            <Value>../qp/ports/arm-cm/qxk/gnu</Value>
-            <Value>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD09_DFP\1.1.69\include</Value>
-            <Value>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
-            <Value>%24(PackRepoDir)\atmel\SAMD09_DFP\1.1.69\include</Value>
-            <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
-            <Value>..</Value>
-          </ListValues>
-        </armgcccpp.compiler.directories.IncludePaths>
-        <armgcccpp.compiler.optimization.level>Optimize for size (-Os)</armgcccpp.compiler.optimization.level>
-        <armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>
-        <armgcccpp.compiler.optimization.PrepareDataForGarbageCollection>True</armgcccpp.compiler.optimization.PrepareDataForGarbageCollection>
-        <armgcccpp.compiler.optimization.EnableLongCalls>False</armgcccpp.compiler.optimization.EnableLongCalls>
-        <armgcccpp.compiler.warnings.AllWarnings>False</armgcccpp.compiler.warnings.AllWarnings>
-        <armgcccpp.linker.general.UseNewlibNano>True</armgcccpp.linker.general.UseNewlibNano>
-        <armgcccpp.linker.general.AdditionalSpecs>Use syscall stubs (--specs=nosys.specs)</armgcccpp.linker.general.AdditionalSpecs>
-        <armgcccpp.linker.libraries.Libraries>
-          <ListValues>
-            <Value>libm</Value>
-          </ListValues>
-        </armgcccpp.linker.libraries.Libraries>
-        <armgcccpp.linker.libraries.LibrarySearchPaths>
-          <ListValues>
-            <Value>\Device_Startup</Value>
-            <Value>%24(ProjectDir)\Device_Startup</Value>
-          </ListValues>
-        </armgcccpp.linker.libraries.LibrarySearchPaths>
-        <armgcccpp.linker.optimization.GarbageCollectUnusedSections>True</armgcccpp.linker.optimization.GarbageCollectUnusedSections>
-        <armgcccpp.linker.memorysettings.ExternalRAM>
-        </armgcccpp.linker.memorysettings.ExternalRAM>
-        <armgcccpp.linker.miscellaneous.LinkerFlags>-Tsamd09d14a_flash.ld</armgcccpp.linker.miscellaneous.LinkerFlags>
-        <armgcccpp.assembler.general.IncludePaths>
-          <ListValues>
-            <Value>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
-            <Value>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD09_DFP\1.1.69\include</Value>
-            <Value>%24(PackRepoDir)\atmel\SAMD09_DFP\1.1.69\include</Value>
-            <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
-          </ListValues>
-        </armgcccpp.assembler.general.IncludePaths>
-        <armgcccpp.preprocessingassembler.general.IncludePaths>
-          <ListValues>
-            <Value>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD09_DFP\1.1.69\include</Value>
-            <Value>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
-            <Value>%24(PackRepoDir)\atmel\SAMD09_DFP\1.1.69\include</Value>
-            <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
-          </ListValues>
-        </armgcccpp.preprocessingassembler.general.IncludePaths>
-        <armgcc.compiler.symbols.DefSymbols>
-          <ListValues>
-            <Value>BOARD_SAMD09BREAKOUT</Value>
-          </ListValues>
-        </armgcc.compiler.symbols.DefSymbols>
-        <armgcccpp.compiler.symbols.DefSymbols>
-          <ListValues>
-            <Value>BOARD_SAMD09BREAKOUT</Value>
-          </ListValues>
-        </armgcccpp.compiler.symbols.DefSymbols>
-      </ArmGccCpp>
+  <armgcc.common.outputfiles.hex>True</armgcc.common.outputfiles.hex>
+  <armgcc.common.outputfiles.lss>True</armgcc.common.outputfiles.lss>
+  <armgcc.common.outputfiles.eep>True</armgcc.common.outputfiles.eep>
+  <armgcc.common.outputfiles.bin>True</armgcc.common.outputfiles.bin>
+  <armgcc.common.outputfiles.srec>True</armgcc.common.outputfiles.srec>
+  <armgcc.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>BOARD_SAMD09BREAKOUT</Value>
+    </ListValues>
+  </armgcc.compiler.symbols.DefSymbols>
+  <armgcc.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>../bsp</Value>
+      <Value>../Config</Value>
+      <Value>../include</Value>
+      <Value>../qp/extras</Value>
+      <Value>../qp/include</Value>
+      <Value>../qp/ports/arm-cm/qxk/gnu</Value>
+      <Value>%24(PackRepoDir)\atmel\SAMD09_DFP\1.1.69\include</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+      <Value>..</Value>
+    </ListValues>
+  </armgcc.compiler.directories.IncludePaths>
+  <armgcc.compiler.optimization.level>Optimize for size (-Os)</armgcc.compiler.optimization.level>
+  <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
+  <armgcc.compiler.optimization.PrepareDataForGarbageCollection>True</armgcc.compiler.optimization.PrepareDataForGarbageCollection>
+  <armgcc.compiler.optimization.EnableLongCalls>False</armgcc.compiler.optimization.EnableLongCalls>
+  <armgcccpp.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>BOARD_SAMD09BREAKOUT</Value>
+    </ListValues>
+  </armgcccpp.compiler.symbols.DefSymbols>
+  <armgcccpp.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>../qp/extras</Value>
+      <Value>../bsp</Value>
+      <Value>../Config</Value>
+      <Value>../include</Value>
+      <Value>../qp/include</Value>
+      <Value>../qp/ports/arm-cm/qxk/gnu</Value>
+      <Value>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD09_DFP\1.1.69\include</Value>
+      <Value>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+      <Value>%24(PackRepoDir)\atmel\SAMD09_DFP\1.1.69\include</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+      <Value>..</Value>
+    </ListValues>
+  </armgcccpp.compiler.directories.IncludePaths>
+  <armgcccpp.compiler.optimization.level>Optimize for size (-Os)</armgcccpp.compiler.optimization.level>
+  <armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>
+  <armgcccpp.compiler.optimization.PrepareDataForGarbageCollection>True</armgcccpp.compiler.optimization.PrepareDataForGarbageCollection>
+  <armgcccpp.compiler.optimization.EnableLongCalls>False</armgcccpp.compiler.optimization.EnableLongCalls>
+  <armgcccpp.linker.general.UseNewlibNano>True</armgcccpp.linker.general.UseNewlibNano>
+  <armgcccpp.linker.general.AdditionalSpecs>Use syscall stubs (--specs=nosys.specs)</armgcccpp.linker.general.AdditionalSpecs>
+  <armgcccpp.linker.libraries.Libraries>
+    <ListValues>
+      <Value>libm</Value>
+    </ListValues>
+  </armgcccpp.linker.libraries.Libraries>
+  <armgcccpp.linker.libraries.LibrarySearchPaths>
+    <ListValues>
+      <Value>\Device_Startup</Value>
+      <Value>%24(ProjectDir)\Device_Startup</Value>
+    </ListValues>
+  </armgcccpp.linker.libraries.LibrarySearchPaths>
+  <armgcccpp.linker.optimization.GarbageCollectUnusedSections>True</armgcccpp.linker.optimization.GarbageCollectUnusedSections>
+  <armgcccpp.linker.memorysettings.ExternalRAM />
+  <armgcccpp.linker.miscellaneous.LinkerFlags>-Tsamd09d14a_flash.ld</armgcccpp.linker.miscellaneous.LinkerFlags>
+  <armgcccpp.assembler.general.IncludePaths>
+    <ListValues>
+      <Value>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+      <Value>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD09_DFP\1.1.69\include</Value>
+      <Value>%24(PackRepoDir)\atmel\SAMD09_DFP\1.1.69\include</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcccpp.assembler.general.IncludePaths>
+  <armgcccpp.preprocessingassembler.general.IncludePaths>
+    <ListValues>
+      <Value>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD09_DFP\1.1.69\include</Value>
+      <Value>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+      <Value>%24(PackRepoDir)\atmel\SAMD09_DFP\1.1.69\include</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcccpp.preprocessingassembler.general.IncludePaths>
+</ArmGccCpp>
     </ToolchainSettings>
     <OutputPath>bin\samd09Breakout\</OutputPath>
     <PreBuildEvent>python $(MSBuildProjectDirectory)\datecode.py $(MSBuildProjectDirectory)</PreBuildEvent>

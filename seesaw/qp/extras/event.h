@@ -88,6 +88,7 @@ enum {
 	TIMER_STOP_REQ,
 	TIMER_STOP_CFM,
 	TIMER_WRITE_PWM,
+	TIMER_SET_FREQ,
 	
 	DAC_START_REQ,
 	DAC_START_CFM,
@@ -289,14 +290,27 @@ class TimerStopCfm : public ErrorEvt {
 
 class TimerWritePWM : public Evt {
 	public:
-	TimerWritePWM(uint8_t pwm, uint8_t value) :
+	TimerWritePWM(uint8_t pwm, uint16_t value) :
 	Evt(TIMER_WRITE_PWM), _pwm(pwm), _value(value) {}
 		
 	uint8_t getPwm() const { return _pwm; }
-	uint8_t getValue() const { return _value; }
+	uint16_t getValue() const { return _value; }
 		
 	private:
-	uint8_t _pwm, _value;
+	uint8_t _pwm;
+	uint16_t _value;
+};
+
+class TimerSetFreq : public Evt {
+	public:
+	TimerSetFreq(uint8_t pwm, uint8_t freq) :
+	Evt(TIMER_SET_FREQ), _pwm(pwm), _freq(freq) {}
+	
+	uint8_t getPwm() const { return _pwm; }
+	uint8_t getFreq() const { return _freq; }
+	
+	private:
+	uint8_t _pwm, _freq;
 };
 
 //* ==========================  DAC ======================= *//

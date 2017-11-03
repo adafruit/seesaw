@@ -53,6 +53,7 @@ QState AOTimer::InitialPseudoState(AOTimer * const me, QEvt const * const e) {
     me->subscribe(TIMER_STOP_REQ);
     
 	me->subscribe(TIMER_WRITE_PWM);
+	me->subscribe(TIMER_SET_FREQ);
 	
     return Q_TRAN(&AOTimer::Root);
 }
@@ -173,6 +174,15 @@ QState AOTimer::Started(AOTimer * const me, QEvt const * const e) {
 			PWMWrite(req.getPwm(), req.getValue());
 			
 			status = Q_HANDLED();
+			break;
+		}
+		case TIMER_SET_FREQ: {
+			
+			TimerSetFreq const &req = static_cast<TimerSetFreq const &>(*e);
+			setFreq(req.getPwm(), req.getFreq());
+			
+			status = Q_HANDLED();
+			break;
 		}
         default: {
             status = Q_SUPER(&AOTimer::Root);

@@ -134,6 +134,9 @@
 	/****** PWM *****/
 	#define SEESAW_TIMER_PWM 0x01
 	
+	/****** FREQ ****/
+	#define SEESAW_TIMER_FREQ 0x02
+	
 //* ============== ADC =================== *//
 #define SEESAW_ADC_BASE 0x09
 
