@@ -41,13 +41,25 @@ void PWMWrite( uint8_t pwm, uint16_t value)
 	syncTC_16(p.tc);
 }
 
-void setFreq( uint8_t pwm, uint8_t freq )
+void setFreq( uint8_t pwm, uint16_t freq )
 {
 	_PWM p = g_pwms[pwm];
 	
+#if defined(__SAMD21G18A__)
+	//TODO: we should be able to set freq w/ this chip
+#else
+	uint8_t prescale = TC_CTRLA_PRESCALER_DIV256_Val; 
+	if( freq > 500) prescale = TC_CTRLA_PRESCALER_DIV1_Val;
+	else if( freq > 250 ) prescale = TC_CTRLA_PRESCALER_DIV2_Val;
+	else if( freq > 140 ) prescale = TC_CTRLA_PRESCALER_DIV4_Val;
+	else if( freq > 75 ) prescale = TC_CTRLA_PRESCALER_DIV8_Val;
+	else if( freq > 25 ) prescale = TC_CTRLA_PRESCALER_DIV16_Val;
+	else if( freq > 7 ) prescale = TC_CTRLA_PRESCALER_DIV64_Val;
+	
 	p.tc->COUNT16.CTRLA.bit.ENABLE = 0;
 	syncTC_16(p.tc);
-	p.tc->COUNT16.CTRLA.bit.PRESCALER = freq;
+	p.tc->COUNT16.CTRLA.bit.PRESCALER = prescale;
 	enableTimer(p.tc);
+#endif
 }
 #endif

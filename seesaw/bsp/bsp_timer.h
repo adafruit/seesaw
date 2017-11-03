@@ -19,6 +19,6 @@ inline void enableTimer( Tc *TCx ){
 void initTimerPWM( Tc *TCx );
 
 void PWMWrite( uint8_t pwm, uint16_t value);
-void setFreq( uint8_t pwm, uint8_t freq);
+void setFreq( uint8_t pwm, uint16_t freq);
 
 #endif

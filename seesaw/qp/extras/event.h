@@ -303,14 +303,15 @@ class TimerWritePWM : public Evt {
 
 class TimerSetFreq : public Evt {
 	public:
-	TimerSetFreq(uint8_t pwm, uint8_t freq) :
+	TimerSetFreq(uint8_t pwm, uint16_t freq) :
 	Evt(TIMER_SET_FREQ), _pwm(pwm), _freq(freq) {}
 	
 	uint8_t getPwm() const { return _pwm; }
-	uint8_t getFreq() const { return _freq; }
+	uint16_t getFreq() const { return _freq; }
 	
 	private:
-	uint8_t _pwm, _freq;
+	uint8_t _pwm;
+	uint16_t _freq;
 };
 
 //* ==========================  DAC ======================= *//

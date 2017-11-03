@@ -539,13 +539,13 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							}
 							case SEESAW_TIMER_FREQ: {
 								Fifo *fifo = req.getFifo();
-								uint8_t dataBytes[2];
-								fifo->Read(dataBytes, 2);
-								len -= 2;
+								uint8_t dataBytes[3];
+								fifo->Read(dataBytes, 3);
+								len -= 3;
 								
 								me->discard(fifo, len);
 								
-								Evt *evt = new TimerSetFreq(dataBytes[0], dataBytes[1]);
+								Evt *evt = new TimerSetFreq(dataBytes[0], ((uint16_t)dataBytes[1] << 8) | (dataBytes[2]));
 								QF::PUBLISH(evt, me);
 								
 								break;
