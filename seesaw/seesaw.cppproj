@@ -39,7 +39,7 @@
       </framework-data>
     </AsfFrameworkConfig>
     <avrtool>com.atmel.avrdbg.tool.edbg</avrtool>
-    <avrtoolserialnumber>00000000EZE000006352</avrtoolserialnumber>
+    <avrtoolserialnumber>00000000EZE000005637</avrtoolserialnumber>
     <avrdeviceexpectedsignature>0x1001030B</avrdeviceexpectedsignature>
     <avrtoolinterface>SWD</avrtoolinterface>
     <com_atmel_avrdbg_tool_edbg>
@@ -50,7 +50,7 @@
         <InterfaceName>SWD</InterfaceName>
       </ToolOptions>
       <ToolType>com.atmel.avrdbg.tool.edbg</ToolType>
-      <ToolNumber>00000000EZE000006352</ToolNumber>
+      <ToolNumber>00000000EZE000005637</ToolNumber>
       <ToolName>EDBG</ToolName>
     </com_atmel_avrdbg_tool_edbg>
     <avrtoolinterfaceclock>2000000</avrtoolinterfaceclock>
@@ -538,8 +538,10 @@
       <Value>..</Value>
       <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.2.276\samd21a\include</Value>
       <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+      <Value>../include/USB</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
+  <armgcc.compiler.optimization.level>Optimize for size (-Os)</armgcc.compiler.optimization.level>
   <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
   <armgcc.compiler.optimization.PrepareDataForGarbageCollection>True</armgcc.compiler.optimization.PrepareDataForGarbageCollection>
   <armgcc.compiler.optimization.EnableLongCalls>False</armgcc.compiler.optimization.EnableLongCalls>
@@ -560,8 +562,10 @@
       <Value>..</Value>
       <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.2.276\samd21a\include</Value>
       <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
+      <Value>../include/USB</Value>
     </ListValues>
   </armgcccpp.compiler.directories.IncludePaths>
+  <armgcccpp.compiler.optimization.level>Optimize for size (-Os)</armgcccpp.compiler.optimization.level>
   <armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>
   <armgcccpp.compiler.optimization.PrepareDataForGarbageCollection>True</armgcccpp.compiler.optimization.PrepareDataForGarbageCollection>
   <armgcccpp.compiler.optimization.EnableLongCalls>False</armgcccpp.compiler.optimization.EnableLongCalls>
@@ -679,6 +683,9 @@
     <Compile Include="include\AOTimer.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="include\AOUSB.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="include\dap.h">
       <SubType>compile</SubType>
     </Compile>
@@ -704,6 +711,18 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="include\System.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\USB\SAMD21_USBDevice.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\USB\USBAPI.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\USB\USBCore.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\USB\USBDesc.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.cpp">
@@ -877,6 +896,9 @@
     <Compile Include="source\AOTimer.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="source\AOUSB.cpp">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="source\dap.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -892,12 +914,19 @@
     <Compile Include="source\System.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="source\USB\CDC.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="source\USB\USBCore.cpp">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bsp\" />
     <Folder Include="Config\" />
     <Folder Include="Device_Startup\" />
     <Folder Include="include\" />
+    <Folder Include="include\USB\" />
     <Folder Include="qp\" />
     <Folder Include="qp\extras\" />
     <Folder Include="qp\include\" />
@@ -907,6 +936,7 @@
     <Folder Include="qp\ports\arm-cm\qxk\gnu\" />
     <Folder Include="qp\source\" />
     <Folder Include="source\" />
+    <Folder Include="source\USB\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Device_Startup\samd21e17a_flash.ld">

@@ -43,7 +43,7 @@
 #define CONFIG_I2C_SLAVE 0
 
 //* ============== SERCOM =================== *//
-#define CONFIG_SERCOM0 0
+#define CONFIG_SERCOM0 1
 #define CONFIG_SERCOM1 0
 #define CONFIG_SERCOM2 0
 
@@ -59,5 +59,13 @@
 #define CONFIG_NEOPIXEL 0
 
 #define CONFIG_NEOPIXEL_BUF_MAX 1024
+
+//* =========== USB ================ *//
+#define CONFIG_USB 1
+
+#define USB_VID 0x239A
+#define USB_PID 0x001B
+
+#define USB_PRODUCT "DSP Feather"
 
 #endif

@@ -118,6 +118,7 @@ void QF::onStartup(void) {
 	SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 	NVIC_SetPriority(SysTick_IRQn, SYSTICK_PRIO);
 	NVIC_SetPriority(CONFIG_I2C_SLAVE_IRQn, I2C_SLAVE_ISR_PRIO);
+	NVIC_SetPriority(USB_IRQn, USB_ISR_PRIO);
 	//NVIC_SetPriority(NVMCTRL_IRQn, NVMCTRL_ISR_PRIO);
 
 #if defined(SERCOM0)
@@ -165,6 +166,10 @@ void QF::onStartup(void) {
 
 #if CONFIG_SERCOM5
 	NVIC_EnableIRQ(SERCOM5_IRQn);
+#endif
+
+#if CONFIG_USB
+	NVIC_EnableIRQ(USB_IRQn);
 #endif
 }
 

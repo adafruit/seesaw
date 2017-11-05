@@ -94,6 +94,11 @@ enum {
 	DAC_STOP_REQ,
 	DAC_STOP_CFM,
 	
+	USB_START_REQ,
+	USB_START_CFM,
+	USB_STOP_REQ,
+	USB_STOP_CFM,
+	
 	DAP_START_REQ,
 	DAP_START_CFM,
 	DAP_STOP_REQ,
@@ -311,6 +316,32 @@ class DACStopCfm : public ErrorEvt {
 	public:
 	DACStopCfm(uint16_t seq, Error error, Reason reason = 0) :
 	ErrorEvt(DAC_STOP_CFM, seq, error, reason) {}
+};
+
+//* ==========================  USB ======================= *//
+
+class USBStartReq : public Evt {
+	public:
+	USBStartReq(Fifo *outFifo, Fifo *inFifo) :
+	Evt(USB_START_REQ), _in_fifo(inFifo), _out_fifo(outFifo) {}
+	
+	Fifo *getInFifo() const { return _in_fifo; }
+	Fifo *getOutFifo() const { return _out_fifo; }
+	private:
+	Fifo *_in_fifo;
+	Fifo *_out_fifo;
+};
+
+class USBStartCfm : public ErrorEvt {
+	public:
+	USBStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(USB_START_CFM, seq, error, reason) {}
+};
+
+class USBStopCfm : public ErrorEvt {
+	public:
+	USBStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(USB_STOP_CFM, seq, error, reason) {}
 };
 
 //* ==========================  DAP ======================= *//

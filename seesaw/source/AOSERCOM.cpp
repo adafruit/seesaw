@@ -39,6 +39,11 @@
 #include "bsp_sercom.h"
 #include "bsp_gpio.h"
 
+//for direct UART<->USB
+#include "USB/USBCore.h"
+#include "USB/USBAPI.h"
+#include "USB/USBDesc.h"
+
 Q_DEFINE_THIS_FILE
 
 using namespace FW;
@@ -285,12 +290,20 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			break;
 		}
 		case SERCOM_RX_INTERRUPT: {
+			//messy but just pipe this right out to USB for dsp feather
+			uint8_t toUSB[64];
+			uint8_t bytesRead = m_rxFifo->Read(toUSB, m_rxFifo->GetUsedCount());
+			
+			USBDevice.send(CDC_ENDPOINT_IN, toUSB, bytesRead);
+			
+			/* NOT NEEDED FOR DSP FEATHER
 			me->m_status.DATA_RDY = 1;
 			if(me->m_inten.DATA_RDY){
 				//post an interrupt event
 				Evt *evt = new InterruptSetReq( (SEESAW_INTERRUPT_SERCOM0_DATA_RDY << me->m_offset) );
 				QF::PUBLISH(evt, me);
 			}
+			*/
 			status = Q_HANDLED();
 			break;
 		}

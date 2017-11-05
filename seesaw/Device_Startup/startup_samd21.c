@@ -45,6 +45,8 @@ int main(void);
 
 void __libc_init_array(void);
 
+static void (*usb_isr)(void) = 0UL;
+
 /* Default empty handler */
 void Dummy_Handler(void);
 
@@ -64,7 +66,7 @@ void EIC_Handler             ( void ) __attribute__ ((weak, alias("Dummy_Handler
 void NVMCTRL_Handler         ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
 void DMAC_Handler            ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
 #ifdef ID_USB
-void USB_Handler             ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
+void USB_Handler             ( void );
 #endif
 void EVSYS_Handler           ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
 void SERCOM0_Handler         ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
@@ -249,6 +251,18 @@ void Reset_Handler(void)
  */
 void Dummy_Handler(void)
 {
+	__BKPT();
         while (1) {
         }
+}
+
+void USB_SetHandler(void (*new_usb_isr)(void))
+{
+	usb_isr = new_usb_isr;
+}
+
+void USB_Handler(void)
+{
+	if (usb_isr)
+	usb_isr();	
 }

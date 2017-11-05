@@ -49,6 +49,11 @@ System::System() :
     m_I2CSlaveInFifo(m_I2CSlaveInFifoStor, I2C_SLAVE_IN_FIFO_ORDER) 
 #endif
 
+#if CONFIG_USB
+	,m_USBOutFifo(m_USBOutFifoStor, USB_OUT_FIFO_ORDER),
+	m_USBInFifo(m_USBInFifoStor, USB_IN_FIFO_ORDER)
+#endif
+
 #if CONFIG_SERCOM0
 	,m_sercom0RxFifo(m_sercom0RxFifoStor, SERCOM_FIFO_ORDER)
 #endif
@@ -121,6 +126,11 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
 #if CONFIG_NEOPIXEL
 	me->subscribe(NEOPIXEL_START_CFM);
 	me->subscribe(NEOPIXEL_STOP_CFM);
+#endif
+
+#if CONFIG_USB
+	me->subscribe(USB_START_CFM);
+	me->subscribe(USB_STOP_CFM);
 #endif
       
     return Q_TRAN(&System::Root);
@@ -255,6 +265,11 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 			evt = new Evt(NEOPIXEL_STOP_REQ);
 			QF::PUBLISH(evt, me);
 #endif
+
+#if CONFIG_USB
+			evt = new Evt(USB_STOP_REQ);
+			QF::PUBLISH(evt, me);
+#endif
 			
 			status = Q_HANDLED();
 			break;
@@ -273,6 +288,7 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 		case INTERRUPT_STOP_CFM:
 		case DAP_STOP_CFM:
 		case NEOPIXEL_STOP_CFM:
+		case USB_STOP_CFM:
 		case DELEGATE_STOP_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);
@@ -365,6 +381,11 @@ QState System::Starting(System * const me, QEvt const * const e) {
 			QF::PUBLISH(evt, me);
 #endif
 
+#if CONFIG_USB
+			evt = new USBStartReq(&me->m_USBOutFifo, &me->m_USBInFifo);
+			QF::PUBLISH(evt, me);
+#endif
+
 			status = Q_HANDLED();
 			break;
 		}
@@ -383,6 +404,7 @@ QState System::Starting(System * const me, QEvt const * const e) {
 		case INTERRUPT_START_CFM:
 		case DAP_START_CFM:
 		case NEOPIXEL_START_CFM:
+		case USB_START_CFM:
 		case DELEGATE_START_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);
