@@ -52,13 +52,13 @@ void board_init(void)
    * 1) Enable OSC32K clock (Internal 32.768Hz oscillator)
    */
 
-#if defined(__SAMD21G18A__) || defined(__SAMD21E17A__)
+#if defined(__SAMD21G18A__) || defined(__SAMD21E18A__) || defined(__SAMD21E17A__)
   uint32_t calib = (*((uint32_t *) FUSES_OSC32K_CAL_ADDR) & FUSES_OSC32K_CAL_Msk) >> FUSES_OSC32K_CAL_Pos;
 #else
   uint32_t calib = (*((uint32_t *) FUSES_OSC32K_ADDR) & FUSES_OSC32K_Msk) >> FUSES_OSC32K_Pos;
 #endif
 
-#if defined(__SAMD21G18A__) || defined(__SAMD21E17A__)
+#if defined(__SAMD21G18A__) || defined(__SAMD21E18A__) || defined(__SAMD21E17A__)
   SYSCTRL->OSC32K.reg = SYSCTRL_OSC32K_CALIB(calib) |
                         SYSCTRL_OSC32K_STARTUP( 0x6u ) | // cf table 15.10 of product datasheet in chapter 15.8.6
                         SYSCTRL_OSC32K_EN32K |
@@ -161,7 +161,7 @@ void board_init(void)
 
 #if defined(CRYSTALLESS)
 
-#if defined(__SAMD21G18A__) || defined(__SAMD21E17A__)
+#if defined(__SAMD21G18A__) || defined(__SAMD21E18A__) || defined(__SAMD21E17A__)
   #define NVM_SW_CALIB_DFLL48M_COARSE_VAL 58
   #define NVM_SW_CALIB_DFLL48M_FINE_VAL   64
 

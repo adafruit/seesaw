@@ -113,6 +113,7 @@ static inline bool spiRdy()
 
 static void bootBfin()
 {
+#if 0
 		pinPeripheral(16, 2);
 		pinPeripheral(18, 2);
 		pinPeripheral(19, 2);
@@ -121,17 +122,20 @@ static void bootBfin()
 		initSPI( SERCOM1, SPI_PAD_2_SCK_3, SERCOM_RX_PAD_0, SPI_CHAR_SIZE_8_BITS, MSB_FIRST);
 		initSPIClock(SERCOM1, SERCOM_SPI_MODE_1, 8000000ul);
 		enableSPI(SERCOM1);
-		
+#endif 
+
 		//dsp !reset
 		gpio_init(PORTA, 23, 1);
 		gpio_write(PORTA, 23, 1);
 		
+#if 0
 		//dsp CS (output)
 		gpio_init(PORTA, 17, 1);
 		gpio_write(PORTA, 17, 1);
 		
 		//dsp SPIRDY (input)
 		gpio_dirclr_bulk(PORTA, (1ul << 22));
+#endif
 		
 		//DSP FEATHER SPECIFIC: start clock output
 		pinPeripheral(27, 7);
@@ -141,7 +145,8 @@ static void bootBfin()
 		gpio_write(PORTA, 23, 0);
 		doNothing(100ul);
 		gpio_write(PORTA, 23, 1);
-		
+
+#if 0
 		//read the file length from the ldr
 		uint8_t szbuf[4];
 		eeprom_read(0x0C, szbuf, 4);
@@ -183,6 +188,7 @@ static void bootBfin()
 #endif
 
 		gpio_write(PORTA, 17, 1);
+#endif
 }
 
 int main(void)
