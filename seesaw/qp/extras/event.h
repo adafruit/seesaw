@@ -67,6 +67,13 @@ enum {
 	I2C_SLAVE_STOP_CONDITION,
 	I2C_SLAVE_TIMEOUT,
 	
+	SPI_SLAVE_START_REQ,
+	SPI_SLAVE_START_CFM,
+	SPI_SLAVE_STOP_REQ,
+	SPI_SLAVE_STOP_CFM,
+	SPI_SLAVE_REQUEST,
+	SPI_SLAVE_RECEIVE,
+	
 	DELEGATE_START_REQ,
 	DELEGATE_START_CFM,
 	DELEGATE_STOP_REQ,
@@ -592,6 +599,45 @@ class I2CSlaveReceive : public Evt {
 	uint8_t getLowByte() const { return _lowByte; }
 	uint8_t getLen() const { return _len; }
 		
+	private:
+	uint8_t _highByte, _lowByte, _len;
+};
+
+//* ==========================  SPI SLAVE ======================= *//
+
+class SPISlaveStartReq : public Evt {
+	public:
+	SPISlaveStartReq(Fifo *outFifo, Fifo *inFifo) :
+	Evt(SPI_SLAVE_START_REQ), _in_fifo(inFifo), _out_fifo(outFifo) {}
+	
+	Fifo *getInFifo() const { return _in_fifo; }
+	Fifo *getOutFifo() const { return _out_fifo; }
+	private:
+	Fifo *_in_fifo;
+	Fifo *_out_fifo;
+};
+
+class SPISlaveStartCfm : public ErrorEvt {
+	public:
+	SPISlaveStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(SPI_SLAVE_START_CFM, seq, error, reason) {}
+};
+
+class SPISlaveStopCfm : public ErrorEvt {
+	public:
+	SPISlaveStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(SPI_SLAVE_STOP_CFM, seq, error, reason) {}
+};
+
+class SPISlaveReceive : public Evt {
+	public:
+	SPISlaveReceive(uint8_t highByte, uint8_t lowByte, uint8_t len) :
+	Evt(SPI_SLAVE_RECEIVE), _highByte(highByte), _lowByte(lowByte), _len(len) {}
+	
+	uint8_t getHighByte() const { return _highByte; }
+	uint8_t getLowByte() const { return _lowByte; }
+	uint8_t getLen() const { return _len; }
+	
 	private:
 	uint8_t _highByte, _lowByte, _len;
 };

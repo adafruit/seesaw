@@ -103,6 +103,19 @@ extern "C" {
 		
 		QXK_ISR_EXIT();
 	}
+	
+	static void (*usb_isr)(void) = NULL;
+
+	void USB_Handler(void)
+	{
+		if (usb_isr)
+		usb_isr();
+	}
+
+	void USB_SetHandler(void (*new_usb_isr)(void))
+	{
+		usb_isr = new_usb_isr;
+	}
 }
 
 // namespace QP **************************************************************
@@ -118,6 +131,7 @@ void QF::onStartup(void) {
 	SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 	NVIC_SetPriority(SysTick_IRQn, SYSTICK_PRIO);
 	NVIC_SetPriority(CONFIG_I2C_SLAVE_IRQn, I2C_SLAVE_ISR_PRIO);
+	NVIC_SetPriority(CONFIG_SPI_SLAVE_IRQn, SPI_SLAVE_ISR_PRIO);
 	NVIC_SetPriority(USB_IRQn, USB_ISR_PRIO);
 	//NVIC_SetPriority(NVMCTRL_IRQn, NVMCTRL_ISR_PRIO);
 
@@ -150,6 +164,10 @@ void QF::onStartup(void) {
 	//NVIC_EnableIRQ(NVMCTRL_IRQn);
 #if CONFIG_I2C_SLAVE
 	NVIC_EnableIRQ(CONFIG_I2C_SLAVE_IRQn);
+#endif
+
+#if CONFIG_SPI_SLAVE
+	NVIC_EnableIRQ(CONFIG_SPI_SLAVE_IRQn);
 #endif
 
 #if CONFIG_SERCOM0

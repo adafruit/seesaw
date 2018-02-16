@@ -49,6 +49,11 @@ System::System() :
     m_I2CSlaveInFifo(m_I2CSlaveInFifoStor, I2C_SLAVE_IN_FIFO_ORDER) 
 #endif
 
+#if CONFIG_SPI_SLAVE
+	,m_SPISlaveOutFifo(m_SPISlaveOutFifoStor, SPI_SLAVE_OUT_FIFO_ORDER),
+	m_SPISlaveInFifo(m_SPISlaveInFifoStor, SPI_SLAVE_IN_FIFO_ORDER)
+#endif
+
 #if CONFIG_USB
 	,m_USBOutFifo(m_USBOutFifoStor, USB_OUT_FIFO_ORDER),
 	m_USBInFifo(m_USBInFifoStor, USB_IN_FIFO_ORDER)
@@ -88,6 +93,11 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
 #if CONFIG_I2C_SLAVE
 	me->subscribe(I2C_SLAVE_START_CFM);
 	me->subscribe(I2C_SLAVE_STOP_CFM);
+#endif
+
+#if CONFIG_SPI_SLAVE
+	me->subscribe(SPI_SLAVE_START_CFM);
+	me->subscribe(SPI_SLAVE_STOP_CFM);
 #endif
 
 #if CONFIG_SERCOM0 || CONFIG_SERCOM1 || CONFIG_SERCOM2 || CONFIG_SERCOM3 || CONFIG_SERCOM4 || CONFIG_SERCOM5
@@ -215,6 +225,11 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 			QF::PUBLISH(evt, me);
 #endif
 
+#if CONFIG_SPI_SLAVE
+			evt = new Evt(SPI_SLAVE_STOP_REQ);
+			QF::PUBLISH(evt, me);
+#endif
+
 #if CONFIG_DAC			
 			evt = new Evt(DAC_STOP_REQ);
 			QF::PUBLISH(evt, me);
@@ -285,6 +300,7 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 		case TIMER_STOP_CFM:
 		case SERCOM_STOP_CFM:
 		case I2C_SLAVE_STOP_CFM:
+		case SPI_SLAVE_STOP_CFM:
 		case INTERRUPT_STOP_CFM:
 		case DAP_STOP_CFM:
 		case NEOPIXEL_STOP_CFM:
@@ -327,6 +343,11 @@ QState System::Starting(System * const me, QEvt const * const e) {
 			
 #if CONFIG_I2C_SLAVE
 			evt = new I2CSlaveStartReq(&me->m_I2CSlaveOutFifo, &me->m_I2CSlaveInFifo);
+			QF::PUBLISH(evt, me);
+#endif
+
+#if CONFIG_SPI_SLAVE
+			evt = new SPISlaveStartReq(&me->m_SPISlaveOutFifo, &me->m_SPISlaveInFifo);
 			QF::PUBLISH(evt, me);
 #endif
 
@@ -401,6 +422,7 @@ QState System::Starting(System * const me, QEvt const * const e) {
 		case DAC_START_CFM:
 		case SERCOM_START_CFM:
 		case I2C_SLAVE_START_CFM:
+		case SPI_SLAVE_START_CFM:
 		case INTERRUPT_START_CFM:
 		case DAP_START_CFM:
 		case NEOPIXEL_START_CFM:

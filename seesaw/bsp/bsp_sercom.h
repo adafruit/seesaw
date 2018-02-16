@@ -272,6 +272,7 @@ inline bool isEnabledUART( Sercom * sercom )
 int writeDataUART( Sercom * sercom ,uint8_t data);
 
 void initSPI( Sercom * sercom, SercomSpiTXPad mosi, SercomRXPad miso, SercomSpiCharSize charSize, SercomDataOrder dataOrder) ;
+void initSPISlave( Sercom *sercom, SercomSpiTXPad miso, SercomRXPad mosi, SercomSpiCharSize charSize, SercomDataOrder dataOrder) ;
 void initSPIClock( Sercom * sercom, SercomSpiClockMode clockMode, uint32_t baudrate) ;
 
 void resetSPI( Sercom * sercom ) ;

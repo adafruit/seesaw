@@ -23,6 +23,7 @@
 #include "System.h"
 #include "Delegate.h"
 #include "I2CSlave.h"
+#include "SPISlave.h"
 #include "AOADC.h"
 #include "AODAC.h"
 #include "AOTimer.h"
@@ -36,10 +37,6 @@
 #include "dsp_fw.h"
 #endif
 
-#define FW_BUFSIZE 256
-
-static uint8_t fw_buf[FW_BUFSIZE];
-
 using namespace QP;
 
 uint32_t evtPoolSmall[ROUND_UP_DIV_4(EVT_SIZE_SMALL * EVT_COUNT_SMALL)];
@@ -52,6 +49,10 @@ static Delegate del;
 
 #if CONFIG_I2C_SLAVE
 static I2CSlave i2c( CONFIG_I2C_SLAVE_SERCOM );
+#endif
+
+#if CONFIG_SPI_SLAVE
+static SPISlave spi( CONFIG_SPI_SLAVE_SERCOM );
 #endif
 
 #if CONFIG_DAC
@@ -113,6 +114,12 @@ static inline bool spiRdy()
 
 static void bootBfin()
 {
+		//TODO: this is used for SPI MISO
+		pinPeripheral(16, 0);
+	    gpio_dirclr_bulk(PORTA, (1UL << 16));
+		gpio_pullenclr_bulk(PORTA, (1UL << 16));
+		gpio_outclr_bulk(PORTA, (1UL << 16));
+	
 #if 0
 		pinPeripheral(16, 2);
 		pinPeripheral(18, 2);
@@ -213,6 +220,10 @@ int main(void)
 	
 #if CONFIG_I2C_SLAVE
 	i2c.Start(PRIO_I2C_SLAVE);
+#endif
+
+#if CONFIG_SPI_SLAVE
+	spi.Start(PRIO_SPI_SLAVE);
 #endif
 	
 #if CONFIG_ADC

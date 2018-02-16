@@ -38,12 +38,10 @@
         </dependencies>
       </framework-data>
     </AsfFrameworkConfig>
-    <avrtool>
-    </avrtool>
+    <avrtool>com.atmel.avrdbg.tool.edbg</avrtool>
     <avrtoolserialnumber>00000000EZE000005637</avrtoolserialnumber>
-    <avrdeviceexpectedsignature>0x1001030B</avrdeviceexpectedsignature>
-    <avrtoolinterface>
-    </avrtoolinterface>
+    <avrdeviceexpectedsignature>0x1001030A</avrdeviceexpectedsignature>
+    <avrtoolinterface>SWD</avrtoolinterface>
     <com_atmel_avrdbg_tool_edbg>
       <ToolOptions>
         <InterfaceProperties>
@@ -538,8 +536,8 @@
       <Value>../qp/include</Value>
       <Value>../qp/ports/arm-cm/qxk/gnu</Value>
       <Value>..</Value>
-      <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.2.276\samd21a\include</Value>
       <Value>../include/USB</Value>
+      <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.2.276\samd21a\include</Value>
       <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
@@ -562,8 +560,8 @@
       <Value>../qp/include</Value>
       <Value>../qp/ports/arm-cm/qxk/gnu</Value>
       <Value>..</Value>
-      <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.2.276\samd21a\include</Value>
       <Value>../include/USB</Value>
+      <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.2.276\samd21a\include</Value>
       <Value>%24(PackRepoDir)\arm\CMSIS\4.2.0\CMSIS\Include\</Value>
     </ListValues>
   </armgcccpp.compiler.directories.IncludePaths>
@@ -710,6 +708,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="include\SeesawConfig.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\SPISlave.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="include\System.h">
@@ -913,6 +914,9 @@
     <Compile Include="source\Neopixel.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="source\SPISlave.cpp">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="source\System.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -941,12 +945,6 @@
     <Folder Include="source\USB\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Device_Startup\samd21e17a_flash.ld">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="Device_Startup\samd21e17a_sram.ld">
-      <SubType>compile</SubType>
-    </None>
     <None Include="Device_Startup\samd21e18a_flash.ld">
       <SubType>compile</SubType>
     </None>

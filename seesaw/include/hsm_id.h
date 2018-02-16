@@ -34,6 +34,7 @@ enum {
     SYSTEM = 1,
 	DELEGATE,
 	I2C_SLAVE,
+	SPI_SLAVE,
 	AO_DAC,
 	AO_USB,
 	AO_TIMER,
@@ -53,6 +54,7 @@ enum
 {
     PRIO_SYSTEM     = 22,
 	PRIO_I2C_SLAVE	= 27,
+	PRIO_SPI_SLAVE  = 29,
 	PRIO_USB		= 28,
 	PRIO_ADC		= 24,
 	PRIO_TIMER		= 25,

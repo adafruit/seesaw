@@ -326,6 +326,24 @@ void initSPI( Sercom *sercom, SercomSpiTXPad mosi, SercomRXPad miso, SercomSpiCh
 
 }
 
+void initSPISlave( Sercom *sercom, SercomSpiTXPad miso, SercomRXPad mosi, SercomSpiCharSize charSize, SercomDataOrder dataOrder)
+{
+	resetSPI(sercom);
+	initClock(sercom);
+
+	//Setting the CTRLA register
+	sercom->SPI.CTRLA.reg =	SERCOM_SPI_CTRLA_MODE_SPI_SLAVE |
+	SERCOM_SPI_CTRLA_DOPO(miso) |
+	SERCOM_SPI_CTRLA_DIPO(mosi) |
+	dataOrder << SERCOM_SPI_CTRLA_DORD_Pos;
+
+	//Setting the CTRLB register
+	sercom->SPI.CTRLB.reg = SERCOM_SPI_CTRLB_CHSIZE(charSize) |
+	SERCOM_SPI_CTRLB_RXEN;	//Active the SPI receiver.
+
+
+}
+
 void initSPIClock( Sercom *sercom, SercomSpiClockMode clockMode, uint32_t baudrate)
 {
   //Extract data from clockMode

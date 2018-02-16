@@ -42,6 +42,9 @@
 //* ============== I2C SLAVE =================== *//
 #define CONFIG_I2C_SLAVE 0
 
+//* ============== SPI SLAVE =================== *//
+#define CONFIG_SPI_SLAVE 0
+
 //* ============== SERCOM =================== *//
 #define CONFIG_SERCOM0 1
 #define CONFIG_SERCOM1 0

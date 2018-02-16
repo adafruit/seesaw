@@ -92,24 +92,24 @@
 							<SourcePath></SourcePath>
 						</d4p1:anyType>
 						<d4p1:anyType i:type="FileInfo">
-							<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD21_DFP\1.2.276\samd21a\gcc\gcc\samd21e17a_flash.ld</AbsolutePath>
+							<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD21_DFP\1.2.276\samd21a\gcc\gcc\samd21e18a_flash.ld</AbsolutePath>
 							<Attribute>config</Attribute>
 							<Category>linkerScript</Category>
 							<Condition>GCC Exe</Condition>
-							<FileContentHash>jQkeyXDVTfYoorI2J42YKA==</FileContentHash>
+							<FileContentHash>wa5oawdlMOuEh6DoAodGKA==</FileContentHash>
 							<FileVersion></FileVersion>
-							<Name>samd21a/gcc/gcc/samd21e17a_flash.ld</Name>
+							<Name>samd21a/gcc/gcc/samd21e18a_flash.ld</Name>
 							<SelectString></SelectString>
 							<SourcePath></SourcePath>
 						</d4p1:anyType>
 						<d4p1:anyType i:type="FileInfo">
-							<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD21_DFP\1.2.276\samd21a\gcc\gcc\samd21e17a_sram.ld</AbsolutePath>
+							<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD21_DFP\1.2.276\samd21a\gcc\gcc\samd21e18a_sram.ld</AbsolutePath>
 							<Attribute>config</Attribute>
 							<Category>other</Category>
 							<Condition>GCC Exe</Condition>
-							<FileContentHash>29UUEnafIQw9bSbMnPMfdA==</FileContentHash>
+							<FileContentHash>buuMOTReLImuk+p9zEYPsQ==</FileContentHash>
 							<FileVersion></FileVersion>
-							<Name>samd21a/gcc/gcc/samd21e17a_sram.ld</Name>
+							<Name>samd21a/gcc/gcc/samd21e18a_sram.ld</Name>
 							<SelectString></SelectString>
 							<SourcePath></SourcePath>
 						</d4p1:anyType>
@@ -118,7 +118,7 @@
 					<PackPath>C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/SAMD21_DFP/1.2.276/Atmel.SAMD21_DFP.pdsc</PackPath>
 					<PackVersion>1.2.276</PackVersion>
 					<PresentInProject>true</PresentInProject>
-					<ReferenceConditionId>ATSAMD21E17A</ReferenceConditionId>
+					<ReferenceConditionId>ATSAMD21E18A</ReferenceConditionId>
 					<RteComponents>
 						<d4p1:string></d4p1:string>
 					</RteComponents>
