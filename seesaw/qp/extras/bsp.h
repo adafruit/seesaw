@@ -62,4 +62,16 @@ void BspInit();
 void BspWrite(char const *buf, uint32_t len);
 uint32_t GetSystemMs();
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void initiateReset(int ms);
+void tickReset();
+void cancelReset();
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif // BSP_H

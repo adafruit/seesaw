@@ -25,6 +25,7 @@
 #include "USB/USBCore.h"
 #include "USB/USBAPI.h"
 #include "USB/USBDesc.h"
+#include "bsp.h"
 
 #ifdef CDC_ENABLED
 
@@ -123,13 +124,11 @@ bool CDC_Setup(USBSetup& setup)
 			// port is open (bit 0 of lineState).
 			if (_usbLineInfo.dwDTERate == 1200 && (_usbLineInfo.lineState & 0x01) == 0)
 			{
-				//TODO: reset stuff for bootloader
-				//initiateReset(250);
+				initiateReset(250);
 			}
 			else
 			{
-				//TODO: reset stuff for bootloader
-				//cancelReset();
+				cancelReset();
 			}
 			return false;
 		}

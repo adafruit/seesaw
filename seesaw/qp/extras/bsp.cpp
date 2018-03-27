@@ -101,6 +101,8 @@ extern "C" {
 		}
 		lastGPIOState = GPIOState;
 		
+		tickReset();
+		
 		QXK_ISR_EXIT();
 	}
 	
@@ -236,6 +238,49 @@ extern "C" void assert_failed(char const *module, int loc) {
 	__BKPT();
 	while(1);
 }
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+static void banzai() {
+	// Disable all interrupts
+	__disable_irq();
+	
+	//THESE MUST MATCH THE BOOTLOADER
+	#define DOUBLE_TAP_MAGIC 			0xf01669efUL
+	#define BOOT_DOUBLE_TAP_ADDRESS     (HMCRAMC0_ADDR + HMCRAMC0_SIZE - 4)
+
+	unsigned long *a = (unsigned long *)BOOT_DOUBLE_TAP_ADDRESS;
+	*a = DOUBLE_TAP_MAGIC;
+	
+	// Reset the device
+	NVIC_SystemReset() ;
+
+	while (true);
+}
+
+static int ticks = -1;
+
+void initiateReset(int _ticks) {
+	ticks = _ticks;
+}
+
+void cancelReset() {
+	ticks = -1;
+}
+
+void tickReset() {
+	if (ticks == -1)
+		return;
+	ticks--;
+	if (ticks == 0)
+		banzai();
+}
+
+#ifdef __cplusplus
+}
+#endif
 
 
 } // namespace QP

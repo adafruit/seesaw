@@ -23,7 +23,7 @@
 #include "System.h"
 #include "Delegate.h"
 #include "I2CSlave.h"
-#include "SPISlave.h"
+//#include "SPISlave.h"
 #include "AOADC.h"
 #include "AODAC.h"
 #include "AOTimer.h"
@@ -118,31 +118,10 @@ static void bootBfin()
 		pinPeripheral(16, 0);
 	    gpio_dirclr_bulk(PORTA, (1UL << 16));
 		gpio_pullenclr_bulk(PORTA, (1UL << 16));
-		gpio_outclr_bulk(PORTA, (1UL << 16));
-	
-#if 0
-		pinPeripheral(16, 2);
-		pinPeripheral(18, 2);
-		pinPeripheral(19, 2);
-		
-		disableSPI(SERCOM1);
-		initSPI( SERCOM1, SPI_PAD_2_SCK_3, SERCOM_RX_PAD_0, SPI_CHAR_SIZE_8_BITS, MSB_FIRST);
-		initSPIClock(SERCOM1, SERCOM_SPI_MODE_1, 8000000ul);
-		enableSPI(SERCOM1);
-#endif 
+		gpio_outclr_bulk(PORTA, (1UL << 16)); 
 
 		//dsp !reset
 		gpio_init(PORTA, 23, 1);
-		gpio_write(PORTA, 23, 1);
-		
-#if 0
-		//dsp CS (output)
-		gpio_init(PORTA, 17, 1);
-		gpio_write(PORTA, 17, 1);
-		
-		//dsp SPIRDY (input)
-		gpio_dirclr_bulk(PORTA, (1ul << 22));
-#endif
 		
 		//DSP FEATHER SPECIFIC: start clock output
 		pinPeripheral(27, 7);
@@ -152,50 +131,6 @@ static void bootBfin()
 		gpio_write(PORTA, 23, 0);
 		doNothing(100ul);
 		gpio_write(PORTA, 23, 1);
-
-#if 0
-		//read the file length from the ldr
-		uint8_t szbuf[4];
-		eeprom_read(0x0C, szbuf, 4);
-		uint32_t fileSize = ((uint32_t)szbuf[3] << 24) | ((uint32_t)szbuf[2] << 16) | ((uint32_t)szbuf[1] << 8) | (uint32_t)szbuf[0];
-		fileSize += 0x10;
-		
-		bool eof = false;
-		uint32_t bytesSent = 0;
-		
-		while(!spiRdy());
-		
-		gpio_write(PORTA, 17, 0);
-		transferDataSPI(SERCOM1, 0x03);
-
-#ifndef FROM_HEADER
-		uint32_t i = 0;
-		while(!eof){
-			
-			//read firmware from flash
-			eeprom_read(i, fw_buf, FW_BUFSIZE);
-			
-			for(int j=0; j<FW_BUFSIZE; j++){
-				while(!spiRdy());
-				transferDataSPI(SERCOM1, fw_buf[j]);
-				bytesSent++;
-				if(bytesSent == fileSize){
-					eof = true;
-					break;
-				}
-			}
-			i+= FW_BUFSIZE;
-		}
-#else
-		
-		for(int i=0; i<sizeof(binfile); i++){
-			while(!spiRdy());
-			transferDataSPI(SERCOM1, binfile[i]);
-		}
-#endif
-
-		gpio_write(PORTA, 17, 1);
-#endif
 }
 
 int main(void)
