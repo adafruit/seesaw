@@ -723,6 +723,9 @@
     <Compile Include="include\SeesawConfig.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="include\SPISlave.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="include\System.h">
       <SubType>compile</SubType>
     </Compile>
@@ -922,6 +925,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="source\Neopixel.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="source\SPISlave.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="source\System.cpp">

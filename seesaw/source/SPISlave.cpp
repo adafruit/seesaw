@@ -106,6 +106,7 @@ QState SPISlave::Stopped(SPISlave * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
+			disableSPI(me->m_sercom);
             status = Q_HANDLED();
             break;
         }
@@ -133,6 +134,7 @@ QState SPISlave::Stopped(SPISlave * const me, QEvt const * const e) {
 			
 			initSPISlave( me->m_sercom, CONFIG_SPI_SLAVE_PAD_TX, CONFIG_SPI_SLAVE_PAD_RX, CONFIG_SPI_SLAVE_CHAR_SIZE,CONFIG_SPI_SLAVE_DATA_ORDER);
 			setClockModeSPI( me->m_sercom, SERCOM_SPI_MODE_3);
+			NVIC_ClearPendingIRQ(CONFIG_SPI_SLAVE_IRQn);
 			
 			//enable receive complete and transaction complete interrupts
 			me->m_sercom->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_RXC | SERCOM_SPI_INTENSET_TXC;
@@ -147,7 +149,7 @@ QState SPISlave::Stopped(SPISlave * const me, QEvt const * const e) {
 			m_inFifo->Reset();
 			m_outFifo->Reset();
 			
-			gpio_init(PORTA, PIN_ACTIVITY_LED, 1); //set as output
+			//gpio_init(PORTA, PIN_ACTIVITY_LED, 1); //set as output
 			
 			Evt *evt = new SPISlaveStartCfm(req.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
@@ -321,19 +323,19 @@ extern "C" {
 			}
 		}
 		
-		if(CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.DRE){
-			CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.DRE = 1;
-			//we can send data, do it.
-			uint8_t c;
-			uint8_t count = m_outFifo->Read(&c, 1);
-		}
-		
 		if(CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.TXC){
 			CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.TXC = 1;
 			
 			//the transaction is complete, send to the system to process
 			SPISlave::ReceiveCallback(high_byte, low_byte, (bytes_received > 0 ? bytes_received - 2 : 0) );
 			bytes_received = 0;
+		}
+		
+		if(CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.DRE){
+			CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.DRE = 1;
+			//we can send data, do it.
+			uint8_t c;
+			uint8_t count = m_outFifo->Read(&c, 1);
 		}
 		
 		QXK_ISR_EXIT();

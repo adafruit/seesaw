@@ -91,20 +91,25 @@ void initClock( Sercom *sercom )
 	}
 #endif
 
-#if defined(__SAMD21G18A__)
-
+#if defined(SERCOM3)
 	else if(sercom == SERCOM3)
 	{
 		clockId = GCLK_CLKCTRL_ID_SERCOM3_CORE;
 	}
+#endif
+
+#if defined(SERCOM4)
 	else if(sercom == SERCOM4)
 	{
 		clockId = GCLK_CLKCTRL_ID_SERCOM4_CORE;
 	}
+#endif
+
+#if defined(SERCOM5)
 	else if(sercom == SERCOM5)
 	{
 		clockId = GCLK_CLKCTRL_ID_SERCOM5_CORE;
-}
+	}
 #endif
 
 	//Setting clock
@@ -328,8 +333,8 @@ void initSPI( Sercom *sercom, SercomSpiTXPad mosi, SercomRXPad miso, SercomSpiCh
 
 void initSPISlave( Sercom *sercom, SercomSpiTXPad miso, SercomRXPad mosi, SercomSpiCharSize charSize, SercomDataOrder dataOrder)
 {
-	resetSPI(sercom);
 	initClock(sercom);
+	resetSPI(sercom);
 
 	//Setting the CTRLA register
 	sercom->SPI.CTRLA.reg =	SERCOM_SPI_CTRLA_MODE_SPI_SLAVE |
@@ -396,6 +401,8 @@ void disableSPI( Sercom *sercom )
 
   //Setting the enable bit to 0
   sercom->SPI.CTRLA.bit.ENABLE = 0;
+  
+  while(sercom->SPI.SYNCBUSY.bit.ENABLE);
 }
 
 void setDataOrderSPI( Sercom *sercom, SercomDataOrder dataOrder)

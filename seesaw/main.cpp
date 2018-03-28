@@ -23,7 +23,7 @@
 #include "System.h"
 #include "Delegate.h"
 #include "I2CSlave.h"
-//#include "SPISlave.h"
+#include "SPISlave.h"
 #include "AOADC.h"
 #include "AODAC.h"
 #include "AOTimer.h"
