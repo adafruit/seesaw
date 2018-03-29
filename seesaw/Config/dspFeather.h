@@ -1,15 +1,15 @@
 #ifndef SEESAW_DEVICE_CONFIG_H
 #define SEESAW_DEVICE_CONFIG_H
 
-#define PRODUCT_CODE 0000
+#define PRODUCT_CODE 0x1234
 
 //* ============== POOL SIZES =================== *//
-#define	EVT_SIZE_SMALL 16
-#define EVT_SIZE_MEDIUM 32
-#define	EVT_SIZE_LARGE 64
-#define	EVT_COUNT_SMALL 16
-#define	EVT_COUNT_MEDIUM 8
-#define	EVT_COUNT_LARGE 1
+#define	EVT_SIZE_SMALL 32
+#define EVT_SIZE_MEDIUM 64
+#define	EVT_SIZE_LARGE 256
+#define	EVT_COUNT_SMALL 128
+#define	EVT_COUNT_MEDIUM 32
+#define	EVT_COUNT_LARGE 16
 
 //* ============== ADC =================== *//
 #define CONFIG_ADC 1

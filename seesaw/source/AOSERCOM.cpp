@@ -356,8 +356,12 @@ void sercom_handler( Sercom * sercom )
 	if( isEnabledUART( sercom ) ){
 		if (availableDataUART( sercom )) {
 			uint8_t c = readDataUART( sercom );
+#if 0
 			m_rxFifo->Write(&c, 1);
 			AOSERCOM::RxCallback();
+#else		
+			USBDevice.send(CDC_ENDPOINT_IN, &c, 1);
+#endif
 		}
 
 		if (isUARTError( sercom )) {

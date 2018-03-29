@@ -226,7 +226,7 @@ QState SPISlave::Idle(SPISlave * const me, QEvt const * const e) {
         }
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
-			PORT->Group[PORTA].OUTSET.reg = (1ul<<PIN_ACTIVITY_LED); //activity led on
+			//PORT->Group[PORTA].OUTSET.reg = (1ul<<PIN_ACTIVITY_LED); //activity led on
             status = Q_HANDLED();
             break;
         }
@@ -280,13 +280,14 @@ QState SPISlave::Busy(SPISlave * const me, QEvt const * const e) {
 				if(req.getFifo() != NULL){
 					 m_outFifo = req.getFifo();
 				}
+				//TODO: set interrupt here to notify master that data is ready
 				status = Q_TRAN(&SPISlave::Idle);
 			}
 			break;
 		}
 		case Q_EXIT_SIG: {
 			LOG_EVENT(e);
-			PORT->Group[PORTA].OUTCLR.reg = (1ul<<PIN_ACTIVITY_LED); //activity led off
+			//PORT->Group[PORTA].OUTCLR.reg = (1ul<<PIN_ACTIVITY_LED); //activity led off
 			status = Q_HANDLED();
 			break;
 		}
@@ -330,12 +331,13 @@ extern "C" {
 			SPISlave::ReceiveCallback(high_byte, low_byte, (bytes_received > 0 ? bytes_received - 2 : 0) );
 			bytes_received = 0;
 		}
-		
 		if(CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.DRE){
 			CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.DRE = 1;
 			//we can send data, do it.
 			uint8_t c;
 			uint8_t count = m_outFifo->Read(&c, 1);
+			if(count != 0)
+				CONFIG_SPI_SLAVE_SERCOM->SPI.DATA.reg = c;
 		}
 		
 		QXK_ISR_EXIT();

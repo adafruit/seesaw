@@ -29,13 +29,13 @@
 #endif
 
 //* ============== ADC =================== *//
-#define CONFIG_ADC_INPUT_0_PIN 2
+#define CONFIG_ADC_INPUT_0_PIN 3
 
-#define CONFIG_ADC_INPUT_1_PIN 3
+#define CONFIG_ADC_INPUT_1_PIN 4
 
-#define CONFIG_ADC_INPUT_2_PIN 4
+#define CONFIG_ADC_INPUT_2_PIN 5
 
-#define CONFIG_ADC_INPUT_3_PIN 5
+#define CONFIG_ADC_INPUT_3_PIN 0
 
 //* ============== DAC =================== *//
 

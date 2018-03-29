@@ -153,6 +153,7 @@ QState AOUSB::Started(AOUSB * const me, QEvt const * const e) {
 		case USB_STOP_REQ: {
 			LOG_EVENT(e);
 			Evt const &req = EVT_CAST(*e);
+			USBDevice.detach();
 			Evt *evt = new USBStopCfm(req.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
 			status = Q_TRAN(AOUSB::Stopped);

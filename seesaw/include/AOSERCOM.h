@@ -60,7 +60,7 @@ protected:
 	static QState SPI(AOSERCOM * const me, QEvt const * const e);
 
     enum {
-        EVT_QUEUE_COUNT = 16,
+        EVT_QUEUE_COUNT = 128,
     };
     QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
     uint8_t m_id;
