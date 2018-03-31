@@ -203,8 +203,6 @@ void QXK::onIdle(void) {
 
     //QF_INT_ENABLE();
 
-
-#if defined NDEBUG
     // Put the CPU and peripherals to the low-power mode.
     // you might need to customize the clock management for your application,
     // see the datasheet for your particular Cortex-M3 MCU.
@@ -219,8 +217,7 @@ void QXK::onIdle(void) {
     // The trick with BOOT(0) is it gets the part to run the System Loader
     // instead of your broken code. When done disconnect BOOT0, and start over.
     //
-    //__WFI();   Wait-For-Interrupt
-#endif
+    __WFI(); //  Wait-For-Interrupt
 }
 
 //............................................................................

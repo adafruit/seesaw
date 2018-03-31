@@ -193,6 +193,7 @@
 #define SEESAW_INTERRUPT_SERCOM3_DATA_RDY ( (uint32_t)(1ul << 4) )
 #define SEESAW_INTERRUPT_SERCOM4_DATA_RDY ( (uint32_t)(1ul << 5) )
 #define SEESAW_INTERRUPT_SERCOM5_DATA_RDY ( (uint32_t)(1ul << 6) )
+#define SEESAW_INTERRUPT_SPI_SLAVE_DATA_RDY ( (uint32_t)(1ul << 7) )
 
 //* ============== DAP =================== *//
 #define SEESAW_DAP_BASE 0x0C

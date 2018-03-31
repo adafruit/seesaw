@@ -36,8 +36,8 @@
 #define CONFIG_TIMER_PWM_OUT3 0
 
 //* ============== INTERRUPT =================== *//
-#define CONFIG_INTERRUPT 0
-#define CONFIG_INTERRUPT_PIN 4
+#define CONFIG_INTERRUPT 1
+#define CONFIG_INTERRUPT_PIN 22
 
 //* ============== I2C SLAVE =================== *//
 #define CONFIG_I2C_SLAVE 0

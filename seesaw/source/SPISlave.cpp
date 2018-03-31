@@ -220,6 +220,7 @@ QState SPISlave::Idle(SPISlave * const me, QEvt const * const e) {
             LOG_EVENT(e);
 			
 			slave_busy = false;
+			m_inFifo->Reset();
 			
             status = Q_HANDLED();
             break;
@@ -241,12 +242,16 @@ QState SPISlave::Idle(SPISlave * const me, QEvt const * const e) {
 				QF::PUBLISH(evt, me);
 				status = Q_HANDLED();
 			}
-			else {
+			else if(req.getLowByte() > 0 || req.getHighByte() > 0) {
 				//read data, go into busy state and wait for a response
 				m_defaultOutFifo->Reset();	
 				Evt *evt = new DelegateProcessCommand(me->m_id, req.getHighByte(), req.getLowByte(), 0, m_defaultOutFifo);
 				QF::PUBLISH(evt, me);
 				status = Q_TRAN(&SPISlave::Busy);
+			}
+			else{
+				//toss the data
+				m_inFifo->Reset();
 			}
 			
 			break;
@@ -280,11 +285,26 @@ QState SPISlave::Busy(SPISlave * const me, QEvt const * const e) {
 				if(req.getFifo() != NULL){
 					 m_outFifo = req.getFifo();
 				}
-				//TODO: set interrupt here to notify master that data is ready
-				status = Q_TRAN(&SPISlave::Idle);
+				
+				//post an interrupt event
+				Evt *evt = new InterruptSetReq( SEESAW_INTERRUPT_SPI_SLAVE_DATA_RDY );
+				QF::PUBLISH(evt, me);
+				
+				status = Q_HANDLED();
 			}
 			break;
 		}
+		case SPI_SLAVE_RECEIVE: {
+			LOG_EVENT(e);
+			//clear the interrupt
+			Evt *evt = new InterruptClearReq( SEESAW_INTERRUPT_SPI_SLAVE_DATA_RDY );
+			QF::PUBLISH(evt, me);
+			
+			//go back to idle once data has been read
+			status = Q_TRAN(&SPISlave::Idle);
+			break;
+		}
+		
 		case Q_EXIT_SIG: {
 			LOG_EVENT(e);
 			//PORT->Group[PORTA].OUTCLR.reg = (1ul<<PIN_ACTIVITY_LED); //activity led off
@@ -312,11 +332,12 @@ extern "C" {
 		
 		if(CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.RXC){
 			CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.RXC = 1;
+			
+			//read the data
+			uint8_t c = CONFIG_SPI_SLAVE_SERCOM->SPI.DATA.reg;
+			
 			if(!slave_busy){
 				bytes_received++;
-				
-				//read the data
-				uint8_t c = CONFIG_SPI_SLAVE_SERCOM->SPI.DATA.reg;
 				
 				if(bytes_received == 1) high_byte = c;
 				else if(bytes_received == 2) low_byte = c;
