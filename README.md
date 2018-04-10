@@ -11,7 +11,7 @@ variety of capabilities such as UART, ADC, DAC, extra GPIO, etc. to chips that d
 
 # Build
 
-Load seesaw.atsln with Atmel Studio 7 and build 
+Load the project with Eclipse IDE. Set the CMSIS_PATH C/C++ build variable to point to your CMSIS locations. Build.
 
 # Contributing
 
