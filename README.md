@@ -9,9 +9,21 @@ variety of capabilities such as UART, ADC, DAC, extra GPIO, etc. to chips that d
 - [CircuitPython](https://github.com/adafruit/Adafruit_CircuitPython_seesaw)
 - [Python](https://github.com/adafruit/Adafruit_Python_seesaw)
 
-# Build
+## Build
 
-Load the project with Eclipse IDE. Set the CMSIS_PATH C/C++ build variable to point to your CMSIS locations. Build.
+### Requirements
+
+* `make` and a Unix environment
+* `python` in path (optional)
+* `arm-none-eabi-gcc` and `arm-none-eabi-g++` in the path
+
+### Build commands
+
+The default board is `debug`. You can build a different one using:
+
+```
+make BOARD=samd09breakout
+```
 
 # Contributing
 

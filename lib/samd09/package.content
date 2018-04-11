@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='ASCII'?>
+<package schemaVersion="1.0">
+  <content>
+    <fileset id="moduleheaders">
+      <includes pattern="component/*"/>
+      <includes pattern="instance/*"/>
+    </fileset>
+    <resources target="ATSAMD09C13A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAMD09C13A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAMD09C13A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="samd09.h"/>
+        <includes pattern="samd09c13a.h"/>
+        <includes pattern="system_samd09.h"/>
+        <includes pattern="pio/samd09c13a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAMD09C13A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="armcc.source.startup" subdir="armcc">
+        <includes pattern="Device/SAMD09/Source/ARM/startup_SAMD09.s"/>
+        <includes pattern="Device/SAMD09/Source/system_samd09.c"/>
+      </resource>
+      <resource type="keil.flashloader" subdir="keil">
+        <includes pattern="Flash/ATSAMD09_8.FLM"/>
+        <meta key="Flash/ATSAMD09_8.FLM" value="start=0x00000000|size=0x00002000|default=1"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_samd09.c"/>
+        <includes pattern="gcc/startup_samd09.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/samd09c13a_flash.ld"/>
+        <includes pattern="gcc/samd09c13a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_samd09.c"/>
+        <includes pattern="iar/startup_samd09.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/samd09c13a_flash.icf"/>
+        <includes pattern="iar/samd09c13a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/debugger/Atmel/Trace_SAMD09.dmac"/>
+        <includes pattern="config/debugger/Atmel/ATSAMD09C13A.ddf"/>
+        <includes pattern="config/devices/Atmel/**/ATSAMD09C13A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAMD09C13A.menu"/>
+        <includes pattern="config/flashloader/Atmel/samd09c13a/samd09c13a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/samd09c13a/samd09c13a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/samd09c13a/samd09c13a-flash.out"/>
+      </resource>
+    </resources>
+    <resources target="ATSAMD09D14A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAMD09D14A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAMD09D14A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="samd09.h"/>
+        <includes pattern="samd09d14a.h"/>
+        <includes pattern="system_samd09.h"/>
+        <includes pattern="pio/samd09d14a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAMD09D14A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="armcc.source.startup" subdir="armcc">
+        <includes pattern="Device/SAMD09/Source/ARM/startup_SAMD09.s"/>
+        <includes pattern="Device/SAMD09/Source/system_samd09.c"/>
+      </resource>
+      <resource type="keil.flashloader" subdir="keil">
+        <includes pattern="Flash/ATSAMD09_16.FLM"/>
+        <meta key="Flash/ATSAMD09_16.FLM" value="start=0x00000000|size=0x00004000|default=1"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_samd09.c"/>
+        <includes pattern="gcc/startup_samd09.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/samd09d14a_flash.ld"/>
+        <includes pattern="gcc/samd09d14a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_samd09.c"/>
+        <includes pattern="iar/startup_samd09.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/samd09d14a_flash.icf"/>
+        <includes pattern="iar/samd09d14a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/debugger/Atmel/Trace_SAMD09.dmac"/>
+        <includes pattern="config/debugger/Atmel/ATSAMD09D14A.ddf"/>
+        <includes pattern="config/devices/Atmel/**/ATSAMD09D14A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAMD09D14A.menu"/>
+        <includes pattern="config/flashloader/Atmel/samd09d14a/samd09d14a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/samd09d14a/samd09d14a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/samd09d14a/samd09d14a-flash.out"/>
+      </resource>
+    </resources>
+  </content>
+  <pdsc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<releases>
+			<release version="1.1.BUILDNUMBER">Removed warnings for some component headers.</release>
+			<release version="1.1.59">Fixed GNU/IAR assembler issues. Files now under Apache license.</release>
+			<release version="1.0.25">Updated documentation links.</release>
+			<release version="1.0.21">Initial release.</release>
+		</releases>
+	</pdsc>
+</package>
