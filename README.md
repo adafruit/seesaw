@@ -14,7 +14,7 @@ variety of capabilities such as UART, ADC, DAC, extra GPIO, etc. to chips that d
 ### Requirements
 
 * `make` and a Unix environment
-* `python` in path (optional)
+* `python` in path
 * `arm-none-eabi-gcc` and `arm-none-eabi-g++` in the path
 
 ### Build commands
