@@ -20,7 +20,7 @@
 #define EVT_COUNT_LARGE 1
 
 //* ============== ADC =================== *//
-#define CONFIG_ADC 0
+#define CONFIG_ADC 1
 
 //we will override some of the default ADC pins for this board
 #define CONFIG_ADC_INPUT_0 1

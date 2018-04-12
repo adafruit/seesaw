@@ -114,23 +114,8 @@ QState AOADC::Stopped(AOADC * const me, QEvt const * const e) {
         }
         case ADC_START_REQ: {
             LOG_EVENT(e);
-			
-#if CONFIG_ADC_INPUT_0
-			pinPeripheral(CONFIG_ADC_INPUT_0_PIN, 1);
-#endif
 
-#if CONFIG_ADC_INPUT_1
-			pinPeripheral(CONFIG_ADC_INPUT_1_PIN, 1);
-#endif
-
-#if CONFIG_ADC_INPUT_2
-			pinPeripheral(CONFIG_ADC_INPUT_2_PIN, 1);
-#endif
-
-#if CONFIG_ADC_INPUT_3
-			pinPeripheral(CONFIG_ADC_INPUT_3_PIN, 1);
-#endif
-
+//DM: TODO: this is used for freerunning adc
 #if CONFIG_ADC_INPUT_3
 #define ADC_NUM_INPUT 4
 #elif CONFIG_ADC_INPUT_2
@@ -192,26 +177,76 @@ QState AOADC::Started(AOADC * const me, QEvt const * const e) {
 			
 			//there should be nothing in the destination pipe
 			Q_ASSERT(!dest->GetUsedCount());
-			
+
+#if CONFIG_ADC
+			uint16_t valueRead = 0;
 			switch(reg){
-				case SEESAW_ADC_CHANNEL_0:
-				case SEESAW_ADC_CHANNEL_1:
-				case SEESAW_ADC_CHANNEL_2:
-				case SEESAW_ADC_CHANNEL_3:{
-					uint16_t valueRead = adc_read(reg - SEESAW_ADC_CHANNEL_0);
-					uint8_t ret[] = { (uint8_t)(valueRead >> 8), (uint8_t)(valueRead & 0xFF) };
-					dest->Write(ret, 2);
-				
-					break;
+#if CONFIG_ADC_INPUT_0
+				case SEESAW_ADC_CHANNEL_0: {
+                    pinPeripheral(CONFIG_ADC_INPUT_0_PIN, 1);
+                    valueRead = adc_read(CONFIG_ADC_INPUT_0_CHANNEL);
+                    goto seesaw_adc_read;
 				}
+#endif
+#if CONFIG_ADC_INPUT_1
+				case SEESAW_ADC_CHANNEL_1:{
+				    pinPeripheral(CONFIG_ADC_INPUT_1_PIN, 1);
+				    valueRead = adc_read(CONFIG_ADC_INPUT_1_CHANNEL);
+                    goto seesaw_adc_read;
+				}
+#endif
+#if CONFIG_ADC_INPUT_2
+				case SEESAW_ADC_CHANNEL_2:{
+				    pinPeripheral(CONFIG_ADC_INPUT_2_PIN, 1);
+				    valueRead = adc_read(CONFIG_ADC_INPUT_2_CHANNEL);
+                    goto seesaw_adc_read;
+				}
+#endif
+#if CONFIG_ADC_INPUT_3
+				case SEESAW_ADC_CHANNEL_3:{
+				    pinPeripheral(CONFIG_ADC_INPUT_3_PIN, 1);
+				    valueRead = adc_read(CONFIG_ADC_INPUT_3_CHANNEL);
+                    goto seesaw_adc_read;
+				}
+#endif
+#if CONFIG_ADC_INPUT_4
+				case SEESAW_ADC_CHANNEL_4:{
+				    pinPeripheral(CONFIG_ADC_INPUT_4_PIN, 1);
+				    valueRead = adc_read(CONFIG_ADC_INPUT_4_CHANNEL);
+                    goto seesaw_adc_read;
+				}
+#endif
+#if CONFIG_ADC_INPUT_5
+				case SEESAW_ADC_CHANNEL_5:{
+				    pinPeripheral(CONFIG_ADC_INPUT_5_PIN, 1);
+				    valueRead = adc_read(CONFIG_ADC_INPUT_5_CHANNEL);
+                    goto seesaw_adc_read;
+				}
+#endif
+#if CONFIG_ADC_INPUT_6
+				case SEESAW_ADC_CHANNEL_6:{
+				    pinPeripheral(CONFIG_ADC_INPUT_6_PIN, 1);
+				    valueRead = adc_read(CONFIG_ADC_INPUT_6_CHANNEL);
+                    goto seesaw_adc_read;
+				}
+#endif
+#if CONFIG_ADC_INPUT_7
+				case SEESAW_ADC_CHANNEL_7:{
+				    pinPeripheral(CONFIG_ADC_INPUT_7_PIN, 1);
+                    valueRead = adc_read(CONFIG_ADC_INPUT_7_CHANNEL);
+                    goto seesaw_adc_read;
+				}
+#endif
 				default:
-					//TODO: lets handle this error better
-					Q_ASSERT(0);
+seesaw_adc_read:
+                    uint8_t ret[] = { (uint8_t)(valueRead >> 8), (uint8_t)(valueRead & 0xFF) };
+                    dest->Write(ret, 2);
 					break;
 			}
 			
 			Evt *evt = new DelegateDataReady(req.getRequesterId());
 			QF::PUBLISH(evt, me);
+#endif
 			status = Q_HANDLED();
 			break;
 		}

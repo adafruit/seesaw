@@ -246,13 +246,33 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							case SEESAW_ADC_WINMODE:
 							case SEESAW_ADC_INTEN:
 							case SEESAW_ADC_INTENCLR:
+#if CONFIG_ADC_INPUT_0
 							case SEESAW_ADC_CHANNEL_0:
+#endif
+#if CONFIG_ADC_INPUT_1
 							case SEESAW_ADC_CHANNEL_1:
+#endif
+#if CONFIG_ADC_INPUT_2
 							case SEESAW_ADC_CHANNEL_2:
-							case SEESAW_ADC_CHANNEL_3:{
-								Evt *evt = new ADCReadRegReq(req.getRequesterId(), lowByte, req.getFifo());
-								QF::PUBLISH(evt, me);
-								break;
+#endif
+#if CONFIG_ADC_INPUT_3
+							case SEESAW_ADC_CHANNEL_3:
+#endif
+#if CONFIG_ADC_INPUT_4
+							case SEESAW_ADC_CHANNEL_4:
+#endif
+#if CONFIG_ADC_INPUT_5
+                            case SEESAW_ADC_CHANNEL_5:
+#endif
+#if CONFIG_ADC_INPUT_6
+                            case SEESAW_ADC_CHANNEL_6:
+#endif
+#if CONFIG_ADC_INPUT_7
+                            case SEESAW_ADC_CHANNEL_7:
+#endif
+                            default: {
+							    Evt *evt = new ADCReadRegReq(req.getRequesterId(), lowByte, req.getFifo());
+                                QF::PUBLISH(evt, me);
 							}
 						}
 						break;

@@ -22,36 +22,93 @@
 #endif
 
 //* ============== ADC =================== *//
+#ifndef CONFIG_ADC_INPUT_0
+#define CONFIG_ADC_INPUT_0 0
+#endif
+#ifndef CONFIG_ADC_INPUT_1
+#define CONFIG_ADC_INPUT_1 0
+#endif
+#ifndef CONFIG_ADC_INPUT_2
+#define CONFIG_ADC_INPUT_2 0
+#endif
+#ifndef CONFIG_ADC_INPUT_3
+#define CONFIG_ADC_INPUT_3 0
+#endif
+#ifndef CONFIG_ADC_INPUT_4
+#define CONFIG_ADC_INPUT_4 0
+#endif
+#ifndef CONFIG_ADC_INPUT_5
+#define CONFIG_ADC_INPUT_5 0
+#endif
+#ifndef CONFIG_ADC_INPUT_6
+#define CONFIG_ADC_INPUT_6 0
+#endif
+#ifndef CONFIG_ADC_INPUT_7
+#define CONFIG_ADC_INPUT_7 0
+#endif
+
 #ifndef CONFIG_ADC_INPUT_0_PIN
 #define CONFIG_ADC_INPUT_0_PIN 2
+#endif
+
+#ifndef CONFIG_ADC_INPUT_0_CHANNEL
+#define CONFIG_ADC_INPUT_0_CHANNEL 0
 #endif
 
 #ifndef CONFIG_ADC_INPUT_1_PIN
 #define CONFIG_ADC_INPUT_1_PIN 3
 #endif
 
+#ifndef CONFIG_ADC_INPUT_1_CHANNEL
+#define CONFIG_ADC_INPUT_1_CHANNEL 1
+#endif
+
 #ifndef CONFIG_ADC_INPUT_2_PIN
 #define CONFIG_ADC_INPUT_2_PIN 4
+#endif
+
+#ifndef CONFIG_ADC_INPUT_2_CHANNEL
+#define CONFIG_ADC_INPUT_2_CHANNEL 2
 #endif
 
 #ifndef CONFIG_ADC_INPUT_3_PIN
 #define CONFIG_ADC_INPUT_3_PIN 5
 #endif
 
+#ifndef CONFIG_ADC_INPUT_3_CHANNEL
+#define CONFIG_ADC_INPUT_3_CHANNEL 3
+#endif
+
 #ifndef CONFIG_ADC_INPUT_4_PIN
 #define CONFIG_ADC_INPUT_4_PIN 11
+#endif
+
+#ifndef CONFIG_ADC_INPUT_4_CHANNEL
+#define CONFIG_ADC_INPUT_4_CHANNEL 19
 #endif
 
 #ifndef CONFIG_ADC_INPUT_5_PIN
 #define CONFIG_ADC_INPUT_5_PIN 10
 #endif
 
+#ifndef CONFIG_ADC_INPUT_5_CHANNEL
+#define CONFIG_ADC_INPUT_5_CHANNEL 18
+#endif
+
 #ifndef CONFIG_ADC_INPUT_6_PIN
 #define CONFIG_ADC_INPUT_6_PIN 9
 #endif
 
+#ifndef CONFIG_ADC_INPUT_6_CHANNEL
+#define CONFIG_ADC_INPUT_6_CHANNEL 17
+#endif
+
 #ifndef CONFIG_ADC_INPUT_7_PIN
 #define CONFIG_ADC_INPUT_7_PIN 8
+#endif
+
+#ifndef CONFIG_ADC_INPUT_7_CHANNEL
+#define CONFIG_ADC_INPUT_7_CHANNEL 16
 #endif
 
 //* ============== DAC =================== *//

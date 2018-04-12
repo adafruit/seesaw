@@ -177,6 +177,10 @@
 	#define SEESAW_ADC_CHANNEL_1 0x08
 	#define SEESAW_ADC_CHANNEL_2 0x09
 	#define SEESAW_ADC_CHANNEL_3 0x0A
+    #define SEESAW_ADC_CHANNEL_4 0x0B
+    #define SEESAW_ADC_CHANNEL_5 0x0C
+    #define SEESAW_ADC_CHANNEL_6 0x0D
+    #define SEESAW_ADC_CHANNEL_7 0x0E
 	
 //* ============== DAC =================== *//
 #define SEESAW_DAC_BASE 0x0A
