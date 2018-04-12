@@ -5,6 +5,12 @@
 
 #define CONFIG_USB 0ul
 
+//override default activity led pin
+#define PIN_ACTIVITY_LED (32 + 22) //PB22
+
+//don't use address pins
+#define CONFIG_NO_ADDR
+
 //* ============== POOL SIZES =================== *//
 #define EVT_SIZE_SMALL 16
 #define EVT_SIZE_MEDIUM 32
@@ -14,14 +20,26 @@
 #define EVT_COUNT_LARGE 1
 
 //* ============== ADC =================== *//
-#define CONFIG_ADC 1
+#define CONFIG_ADC 0
+
+//we will override some of the default ADC pins for this board
 #define CONFIG_ADC_INPUT_0 1
 
 #define CONFIG_ADC_INPUT_1 1
 
 #define CONFIG_ADC_INPUT_2 1
+#define CONFIG_ADC_INPUT_2_PIN (32 + 8) //PB08
 
-#define CONFIG_ADC_INPUT_3 0
+#define CONFIG_ADC_INPUT_3 1
+#define CONFIG_ADC_INPUT_3_PIN (32 + 9) //PB09
+
+#define CONFIG_ADC_INPUT_4 1
+
+#define CONFIG_ADC_INPUT_5 1
+
+#define CONFIG_ADC_INPUT_6 1
+
+#define CONFIG_ADC_INPUT_7 1
 
 //* ============== DAC =================== *//
 #define CONFIG_DAC 0
@@ -43,6 +61,12 @@
 
 //* ============== I2C SLAVE =================== *//
 #define CONFIG_I2C_SLAVE 1
+//override the default pins
+#define CONFIG_I2C_SLAVE_PIN_SDA 0
+#define CONFIG_I2C_SLAVE_PIN_SCL 1
+
+//override default mux
+#define CONFIG_I2C_SLAVE_MUX 3
 
 //* ============== SERCOM =================== *//
 #define CONFIG_SERCOM0 0
@@ -58,7 +82,7 @@
 #define CONFIG_DAP 0
 
 //* =========== NEOPIXEL ================ *//
-#define CONFIG_NEOPIXEL 0
+#define CONFIG_NEOPIXEL 1
 
 #define CONFIG_NEOPIXEL_BUF_MAX 512
 

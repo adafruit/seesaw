@@ -282,6 +282,7 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 		
 		case SYSTEM_FAIL:
 			Q_ASSERT(0);
+			status = Q_HANDLED();
 			break;
 		case SYSTEM_DONE: {
 			LOG_EVENT(e);

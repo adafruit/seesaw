@@ -199,7 +199,7 @@ QState AOADC::Started(AOADC * const me, QEvt const * const e) {
 				case SEESAW_ADC_CHANNEL_2:
 				case SEESAW_ADC_CHANNEL_3:{
 					uint16_t valueRead = adc_read(reg - SEESAW_ADC_CHANNEL_0);
-					uint8_t ret[] = { (uint8_t)(valueRead >> 8), (uint8_t)valueRead & 0xFF };
+					uint8_t ret[] = { (uint8_t)(valueRead >> 8), (uint8_t)(valueRead & 0xFF) };
 					dest->Write(ret, 2);
 				
 					break;
@@ -312,7 +312,7 @@ QState AOADC::Freeruning(AOADC * const me, QEvt const * const e) {
 				//read the data
 				while (ADC->INTFLAG.bit.RESRDY == 0);   // Waiting for conversion to complete
 				uint16_t valueRead = ADC->RESULT.reg;
-				uint8_t ret[] = { (uint8_t)(valueRead >> 8), (uint8_t)valueRead & 0xFF };
+				uint8_t ret[] = { (uint8_t)(valueRead >> 8), (uint8_t)(valueRead & 0xFF) };
 				dest->Write(ret, 2);
 				
 				Evt *evt = new DelegateDataReady(req.getRequesterId());

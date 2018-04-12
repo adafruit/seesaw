@@ -91,16 +91,21 @@ void initClock( Sercom *sercom )
 	}
 #endif
 
-#if defined(__SAMD21G18A__)
-
+#if defined(SERCOM3)
 	else if(sercom == SERCOM3)
 	{
 		clockId = GCLK_CLKCTRL_ID_SERCOM3_CORE;
 	}
+#endif
+
+#if defined(SERCOM4)
 	else if(sercom == SERCOM4)
 	{
 		clockId = GCLK_CLKCTRL_ID_SERCOM4_CORE;
 	}
+#endif
+
+#if defined(SERCOM5)
 	else if(sercom == SERCOM5)
 	{
 		clockId = GCLK_CLKCTRL_ID_SERCOM5_CORE;

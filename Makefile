@@ -7,7 +7,7 @@ CXX=arm-none-eabi-g++
 COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g -D__$(CHIP_VARIANT)__ -DBOARD_$(BOARD_NAME)
 
 WFLAGS = \
--Wall
+-Wall -Werror
 
 SFLAGS = $(COMMON_FLAGS) \
 -x assembler-with-cpp -c \
@@ -23,7 +23,7 @@ CXXFLAGS = $(COMMON_FLAGS) \
 $(WFLAGS)
 
 LDFLAGS= $(COMMON_FLAGS) \
--Wall -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--unresolved-symbols=report-all -Wl,--warn-common \
+-Wall -Werror -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--unresolved-symbols=report-all -Wl,--warn-common \
 -Wl,--warn-section-align -Wl,--warn-unresolved-symbols \
 -save-temps \
 --specs=nano.specs --specs=nosys.specs
@@ -74,12 +74,12 @@ COMMON_SRC = \
 	lib/qp/source/qxk_sema.cpp \
 	lib/qp/source/qxk_xthr.cpp \
 	lib/qp/include/qstamp.cpp \
-	lib/qp/extras/bsp.cpp \
-	lib/qp/extras/event.cpp \
 	lib/qp/extras/fw_evt.cpp \
 	lib/qp/extras/fw_log.cpp \
 
 SOURCES = $(COMMON_SRC) \
+	source/bsp.cpp \
+	source/event.cpp \
 	source/AOADC.cpp \
 	source/AODAC.cpp \
 	source/AOInterrupt.cpp \
@@ -142,4 +142,4 @@ clean:
 	rm -rf build
 
 all-boards:
-	for f in `cd boards; ls` ; do "$(MAKE)" BOARD=$$f
+	for f in `cd boards; ls` ; do "$(MAKE)" BOARD=$$f ; done

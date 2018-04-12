@@ -167,7 +167,13 @@ static inline void DAP_CONFIG_SETUP(void)
   gpio_pullenset_bulk(1ul << CONFIG_DAP_SWDIO);
   gpio_outset_bulk(PORTA, 1ul << CONFIG_DAP_SWDIO);
   
+#if CONFIG_ACTIVITY_LED
+#if PIN_ACTIVITY_LED >= 32
+  PORT->Group[PORTB].OUTSET.reg = (1ul<<(PIN_ACTIVITY_LED-32));
+#else
   PORT->Group[PORTA].OUTSET.reg = (1ul<<PIN_ACTIVITY_LED);
+#endif
+#endif
 }
 
 //-----------------------------------------------------------------------------

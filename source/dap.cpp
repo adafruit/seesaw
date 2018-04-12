@@ -241,6 +241,7 @@ static uint32_t dap_swd_read_slow (int size)
   return value;
 }
 
+#if 0 //DM: TODO: fix these
 //-----------------------------------------------------------------------------
 static void dap_swd_clock_fast(int cycles)
 {
@@ -280,6 +281,7 @@ static uint32_t dap_swd_read_fast(int size)
 
   return value;
 }
+#endif
 
 //-----------------------------------------------------------------------------
 static void dap_setup_clock(int freq)

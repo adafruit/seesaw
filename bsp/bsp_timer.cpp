@@ -2,6 +2,16 @@
 #include "PinMap.h"
 #include "SeesawConfig.h"
 
+#if CONFIG_TIMER
+_PWM g_pwms[]=
+{
+    { CONFIG_TIMER_PWM_OUT0_TC, CONFIG_TIMER_PWM_OUT0_WO, CONFIG_TIMER_PWM_OUT0_PIN },
+    { CONFIG_TIMER_PWM_OUT1_TC, CONFIG_TIMER_PWM_OUT1_WO, CONFIG_TIMER_PWM_OUT1_PIN },
+    { CONFIG_TIMER_PWM_OUT2_TC, CONFIG_TIMER_PWM_OUT2_WO, CONFIG_TIMER_PWM_OUT2_PIN },
+    { CONFIG_TIMER_PWM_OUT3_TC, CONFIG_TIMER_PWM_OUT3_WO, CONFIG_TIMER_PWM_OUT3_PIN },
+};
+#endif
+
 //TODO: this will probably change based on the use of the timer
 void initTimerPWM( Tc *TCx )
 {
@@ -43,11 +53,11 @@ void PWMWrite( uint8_t pwm, uint16_t value)
 
 void setFreq( uint8_t pwm, uint16_t freq )
 {
-	_PWM p = g_pwms[pwm];
-	
 #if defined(__SAMD21G18A__)
 	//TODO: we should be able to set freq w/ this chip
 #else
+    _PWM p = g_pwms[pwm];
+
 	uint8_t prescale = TC_CTRLA_PRESCALER_DIV256_Val; 
 	if( freq > 500) prescale = TC_CTRLA_PRESCALER_DIV1_Val;
 	else if( freq > 250 ) prescale = TC_CTRLA_PRESCALER_DIV2_Val;

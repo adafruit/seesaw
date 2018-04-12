@@ -157,7 +157,17 @@ QState Neopixel::Started(Neopixel * const me, QEvt const * const e) {
 		}
 		case NEOPIXEL_SET_PIN_REQ: {
 			NeopixelSetPinReq const &req = static_cast<NeopixelSetPinReq const &>(*e);
+#ifdef HAS_PORTB
+			uint8_t port = PORTA;
+			uint8_t pin = req.getPin();
+			if(pin >= 32){
+                port = PORTB;
+                pin -= 32;
+            }
+			gpio_init(port, pin, 1);
+#else
 			gpio_init(PORTA, req.getPin(), 1);
+#endif
 			me->m_pin = req.getPin();
 			
 			status = Q_HANDLED();

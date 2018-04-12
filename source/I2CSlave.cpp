@@ -130,7 +130,10 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
 			
 			//see if there is an I2C addr set
 			uint8_t addr = eeprom_read_byte(SEESAW_EEPROM_I2C_ADDR);
+			uint32_t val = 0;
 			addr = (addr > 0x7F ? CONFIG_I2C_SLAVE_ADDR : addr);
+
+#if CONFIG_ADDR
 			
 			uint32_t mask = (1ul << PIN_ADDR_0) | (1ul << PIN_ADDR_1);
 			gpio_dirclr_bulk(PORTA, mask);
@@ -138,21 +141,21 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
 			gpio_outset_bulk(PORTA, mask);
 			
 			//wait for everything to settle
-			for(int i=0; i<50000ul; i++){
+			for(uint32_t i=0; i<50000ul; i++){
 				asm("nop");
 			}
 			
-			uint32_t val = (gpio_read_bulk() >> PIN_ADDR_0);
+			val = (gpio_read_bulk() >> PIN_ADDR_0);
 			val ^= 0x03;
-			
+#endif
 			initSlaveWIRE( me->m_sercom, addr + (val & 0x03) );
 			enableWIRE( me->m_sercom );
 			NVIC_ClearPendingIRQ( CONFIG_I2C_SLAVE_IRQn );
 			
 			slave_busy = false;
 			
-			pinPeripheral(CONFIG_I2C_SLAVE_PIN_SDA, 2);
-			pinPeripheral(CONFIG_I2C_SLAVE_PIN_SCL, 2);
+			pinPeripheral(CONFIG_I2C_SLAVE_PIN_SDA, CONFIG_I2C_SLAVE_MUX);
+			pinPeripheral(CONFIG_I2C_SLAVE_PIN_SCL, CONFIG_I2C_SLAVE_MUX);
 			
 			I2CSlaveStartReq const &req = static_cast<I2CSlaveStartReq const &>(*e);
 			m_inFifo = req.getInFifo();
@@ -163,7 +166,13 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
 			m_inFifo->Reset();
 			m_outFifo->Reset();
 			
-			gpio_init(PORTA, PIN_ACTIVITY_LED, 1); //set as output
+#if CONFIG_ACTIVITY_LED
+#if PIN_ACTIVITY_LED >= 32
+            gpio_init(PORTB, PIN_ACTIVITY_LED-32, 1); //set as output
+#else
+            gpio_init(PORTA, PIN_ACTIVITY_LED, 1); //set as output
+#endif
+#endif
 			
 			Evt *evt = new I2CSlaveStartCfm(req.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
@@ -217,6 +226,8 @@ QState I2CSlave::Started(I2CSlave * const me, QEvt const * const e) {
 				else m_outFifo->Reset();
 				status = Q_HANDLED();
 			}
+			else
+			    status = Q_UNHANDLED();
 			break;
 		}
         default: {
@@ -240,7 +251,13 @@ QState I2CSlave::Idle(I2CSlave * const me, QEvt const * const e) {
         }
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
-			PORT->Group[PORTA].OUTSET.reg = (1ul<<PIN_ACTIVITY_LED); //activity led on
+#if CONFIG_ACTIVITY_LED
+#if PIN_ACTIVITY_LED >= 32
+            PORT->Group[PORTB].OUTSET.reg = (1ul<<(PIN_ACTIVITY_LED-32)); //activity led on
+#else
+            PORT->Group[PORTA].OUTSET.reg = (1ul<<PIN_ACTIVITY_LED); //activity led on
+#endif
+#endif
             status = Q_HANDLED();
             break;
         }
@@ -295,6 +312,8 @@ QState I2CSlave::Busy(I2CSlave * const me, QEvt const * const e) {
 				}
 				status = Q_TRAN(&I2CSlave::Idle);
 			}
+			else
+			    status = Q_UNHANDLED();
 			break;
 		}
 		case I2C_SLAVE_TIMEOUT: {
@@ -303,7 +322,13 @@ QState I2CSlave::Busy(I2CSlave * const me, QEvt const * const e) {
 		}
 		case Q_EXIT_SIG: {
 			LOG_EVENT(e);
-			PORT->Group[PORTA].OUTCLR.reg = (1ul<<PIN_ACTIVITY_LED); //activity led off
+#if CONFIG_ACTIVITY_LED
+#if PIN_ACTIVITY_LED >= 32
+            PORT->Group[PORTB].OUTCLR.reg = (1ul<<(PIN_ACTIVITY_LED-32)); //activity led off
+#else
+            PORT->Group[PORTA].OUTCLR.reg = (1ul<<PIN_ACTIVITY_LED); //activity led off
+#endif
+#endif
 			me->m_timeout.disarm();
 			status = Q_HANDLED();
 			break;

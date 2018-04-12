@@ -356,8 +356,16 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_dirset_bulk(PORTA, combined & CONFIG_GPIO_MASK);
-								
+								gpio_dirset_bulk(PORTA, combined & CONFIG_GPIO_A_MASK);
+#ifdef HAS_PORTB
+								if(len > 0){
+								    fifo->Read(pins, 4);
+                                    len-=4;
+
+                                    uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+                                    gpio_dirset_bulk(PORTB, combined & CONFIG_GPIO_B_MASK);
+								}
+#endif
 								break;
 							}
 							case SEESAW_GPIO_DIRCLR_BULK: {
@@ -366,7 +374,16 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_dirclr_bulk(PORTA, combined & CONFIG_GPIO_MASK);
+								gpio_dirclr_bulk(PORTA, combined & CONFIG_GPIO_A_MASK);
+#ifdef HAS_PORTB
+                                if(len > 0){
+                                    fifo->Read(pins, 4);
+                                    len-=4;
+
+                                    uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+                                    gpio_dirclr_bulk(PORTB, combined & CONFIG_GPIO_B_MASK);
+                                }
+#endif
 								
 								break;
 							}
@@ -376,8 +393,16 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_outset_bulk(PORTA, combined & CONFIG_GPIO_MASK);
-								
+								gpio_outset_bulk(PORTA, combined & CONFIG_GPIO_A_MASK);
+#ifdef HAS_PORTB
+                                if(len > 0){
+                                    fifo->Read(pins, 4);
+                                    len-=4;
+
+                                    uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+                                    gpio_outset_bulk(PORTB, combined & CONFIG_GPIO_B_MASK);
+                                }
+#endif
 								break;
 							}
 							case SEESAW_GPIO_BULK_CLR: {
@@ -386,7 +411,16 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_outclr_bulk(PORTA, combined & CONFIG_GPIO_MASK);
+								gpio_outclr_bulk(PORTA, combined & CONFIG_GPIO_A_MASK);
+#ifdef HAS_PORTB
+                                if(len > 0){
+                                    fifo->Read(pins, 4);
+                                    len-=4;
+
+                                    uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+                                    gpio_outclr_bulk(PORTB, combined & CONFIG_GPIO_B_MASK);
+                                }
+#endif
 								
 								break;
 							}
@@ -396,7 +430,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								Delegate::m_inten |= (combined  & CONFIG_GPIO_MASK);
+								Delegate::m_inten |= (combined  & CONFIG_GPIO_A_MASK);
 								break;
 							}
 							case SEESAW_GPIO_INTENCLR: {
@@ -405,7 +439,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								combined &= CONFIG_GPIO_MASK;
+								combined &= CONFIG_GPIO_A_MASK;
 								Delegate::m_inten &= !combined;
 								break;
 							}
@@ -415,7 +449,16 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_pullenset_bulk(combined & CONFIG_GPIO_MASK);
+								gpio_pullenset_bulk(combined & CONFIG_GPIO_A_MASK);
+#ifdef HAS_PORTB
+                                if(len > 0){
+                                    fifo->Read(pins, 4);
+                                    len-=4;
+
+                                    uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+                                    gpio_pullenset_bulk(PORTB, combined & CONFIG_GPIO_B_MASK);
+                                }
+#endif
 								break;
 							}
 							case SEESAW_GPIO_PULLENCLR: {
@@ -424,7 +467,16 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-								gpio_pullenclr_bulk(combined & CONFIG_GPIO_MASK);
+								gpio_pullenclr_bulk(combined & CONFIG_GPIO_A_MASK);
+#ifdef HAS_PORTB
+                                if(len > 0){
+                                    fifo->Read(pins, 4);
+                                    len-=4;
+
+                                    uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+                                    gpio_pullenclr_bulk(PORTB, combined & CONFIG_GPIO_B_MASK);
+                                }
+#endif
 								break;
 							}
 						}

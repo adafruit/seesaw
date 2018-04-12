@@ -35,7 +35,7 @@ static void eeprom_read(uint8_t addr, uint8_t *buf, uint8_t size)
 {
 	uint32_t src_addr = (EEPROM_ADDR  + addr);
 	uint32_t nvm_address = src_addr / 2;
-	uint32_t i;
+	int32_t i;
 	uint16_t data;
 
 	while (!NVMCTRL->INTFLAG.bit.READY);
@@ -57,7 +57,7 @@ static void eeprom_read(uint8_t addr, uint8_t *buf, uint8_t size)
 	while (i < size) {
 		data      = NVM_MEMORY[nvm_address++];
 		buf[i] = (data & 0xFF);
-		if (i < (size - 1)) {
+		if (i < ((int32_t)size - 1)) {
 			buf[i + 1] = (data >> 8);
 		}
 		i += 2;
@@ -109,6 +109,7 @@ static void eeprom_write(uint8_t addr, uint8_t *buf, uint8_t size)
 static inline uint32_t eeprom_read_word(uint8_t addr)
 {
 	//TODO:
+    return 0;
 }
 
 static inline uint8_t eeprom_read_byte(uint8_t addr)

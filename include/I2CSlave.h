@@ -67,10 +67,10 @@ protected:
     uint8_t m_id;
 	uint16_t m_nextSequence;
     char const * m_name;
-	
+
+    Sercom *m_sercom;
+
 	QTimeEvt m_timeout;
-	
-	Sercom *m_sercom;
 };
 
 

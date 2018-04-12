@@ -9,6 +9,14 @@ static void neopix_show_400k(uint32_t pin, uint8_t *pixels, uint16_t numBytes)
 	uint8_t  *ptr, *end, p, bitMask;
 	uint32_t  pinMask;
 
+    volatile uint32_t *set = &(PORT->Group[PORTA].OUTSET.reg);
+    volatile uint32_t *clr = &(PORT->Group[PORTA].OUTCLR.reg);
+#ifdef HAS_PORTB
+    set = &(PORT->Group[PORTB].OUTSET.reg);
+    clr = &(PORT->Group[PORTB].OUTCLR.reg);
+    pin -= 32;
+#endif
+
 	pinMask =  1ul << pin;
 	ptr     =  pixels;
 	end     =  ptr + numBytes;
@@ -56,6 +64,14 @@ static void neopix_show_800k(uint32_t pin, uint8_t *pixels, uint16_t numBytes)
 	p       = *ptr++;
 	bitMask =  0x80;
 	
+    volatile uint32_t *set = &(PORT->Group[PORTA].OUTSET.reg);
+    volatile uint32_t *clr = &(PORT->Group[PORTA].OUTCLR.reg);
+#ifdef HAS_PORTB
+    set = &(PORT->Group[PORTB].OUTSET.reg);
+    clr = &(PORT->Group[PORTB].OUTCLR.reg);
+    pin -= 32;
+#endif
+
 	for(;;) {
 		*set = pinMask;
 		asm("nop; nop; nop; nop; nop; nop; nop; nop;");
