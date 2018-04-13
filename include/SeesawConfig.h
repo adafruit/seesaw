@@ -1,0 +1,286 @@
+#ifndef SEESAW_CONFIG_H
+#define SEESAW_CONFIG_H
+
+#include "board_config.h"
+#include "RegisterMap.h"
+#include "PinMap.h"
+#include "build_date.h"
+
+#define DATE_CODE (uint32_t)( (  (uint32_t)__YEAR__ << 9) \
+		| ( (uint32_t)__MONTH__ << 5 ) \
+		| ( (uint32_t)__DAY__ & 0x1F ) )
+
+#define CONFIG_VERSION (uint32_t)( ( (uint32_t)PRODUCT_CODE << 16 ) \
+		| ( (uint16_t)DATE_CODE & 0x0000FFFF) )
+
+#ifndef CONFIG_USB
+#define CONFIG_USB 1ul
+#endif
+
+#if defined(__SAMD21G18A__)
+#define HAS_PORTB
+#endif
+
+//* ============== ADC =================== *//
+#ifndef CONFIG_ADC_INPUT_0
+#define CONFIG_ADC_INPUT_0 0
+#endif
+#ifndef CONFIG_ADC_INPUT_1
+#define CONFIG_ADC_INPUT_1 0
+#endif
+#ifndef CONFIG_ADC_INPUT_2
+#define CONFIG_ADC_INPUT_2 0
+#endif
+#ifndef CONFIG_ADC_INPUT_3
+#define CONFIG_ADC_INPUT_3 0
+#endif
+#ifndef CONFIG_ADC_INPUT_4
+#define CONFIG_ADC_INPUT_4 0
+#endif
+#ifndef CONFIG_ADC_INPUT_5
+#define CONFIG_ADC_INPUT_5 0
+#endif
+#ifndef CONFIG_ADC_INPUT_6
+#define CONFIG_ADC_INPUT_6 0
+#endif
+#ifndef CONFIG_ADC_INPUT_7
+#define CONFIG_ADC_INPUT_7 0
+#endif
+
+#ifndef CONFIG_ADC_INPUT_0_PIN
+#define CONFIG_ADC_INPUT_0_PIN 2
+#endif
+
+#ifndef CONFIG_ADC_INPUT_0_CHANNEL
+#define CONFIG_ADC_INPUT_0_CHANNEL 0
+#endif
+
+#ifndef CONFIG_ADC_INPUT_1_PIN
+#define CONFIG_ADC_INPUT_1_PIN 3
+#endif
+
+#ifndef CONFIG_ADC_INPUT_1_CHANNEL
+#define CONFIG_ADC_INPUT_1_CHANNEL 1
+#endif
+
+#ifndef CONFIG_ADC_INPUT_2_PIN
+#define CONFIG_ADC_INPUT_2_PIN 4
+#endif
+
+#ifndef CONFIG_ADC_INPUT_2_CHANNEL
+#define CONFIG_ADC_INPUT_2_CHANNEL 2
+#endif
+
+#ifndef CONFIG_ADC_INPUT_3_PIN
+#define CONFIG_ADC_INPUT_3_PIN 5
+#endif
+
+#ifndef CONFIG_ADC_INPUT_3_CHANNEL
+#define CONFIG_ADC_INPUT_3_CHANNEL 3
+#endif
+
+#ifndef CONFIG_ADC_INPUT_4_PIN
+#define CONFIG_ADC_INPUT_4_PIN 11
+#endif
+
+#ifndef CONFIG_ADC_INPUT_4_CHANNEL
+#define CONFIG_ADC_INPUT_4_CHANNEL 19
+#endif
+
+#ifndef CONFIG_ADC_INPUT_5_PIN
+#define CONFIG_ADC_INPUT_5_PIN 10
+#endif
+
+#ifndef CONFIG_ADC_INPUT_5_CHANNEL
+#define CONFIG_ADC_INPUT_5_CHANNEL 18
+#endif
+
+#ifndef CONFIG_ADC_INPUT_6_PIN
+#define CONFIG_ADC_INPUT_6_PIN 9
+#endif
+
+#ifndef CONFIG_ADC_INPUT_6_CHANNEL
+#define CONFIG_ADC_INPUT_6_CHANNEL 17
+#endif
+
+#ifndef CONFIG_ADC_INPUT_7_PIN
+#define CONFIG_ADC_INPUT_7_PIN 8
+#endif
+
+#ifndef CONFIG_ADC_INPUT_7_CHANNEL
+#define CONFIG_ADC_INPUT_7_CHANNEL 16
+#endif
+
+//* ============== DAC =================== *//
+
+//* ============== TIMER =================== *//
+
+//TODO: fix timers for samd21
+#if defined(__SAMD21G18A__)
+	
+	#define CONFIG_TIMER_PWM_OUT0_TC TC3
+	#define CONFIG_TIMER_PWM_OUT0_WO 0
+	#define CONFIG_TIMER_PWM_OUT0_PIN 4
+
+	
+	#define CONFIG_TIMER_PWM_OUT1_TC TC3
+	#define CONFIG_TIMER_PWM_OUT1_WO 1
+	#define CONFIG_TIMER_PWM_OUT1_PIN 5
+
+	
+	#define CONFIG_TIMER_PWM_OUT2_TC TC4
+	#define CONFIG_TIMER_PWM_OUT2_WO 0
+	#define CONFIG_TIMER_PWM_OUT2_PIN 6
+
+	
+	#define CONFIG_TIMER_PWM_OUT3_TC TC4
+	#define CONFIG_TIMER_PWM_OUT3_WO 1
+	#define CONFIG_TIMER_PWM_OUT3_PIN 7
+#else
+	#define CONFIG_TIMER_PWM_OUT0_TC TC1
+	#define CONFIG_TIMER_PWM_OUT0_WO 0
+	#define CONFIG_TIMER_PWM_OUT0_PIN 4
+
+	#define CONFIG_TIMER_PWM_OUT1_TC TC1
+	#define CONFIG_TIMER_PWM_OUT1_WO 1
+	#define CONFIG_TIMER_PWM_OUT1_PIN 5
+
+	#define CONFIG_TIMER_PWM_OUT2_TC TC2
+	#define CONFIG_TIMER_PWM_OUT2_WO 0
+	#define CONFIG_TIMER_PWM_OUT2_PIN 6
+
+	#define CONFIG_TIMER_PWM_OUT3_TC TC2
+	#define CONFIG_TIMER_PWM_OUT3_WO 1
+	#define CONFIG_TIMER_PWM_OUT3_PIN 7
+#endif
+
+#if CONFIG_TIMER
+	typedef struct _PWM
+	{
+		Tc*				tc ;
+		uint8_t			wo ;
+		uint8_t			pin;
+	} _PWM ;
+
+	extern _PWM g_pwms[];
+#endif
+
+//* ============== INTERRUPT =================== *//
+
+//* ============== I2C SLAVE =================== *//
+
+#define CONFIG_I2C_SLAVE_SERCOM SERCOM1
+#define CONFIG_I2C_SLAVE_HANDLER SERCOM1_Handler
+#define CONFIG_I2C_SLAVE_IRQn SERCOM1_IRQn
+
+#ifndef CONFIG_I2C_SLAVE_PIN_SDA
+#define CONFIG_I2C_SLAVE_PIN_SDA 22
+#endif
+#ifndef CONFIG_I2C_SLAVE_PIN_SCL
+#define CONFIG_I2C_SLAVE_PIN_SCL 23
+#endif
+
+#ifndef CONFIG_I2C_SLAVE_MUX
+#define CONFIG_I2C_SLAVE_MUX 2
+#endif
+
+#define CONFIG_I2C_SLAVE_ADDR 0x49
+
+//* ============== SPI SLAVE =================== *//
+#define CONFIG_SPI_SLAVE_SERCOM SERCOM3
+#define CONFIG_SPI_SLAVE_HANDLER SERCOM3_Handler
+#define CONFIG_SPI_SLAVE_IRQn SERCOM3_IRQn
+
+#define CONFIG_SPI_SLAVE_PIN_MOSI 18
+#define CONFIG_SPI_SLAVE_PIN_MISO 16
+#define CONFIG_SPI_SLAVE_PIN_SCK 19
+#define CONFIG_SPI_SLAVE_PIN_SS 17
+
+#define CONFIG_SPI_SLAVE_PAD_TX SPI_PAD_0_SCK_3
+#define CONFIG_SPI_SLAVE_PAD_RX SERCOM_RX_PAD_2
+
+#define CONFIG_SPI_SLAVE_CHAR_SIZE SPI_CHAR_SIZE_8_BITS
+#define CONFIG_SPI_SLAVE_DATA_ORDER MSB_FIRST
+
+//* ============== SERCOM =================== *//
+
+#define CONFIG_SERCOM_UART_PIN_RX 11
+#define CONfIG_SERCOM_UART_PIN_TX 10
+#define CONFIG_SERCOM_UART_PAD_TX UART_TX_PAD_2
+#define CONFIG_SERCOM_UART_PAD_RX SERCOM_RX_PAD_3
+
+#define CONFIG_SERCOM_UART_BAUD_RATE 9600
+#define CONFIG_SERCOM_UART_CHAR_SIZE UART_CHAR_SIZE_8_BITS
+
+#define CONFIG_SERCOM_UART_PARITY SERCOM_NO_PARITY
+
+#define CONFIG_SERCOM_UART_STOP_BIT SERCOM_STOP_BIT_1
+
+//* ============== DAP =================== *//
+
+	#define CONFIG_DAP_SWCLK 11
+	#define CONFIG_DAP_SWDIO 10
+	#define CONFIG_DAP_TDI 19
+	#define CONFIG_DAP_TDO 20
+	#define CONFIG_DAP_nTRST 21
+	#define CONFIG_DAP_nRESET 14
+	
+//* =========== NEOPIXEL ================ *//
+
+
+//* ============== GPIO ================= *//
+#ifndef CONFIG_NO_ACTIVITY_LED
+#define CONFIG_ACTIVITY_LED 1ul
+#else
+#define CONFIG_ACTIVITY_LED 0ul
+#endif
+#ifndef CONFIG_NO_ADDR
+#define CONFIG_ADDR 1ul
+#else
+#define CONFIG_ADDR 0ul
+#endif
+
+#ifndef PIN_ACTIVITY_LED
+#define PIN_ACTIVITY_LED 27
+#endif
+
+#define PIN_ADDR_0 16
+#define PIN_ADDR_1 17
+#define PIN_USB_DM 24
+#define PIN_USB_DP 25
+
+#define CONFIG_GPIO_MASK (((unsigned long long) 0xFFFFFFFFFFFFFFFF) ^ (( ((uint64_t)CONFIG_USB << PIN_USB_DM) | ((uint64_t)CONFIG_USB << PIN_USB_DP) | ((uint64_t)CONFIG_ADDR << PIN_ADDR_0) | ((uint64_t)CONFIG_ADDR << PIN_ADDR_1) | ((uint64_t)CONFIG_ACTIVITY_LED << PIN_ACTIVITY_LED) ) \
+		| ((uint64_t)(CONFIG_TIMER & CONFIG_TIMER_PWM_OUT0) << CONFIG_TIMER_PWM_OUT0_PIN) \
+		| ((uint64_t)(CONFIG_TIMER & CONFIG_TIMER_PWM_OUT1) << CONFIG_TIMER_PWM_OUT1_PIN) \
+		| ((uint64_t)(CONFIG_TIMER & CONFIG_TIMER_PWM_OUT2) << CONFIG_TIMER_PWM_OUT2_PIN) \
+		| ((uint64_t)(CONFIG_TIMER & CONFIG_TIMER_PWM_OUT3) << CONFIG_TIMER_PWM_OUT3_PIN) \
+		| ((uint64_t)CONFIG_INTERRUPT << CONFIG_INTERRUPT_PIN) \
+		| ((uint64_t)CONFIG_I2C_SLAVE << CONFIG_I2C_SLAVE_PIN_SCL) \
+		| ((uint64_t)CONFIG_I2C_SLAVE << CONFIG_I2C_SLAVE_PIN_SDA) \
+		| ((uint32_t)CONFIG_SPI_SLAVE << CONFIG_SPI_SLAVE_PIN_MOSI) \
+		| ((uint64_t)CONFIG_SPI_SLAVE << CONFIG_SPI_SLAVE_PIN_MISO) \
+		| ((uint64_t)CONFIG_SPI_SLAVE << CONFIG_SPI_SLAVE_PIN_SCK) \
+		| ((uint64_t)CONFIG_SPI_SLAVE << CONFIG_SPI_SLAVE_PIN_SS) \
+		| ((uint64_t)(CONFIG_SERCOM0 | CONFIG_SERCOM1 | CONFIG_SERCOM2 | CONFIG_SERCOM3 | CONFIG_SERCOM4 | CONFIG_SERCOM5) << CONFIG_SERCOM_UART_PIN_RX) \
+		| ((uint64_t)(CONFIG_SERCOM0 | CONFIG_SERCOM1 | CONFIG_SERCOM2 | CONFIG_SERCOM3 | CONFIG_SERCOM4 | CONFIG_SERCOM5) << CONfIG_SERCOM_UART_PIN_TX))) \
+
+#define CONFIG_GPIO_A_MASK ((uint32_t)(CONFIG_GPIO_MASK & 0xFFFFFFFF))
+#define CONFIG_GPIO_B_MASK ((uint32_t)((CONFIG_GPIO_MASK >> 32) & 0xFFFFFFFF))
+
+
+#define CONFIG_NUM_AO (1 + CONFIG_ADC + CONFIG_DAC + CONFIG_TIMER + CONFIG_INTERRUPT + CONFIG_SERCOM0 + CONFIG_SERCOM1 + CONFIG_SERCOM2 + CONFIG_SERCOM3 + CONFIG_SERCOM4 + CONFIG_SERCOM5 + CONFIG_I2C_SLAVE + CONFIG_SPI_SLAVE  + CONFIG_DAP + CONFIG_NEOPIXEL)
+
+#define CONFIG_OPTIONS ( (0x03ul) | (CONFIG_DAC << SEESAW_DAC_BASE) \
+			| ((uint32_t)CONFIG_ADC << SEESAW_ADC_BASE) \
+			| ((uint32_t)CONFIG_TIMER << SEESAW_TIMER_BASE) \
+			| ((uint32_t)CONFIG_INTERRUPT << SEESAW_INTERRUPT_BASE) \
+			| ((uint32_t)CONFIG_SERCOM0 << SEESAW_SERCOM0_BASE) \
+			| ((uint32_t)CONFIG_SERCOM1 << SEESAW_SERCOM1_BASE) \
+			| ((uint32_t)CONFIG_SERCOM2 << SEESAW_SERCOM2_BASE) \
+			| ((uint32_t)CONFIG_SERCOM3 << SEESAW_SERCOM3_BASE) \
+			| ((uint32_t)CONFIG_SERCOM4 << SEESAW_SERCOM4_BASE) \
+			| ((uint32_t)CONFIG_SERCOM5 << SEESAW_SERCOM5_BASE) \
+			| ((uint32_t)CONFIG_DAP << SEESAW_DAP_BASE) \
+			| ((uint32_t)CONFIG_NEOPIXEL << SEESAW_NEOPIXEL_BASE))
+
+#endif

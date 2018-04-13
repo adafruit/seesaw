@@ -1,3 +1,4 @@
+### This fork adds USB <-> UART, SPI Slave interface and DSP Feather config
 
 # Introduction
 
@@ -9,9 +10,21 @@ variety of capabilities such as UART, ADC, DAC, extra GPIO, etc. to chips that d
 - [CircuitPython](https://github.com/adafruit/Adafruit_CircuitPython_seesaw)
 - [Python](https://github.com/adafruit/Adafruit_Python_seesaw)
 
-# Build
+## Build
 
-Load seesaw.atsln with Atmel Studio 7 and build 
+### Requirements
+
+* `make` and a Unix environment
+* `python` in path
+* `arm-none-eabi-gcc` and `arm-none-eabi-g++` in the path
+
+### Build commands
+
+The default board is `debug`. You can build a different one using:
+
+```
+make BOARD=samd09breakout
+```
 
 # Contributing
 
