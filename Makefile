@@ -4,7 +4,7 @@ include boards/$(BOARD)/board.mk
 CC=arm-none-eabi-gcc
 CXX=arm-none-eabi-g++
 
-COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g -D__$(CHIP_VARIANT)__ -DBOARD_$(BOARD_NAME)
+COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g3 -D__$(CHIP_VARIANT)__ -DBOARD_$(BOARD_NAME)
 
 WFLAGS = \
 -Wall -Werror
@@ -99,6 +99,7 @@ SOURCES = $(COMMON_SRC) \
 	bsp/bsp_gpio.cpp \
 	bsp/bsp_sercom.cpp \
 	bsp/bsp_timer.cpp \
+	bsp/bsp_dma.cpp \
 
 SOBJECTS = $(patsubst %.S,$(BUILD_PATH)/%.o,$(SSOURCES))
 COBJECTS = $(patsubst %.c,$(BUILD_PATH)/%.o,$(CSOURCES))

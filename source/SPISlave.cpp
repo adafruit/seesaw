@@ -39,6 +39,9 @@
 #include "SeesawConfig.h"
 #include "PinMap.h"
 #include "bsp_nvmctrl.h"
+#include "bsp_dma.h"
+
+#define SPI_SLAVE_USE_DMA
 
 Q_DEFINE_THIS_FILE
 
@@ -51,7 +54,7 @@ static Fifo *m_defaultOutFifo;
 
 static volatile bool slave_busy;
 
-static volatile uint8_t bytes_received, high_byte, low_byte;
+static uint8_t bytes_received, high_byte, low_byte;
 
 SPISlave::SPISlave( Sercom *sercom) :
     QActive((QStateHandler)&SPISlave::InitialPseudoState), 
@@ -131,13 +134,13 @@ QState SPISlave::Stopped(SPISlave * const me, QEvt const * const e) {
 			pinPeripheral(CONFIG_SPI_SLAVE_PIN_MISO, 3);
 			pinPeripheral(CONFIG_SPI_SLAVE_PIN_SCK, 3);
 			pinPeripheral(CONFIG_SPI_SLAVE_PIN_SS, 3);
-			
+
 			initSPISlave( me->m_sercom, CONFIG_SPI_SLAVE_PAD_TX, CONFIG_SPI_SLAVE_PAD_RX, CONFIG_SPI_SLAVE_CHAR_SIZE,CONFIG_SPI_SLAVE_DATA_ORDER);
 			setClockModeSPI( me->m_sercom, SERCOM_SPI_MODE_3);
 			NVIC_ClearPendingIRQ(CONFIG_SPI_SLAVE_IRQn);
 			
-			//enable receive complete and transaction complete interrupts
-			me->m_sercom->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_RXC | SERCOM_SPI_INTENSET_TXC;
+			//enable transaction complete interrupt
+			me->m_sercom->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_TXC;
 			
 			SPISlaveStartReq const &req = static_cast<SPISlaveStartReq const &>(*e);
 			m_inFifo = req.getInFifo();
@@ -148,9 +151,39 @@ QState SPISlave::Stopped(SPISlave * const me, QEvt const * const e) {
 			
 			m_inFifo->Reset();
 			m_outFifo->Reset();
-			
-			//gpio_init(PORTA, PIN_ACTIVITY_LED, 1); //set as output
-			
+
+#ifdef SPI_SLAVE_USE_DMA
+            dmac_init();
+            dmac_alloc(0);
+
+            dmac_set_action(0, DMA_TRIGGER_ACTON_BEAT);
+            dmac_set_trigger(0, SERCOM3_DMAC_ID_RX);
+
+            dmac_set_descriptor(
+              0,
+              (void *)&me->m_sercom->SPI.DATA.reg,
+              (void *)m_inFifo->GetAddr(0),
+              64,
+              DMA_BEAT_SIZE_BYTE,
+              false,
+              true);
+
+            dmac_alloc(1);
+            dmac_set_action(1, DMA_TRIGGER_ACTON_BEAT);
+            dmac_set_trigger(1, SERCOM3_DMAC_ID_TX);
+
+            //TODO: this descriptor needs to be dynamic for the fifo
+            dmac_set_descriptor(
+              1,
+              (void *)m_defaultOutFifo->GetAddr(0),
+              (void *)&me->m_sercom->SPI.DATA.reg,
+              64,
+              DMA_BEAT_SIZE_BYTE,
+              true,
+              false);
+#endif
+            //gpio_init(PORTA, PIN_ACTIVITY_LED, 1); //set as output
+
 			Evt *evt = new SPISlaveStartCfm(req.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
 			
@@ -242,6 +275,7 @@ QState SPISlave::Idle(SPISlave * const me, QEvt const * const e) {
 				//write data, no response needed
 				Evt *evt = new DelegateProcessCommand(me->m_id, req.getHighByte(), req.getLowByte(), req.getLen(), m_inFifo);
 				QF::PUBLISH(evt, me);
+				dmac_start(0);
 				status = Q_HANDLED();
 			}
 			else if(req.getLowByte() > 0 || req.getHighByte() > 0) {
@@ -254,6 +288,7 @@ QState SPISlave::Idle(SPISlave * const me, QEvt const * const e) {
 			else{
 				//toss the data
 				m_inFifo->Reset();
+				dmac_start(0);
 				status = Q_HANDLED();
 			}
 			
@@ -274,6 +309,7 @@ QState SPISlave::Busy(SPISlave * const me, QEvt const * const e) {
 			LOG_EVENT(e);
 			
 			slave_busy = true;
+			dmac_abort(0);
 			
 			//assume default output fifo
 			m_outFifo = m_defaultOutFifo;
@@ -288,7 +324,9 @@ QState SPISlave::Busy(SPISlave * const me, QEvt const * const e) {
 				if(req.getFifo() != NULL){
 					 m_outFifo = req.getFifo();
 				}
-				
+
+                dmac_start(1);
+
 				//post an interrupt event
 				Evt *evt = new InterruptSetReq( SEESAW_INTERRUPT_SPI_SLAVE_DATA_RDY );
 				QF::PUBLISH(evt, me);
@@ -312,6 +350,7 @@ QState SPISlave::Busy(SPISlave * const me, QEvt const * const e) {
 		
 		case Q_EXIT_SIG: {
 			LOG_EVENT(e);
+			dmac_start(0);
 			//PORT->Group[PORTA].OUTCLR.reg = (1ul<<PIN_ACTIVITY_LED); //activity led off
 			status = Q_HANDLED();
 			break;
@@ -335,6 +374,7 @@ extern "C" {
 	void CONFIG_SPI_SLAVE_HANDLER(void){
 		QXK_ISR_ENTRY();
 		
+#ifndef SPI_SLAVE_USE_DMA
 		if(CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.RXC){
 			CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.RXC = 1;
 			
@@ -349,14 +389,34 @@ extern "C" {
 				else m_inFifo->Write(&c, 1);
 			}
 		}
+#endif
 		
 		if(CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.TXC){
 			CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.TXC = 1;
 			
-			//the transaction is complete, send to the system to process
-			SPISlave::ReceiveCallback(high_byte, low_byte, (bytes_received > 0 ? bytes_received - 2 : 0) );
+			dmac_abort(1);
+            dmac_abort(0);
+
+			if(!slave_busy){
+
+                bytes_received = dmac_get_transfer_count(0);
+
+                m_inFifo->SetIndex(bytes_received);
+                m_inFifo->Read(&high_byte, 1);
+                m_inFifo->Read(&low_byte, 1);
+
+                //the transaction is complete, send to the system to process
+                SPISlave::ReceiveCallback(high_byte, low_byte, (bytes_received > 0 ? bytes_received - 2 : 0) );
+                high_byte = 0;
+                low_byte = 0;
+			}
+			else{
+			    __BKPT();
+			}
 			bytes_received = 0;
 		}
+
+#ifndef SPI_SLAVE_USE_DMA
 		if(CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.DRE){
 			CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.DRE = 1;
 			//we can send data, do it.
@@ -365,6 +425,7 @@ extern "C" {
 			if(count != 0)
 				CONFIG_SPI_SLAVE_SERCOM->SPI.DATA.reg = c;
 		}
+#endif
 		
 		QXK_ISR_EXIT();
 	}	
