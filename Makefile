@@ -4,7 +4,7 @@ include boards/$(BOARD)/board.mk
 CC=arm-none-eabi-gcc
 CXX=arm-none-eabi-g++
 
-COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g3 -D__$(CHIP_VARIANT)__ -DBOARD_$(BOARD_NAME)
+COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -O2 -g -D__$(CHIP_VARIANT)__ -DBOARD_$(BOARD_NAME)
 
 WFLAGS = \
 -Wall -Werror

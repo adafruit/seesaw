@@ -219,6 +219,11 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 						
 			Evt *evt = new Evt(DELEGATE_STOP_REQ);
 			QF::PUBLISH(evt, me);
+
+#if CONFIG_INTERRUPT
+			evt = new Evt(INTERRUPT_STOP_REQ);
+			QF::PUBLISH(evt, me);
+#endif
 			
 #if CONFIG_I2C_SLAVE
 			evt = new Evt(I2C_SLAVE_STOP_REQ);
@@ -242,11 +247,6 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 
 #if CONFIG_TIMER
 			evt = new Evt(TIMER_STOP_REQ);
-			QF::PUBLISH(evt, me);
-#endif
-
-#if CONFIG_INTERRUPT
-			evt = new Evt(INTERRUPT_STOP_REQ);
 			QF::PUBLISH(evt, me);
 #endif
 
@@ -342,6 +342,11 @@ QState System::Starting(System * const me, QEvt const * const e) {
 			Evt *evt = new Evt(DELEGATE_START_REQ);
 			QF::PUBLISH(evt, me);
 			
+#if CONFIG_INTERRUPT
+			evt = new Evt(INTERRUPT_START_REQ);
+			QF::PUBLISH(evt, me);
+#endif
+
 #if CONFIG_I2C_SLAVE
 			evt = new I2CSlaveStartReq(&me->m_I2CSlaveOutFifo, &me->m_I2CSlaveInFifo);
 			QF::PUBLISH(evt, me);
@@ -364,11 +369,6 @@ QState System::Starting(System * const me, QEvt const * const e) {
 
 #if CONFIG_TIMER
 			evt = new Evt(TIMER_START_REQ);
-			QF::PUBLISH(evt, me);
-#endif
-
-#if CONFIG_INTERRUPT
-			evt = new Evt(INTERRUPT_START_REQ);
 			QF::PUBLISH(evt, me);
 #endif
 

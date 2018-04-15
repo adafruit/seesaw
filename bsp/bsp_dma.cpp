@@ -19,7 +19,9 @@ void dmac_init()
     PM->AHBMASK.bit.DMAC_       = 1; // Initialize DMA clocks
     PM->APBBMASK.bit.DMAC_      = 1;
 
+    NVIC_DisableIRQ(DMAC_IRQn);
     DMAC->CTRL.bit.DMAENABLE    = 0; // Disable DMA controller
+    while(DMAC->CTRL.bit.DMAENABLE);
     DMAC->CTRL.bit.SWRST        = 1; // Perform software reset
 
     // Initialize descriptor list addresses

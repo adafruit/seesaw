@@ -41,8 +41,6 @@
 #include "bsp_nvmctrl.h"
 #include "bsp_dma.h"
 
-#define SPI_SLAVE_USE_DMA
-
 Q_DEFINE_THIS_FILE
 
 using namespace FW;
@@ -69,6 +67,8 @@ QState SPISlave::InitialPseudoState(SPISlave * const me, QEvt const * const e) {
 	me->subscribe(SPI_SLAVE_REQUEST);
 	me->subscribe(SPI_SLAVE_RECEIVE);
 	
+	me->subscribe(SPI_SLAVE_READY);
+
 	me->subscribe(DELEGATE_DATA_READY);
 	  
     return Q_TRAN(&SPISlave::Root);
@@ -152,7 +152,9 @@ QState SPISlave::Stopped(SPISlave * const me, QEvt const * const e) {
 			m_inFifo->Reset();
 			m_outFifo->Reset();
 
-#ifdef SPI_SLAVE_USE_DMA
+			gpio_init(PORTA, CONFIG_INTERRUPT_PIN, 1); //set as output
+			gpio_write(PORTA, CONFIG_INTERRUPT_PIN, 0); //write low
+
             dmac_init();
             dmac_alloc(0);
 
@@ -172,16 +174,6 @@ QState SPISlave::Stopped(SPISlave * const me, QEvt const * const e) {
             dmac_set_action(1, DMA_TRIGGER_ACTON_BEAT);
             dmac_set_trigger(1, SERCOM3_DMAC_ID_TX);
 
-            //TODO: this descriptor needs to be dynamic for the fifo
-            dmac_set_descriptor(
-              1,
-              (void *)m_defaultOutFifo->GetAddr(0),
-              (void *)&me->m_sercom->SPI.DATA.reg,
-              64,
-              DMA_BEAT_SIZE_BYTE,
-              true,
-              false);
-#endif
             //gpio_init(PORTA, PIN_ACTIVITY_LED, 1); //set as output
 
 			Evt *evt = new SPISlaveStartCfm(req.GetSeq(), ERROR_SUCCESS);
@@ -253,10 +245,10 @@ QState SPISlave::Idle(SPISlave * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
-			
-			slave_busy = false;
-			m_inFifo->Reset();
-			
+
+            dmac_start(0);
+            gpio_write(PORTA, CONFIG_INTERRUPT_PIN, 1); //write high
+
             status = Q_HANDLED();
             break;
         }
@@ -275,7 +267,10 @@ QState SPISlave::Idle(SPISlave * const me, QEvt const * const e) {
 				//write data, no response needed
 				Evt *evt = new DelegateProcessCommand(me->m_id, req.getHighByte(), req.getLowByte(), req.getLen(), m_inFifo);
 				QF::PUBLISH(evt, me);
+
 				dmac_start(0);
+				gpio_write(PORTA, CONFIG_INTERRUPT_PIN, 1); //signal we are now ready to accept commands again
+
 				status = Q_HANDLED();
 			}
 			else if(req.getLowByte() > 0 || req.getHighByte() > 0) {
@@ -286,9 +281,8 @@ QState SPISlave::Idle(SPISlave * const me, QEvt const * const e) {
 				status = Q_TRAN(&SPISlave::Busy);
 			}
 			else{
-				//toss the data
-				m_inFifo->Reset();
 				dmac_start(0);
+				gpio_write(PORTA, CONFIG_INTERRUPT_PIN, 1); //signal we are now ready to accept commands again
 				status = Q_HANDLED();
 			}
 			
@@ -308,7 +302,6 @@ QState SPISlave::Busy(SPISlave * const me, QEvt const * const e) {
 		case Q_ENTRY_SIG: {
 			LOG_EVENT(e);
 			
-			slave_busy = true;
 			dmac_abort(0);
 			
 			//assume default output fifo
@@ -324,33 +317,33 @@ QState SPISlave::Busy(SPISlave * const me, QEvt const * const e) {
 				if(req.getFifo() != NULL){
 					 m_outFifo = req.getFifo();
 				}
+	            dmac_set_descriptor(
+	              1,
+	              (void *)m_outFifo->GetAddr(0),
+	              (void *)&me->m_sercom->SPI.DATA.reg,
+	              64,
+	              DMA_BEAT_SIZE_BYTE,
+	              true,
+	              false);
 
                 dmac_start(1);
 
-				//post an interrupt event
-				Evt *evt = new InterruptSetReq( SEESAW_INTERRUPT_SPI_SLAVE_DATA_RDY );
-				QF::PUBLISH(evt, me);
+                gpio_write(PORTA, CONFIG_INTERRUPT_PIN, 1); //write high
+
+                status = Q_HANDLED();
 				
-				status = Q_HANDLED();
 			}
 			else
 				status = Q_UNHANDLED();
 			break;
 		}
 		case SPI_SLAVE_RECEIVE: {
-			LOG_EVENT(e);
-			//clear the interrupt
-			Evt *evt = new InterruptClearReq( SEESAW_INTERRUPT_SPI_SLAVE_DATA_RDY );
-			QF::PUBLISH(evt, me);
-			
-			//go back to idle once data has been read
 			status = Q_TRAN(&SPISlave::Idle);
 			break;
 		}
 		
 		case Q_EXIT_SIG: {
 			LOG_EVENT(e);
-			dmac_start(0);
 			//PORT->Group[PORTA].OUTCLR.reg = (1ul<<PIN_ACTIVITY_LED); //activity led off
 			status = Q_HANDLED();
 			break;
@@ -374,58 +367,29 @@ extern "C" {
 	void CONFIG_SPI_SLAVE_HANDLER(void){
 		QXK_ISR_ENTRY();
 		
-#ifndef SPI_SLAVE_USE_DMA
-		if(CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.RXC){
-			CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.RXC = 1;
-			
-			//read the data
-			uint8_t c = CONFIG_SPI_SLAVE_SERCOM->SPI.DATA.reg;
-			
-			if(!slave_busy){
-				bytes_received++;
-				
-				if(bytes_received == 1) high_byte = c;
-				else if(bytes_received == 2) low_byte = c;
-				else m_inFifo->Write(&c, 1);
-			}
-		}
-#endif
-		
 		if(CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.TXC){
+
+			gpio_write(PORTA, CONFIG_INTERRUPT_PIN, 0); //signal to the host to stop sending data
+
 			CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.TXC = 1;
-			
+
 			dmac_abort(1);
             dmac_abort(0);
 
-			if(!slave_busy){
+			bytes_received = dmac_get_transfer_count(0);
 
-                bytes_received = dmac_get_transfer_count(0);
+			m_inFifo->Reset();
+			m_inFifo->SetIndex(bytes_received);
+			m_inFifo->Read(&high_byte, 1);
+			m_inFifo->Read(&low_byte, 1);
 
-                m_inFifo->SetIndex(bytes_received);
-                m_inFifo->Read(&high_byte, 1);
-                m_inFifo->Read(&low_byte, 1);
+			//the transaction is complete, send to the system to process
+			SPISlave::ReceiveCallback(high_byte, low_byte, (bytes_received > 1 ? bytes_received - 2 : 0) );
+			high_byte = 0;
+			low_byte = 0;
 
-                //the transaction is complete, send to the system to process
-                SPISlave::ReceiveCallback(high_byte, low_byte, (bytes_received > 0 ? bytes_received - 2 : 0) );
-                high_byte = 0;
-                low_byte = 0;
-			}
-			else{
-			    __BKPT();
-			}
 			bytes_received = 0;
 		}
-
-#ifndef SPI_SLAVE_USE_DMA
-		if(CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.DRE){
-			CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.DRE = 1;
-			//we can send data, do it.
-			uint8_t c;
-			uint8_t count = m_outFifo->Read(&c, 1);
-			if(count != 0)
-				CONFIG_SPI_SLAVE_SERCOM->SPI.DATA.reg = c;
-		}
-#endif
 		
 		QXK_ISR_EXIT();
 	}	

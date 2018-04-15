@@ -59,6 +59,8 @@ protected:
     static QState Idle(SPISlave * const me, QEvt const * const e);
 	static QState Busy(SPISlave * const me, QEvt const * const e);
 
+	void handleReceive();
+
     enum {
         EVT_QUEUE_COUNT = 16,
     };

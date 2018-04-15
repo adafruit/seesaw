@@ -344,7 +344,7 @@ void initSPISlave( Sercom *sercom, SercomSpiTXPad miso, SercomRXPad mosi, Sercom
 
 	//Setting the CTRLB register
 	sercom->SPI.CTRLB.reg = SERCOM_SPI_CTRLB_CHSIZE(charSize) |
-	SERCOM_SPI_CTRLB_RXEN;	//Active the SPI receiver.
+	SERCOM_SPI_CTRLB_RXEN | SERCOM_SPI_CTRLB_PLOADEN;	//Active the SPI receiver.
 
 
 }

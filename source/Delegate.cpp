@@ -512,7 +512,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							case SEESAW_ADC_INTEN:
 							case SEESAW_ADC_INTENCLR:{
 								Fifo *fifo = req.getFifo();
-								uint8_t dataByte;
+								uint8_t dataByte = 0;
 								fifo->Read(&dataByte, 1);
 								len--;
 								
@@ -556,7 +556,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							case SEESAW_SERCOM_STATUS:
 							case SEESAW_SERCOM_INTEN:{
 								Fifo *fifo = req.getFifo();
-								uint8_t dataByte;
+								uint8_t dataByte = 0;
 								fifo->Read(&dataByte, 1);
 								len--;
 								
