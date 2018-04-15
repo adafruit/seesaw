@@ -66,8 +66,6 @@ QState SPISlave::InitialPseudoState(SPISlave * const me, QEvt const * const e) {
       
 	me->subscribe(SPI_SLAVE_REQUEST);
 	me->subscribe(SPI_SLAVE_RECEIVE);
-	
-	me->subscribe(SPI_SLAVE_READY);
 
 	me->subscribe(DELEGATE_DATA_READY);
 	  
