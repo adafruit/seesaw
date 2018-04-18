@@ -28,6 +28,8 @@
 #include "AODAP.h"
 #include "Neopixel.h"
 
+#include "bsp_gpio.h"
+
 using namespace QP;
 
 uint32_t evtPoolSmall[ROUND_UP_DIV_4(EVT_SIZE_SMALL * EVT_COUNT_SMALL)];
@@ -95,6 +97,7 @@ int main(void)
 	QP::QF::psInit(subscrSto, Q_DIM(subscrSto)); // init publish-subscribe
 	
 	BspInit();
+
 	//Start active objects.
 	sys.Start(PRIO_SYSTEM);
 	del.Start(PRIO_DELEGATE);

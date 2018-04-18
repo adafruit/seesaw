@@ -4,7 +4,7 @@ include boards/$(BOARD)/board.mk
 CC=arm-none-eabi-gcc
 CXX=arm-none-eabi-g++
 
-COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g -D__$(CHIP_VARIANT)__ -DBOARD_$(BOARD_NAME)
+COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g -D$(CHIP_FAMILY) -D__$(CHIP_VARIANT)__ -DBOARD_$(BOARD_NAME)
 
 WFLAGS = \
 -Wall -Werror
@@ -35,23 +35,23 @@ INCLUDES = -I. -I./include -I./bsp -I./lib/qp/extras -I./lib/qp/include -I./lib/
 INCLUDES += -I./boards/$(BOARD) -Ilib/cmsis/CMSIS/Include
 INCLUDES += -I$(BUILD_PATH)
 
-ifeq ($(CHIP_FAMILY), samd21)
+ifeq ($(CHIP_FAMILY), SAMD21)
 INCLUDES += -Ilib/samd21/samd21a/include/
 endif
 
-ifeq ($(CHIP_FAMILY), samd09)
+ifeq ($(CHIP_FAMILY), SAMD09)
 INCLUDES += -Ilib/samd09/include/
 endif
 
 SSOURCES = \
 	$(QPPORT)/qxk_port.S \
 
-ifeq ($(CHIP_FAMILY), samd21)
+ifeq ($(CHIP_FAMILY), SAMD21)
 CSOURCES = Device_Startup/startup_samd21.c \
 	Device_Startup/system_samd21.c
 endif
 
-ifeq ($(CHIP_FAMILY), samd09)
+ifeq ($(CHIP_FAMILY), SAMD09)
 CSOURCES = Device_Startup/startup_samd09.c \
 	Device_Startup/system_samd09.c
 endif
