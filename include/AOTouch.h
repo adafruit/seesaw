@@ -27,42 +27,63 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef HSM_ID_H
-#define HSM_ID_H
 
-enum {
-    SYSTEM = 1,
-	DELEGATE,
-	I2C_SLAVE,
-	AO_DAC,
-	AO_TIMER,
-	AO_ADC,
-	AO_TOUCH,
-	AO_SERCOM0,
-	AO_SERCOM1,
-	AO_SERCOM2,
-	AO_SERCOM5,
-	AO_INTERRUPT,
-	AO_DAP,
-	AO_NEOPIXEL,
+#ifndef AO_TOUCH_H
+#define AO_TOUCH_H
+
+#include "qpcpp.h"
+#include "qp_extras.h"
+
+#include "hsm_id.h"
+
+#include "adafruit_ptc.h"
+
+#include "SeesawConfig.h"
+
+using namespace QP;
+using namespace FW;
+
+class AOTouch : public QActive {
+public:
+    AOTouch();
+    ~AOTouch() {}
+    void Start(uint8_t prio) {
+        QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
+    }
+
+protected:
+    static QState InitialPseudoState(AOTouch * const me, QEvt const * const e);
+    static QState Root(AOTouch * const me, QEvt const * const e);
+    static QState Stopped(AOTouch * const me, QEvt const * const e);
+    static QState Started(AOTouch * const me, QEvt const * const e);
+
+    enum {
+        EVT_QUEUE_COUNT = 8,
+    };
+    QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
+    uint8_t m_id;
+	uint16_t m_nextSequence;
+    char const * m_name;
+
+#if CONFIG_TOUCH0
+    struct adafruit_ptc_config config0;
+#endif
+
+#if CONFIG_TOUCH1
+    struct adafruit_ptc_config config1;
+#endif
+
+#if CONFIG_TOUCH2
+    struct adafruit_ptc_config config2;
+#endif
+
+#if CONFIG_TOUCH3
+    struct adafruit_ptc_config config3;
+#endif
+
 };
 
-// Higher value corresponds to higher priority.
-// The maximum priority is defined in qf_port.h as QF_MAX_ACTIVE (32)
-enum
-{
-    PRIO_SYSTEM     = 22,
-	PRIO_I2C_SLAVE	= 27,
-	PRIO_ADC		= 24,
-	PRIO_TOUCH      = 19,
-	PRIO_TIMER		= 25,
-	PRIO_DAC		= 23,
-	PRIO_SERCOM		= 26,
-	PRIO_DELEGATE   = 30,
-	PRIO_INTERRUPT  = 31,
-	PRIO_DAP		= 21,
-	PRIO_NEOPIXEL	= 20,
-};
+
+#endif // AO_TOUCH_H
 
 
-#endif // HSM_ID_H

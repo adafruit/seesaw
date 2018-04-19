@@ -4,7 +4,7 @@ include boards/$(BOARD)/board.mk
 CC=arm-none-eabi-gcc
 CXX=arm-none-eabi-g++
 
-COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g -D$(CHIP_FAMILY) -D__$(CHIP_VARIANT)__ -DBOARD_$(BOARD_NAME)
+COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g3 -D$(CHIP_FAMILY) -D__$(CHIP_VARIANT)__ -DBOARD_$(BOARD_NAME)
 
 WFLAGS = \
 -Wall -Werror
@@ -82,6 +82,7 @@ SOURCES = $(COMMON_SRC) \
 	source/event.cpp \
 	source/AOADC.cpp \
 	source/AODAC.cpp \
+	source/AOTouch.cpp \
 	source/AOInterrupt.cpp \
 	source/AOSERCOM.cpp \
 	source/AOTimer.cpp \
@@ -95,6 +96,8 @@ SOURCES = $(COMMON_SRC) \
 	bsp/bsp_gpio.cpp \
 	bsp/bsp_sercom.cpp \
 	bsp/bsp_timer.cpp \
+	bsp/pinmux.cpp \
+	bsp/adafruit_ptc.cpp \
 
 SOBJECTS = $(patsubst %.S,$(BUILD_PATH)/%.o,$(SSOURCES))
 COBJECTS = $(patsubst %.c,$(BUILD_PATH)/%.o,$(CSOURCES))

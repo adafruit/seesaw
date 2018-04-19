@@ -273,11 +273,25 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
                             default: {
 							    Evt *evt = new ADCReadRegReq(req.getRequesterId(), lowByte, req.getFifo());
                                 QF::PUBLISH(evt, me);
+                                break;
 							}
 						}
 						break;
 					}
 #endif //ADC
+
+#if CONFIG_TOUCH
+                    case SEESAW_TOUCH_BASE: {
+                        switch(lowByte){
+                            default: {
+                                Evt *evt = new TouchReadRegReq(req.getRequesterId(), lowByte, req.getFifo());
+                                QF::PUBLISH(evt, me);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+#endif //TOUCH
 
 #if CONFIG_SERCOM0 || CONFIG_SERCOM1 || CONFIG_SERCOM2 || CONFIG_SERCOM3 || CONFIG_SERCOM4 || CONFIG_SERCOM5 
 					case SEESAW_SERCOM0_BASE:

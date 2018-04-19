@@ -44,6 +44,14 @@
 //* ============== DAC =================== *//
 #define CONFIG_DAC 0
 
+//* ============== TOUCH =================== *//
+#define CONFIG_TOUCH 1
+
+#define CONFIG_TOUCH0 1
+#define CONFIG_TOUCH1 1
+#define CONFIG_TOUCH2 1
+#define CONFIG_TOUCH3 1
+
 //* ============== TIMER =================== *//
 #define CONFIG_TIMER 1
 

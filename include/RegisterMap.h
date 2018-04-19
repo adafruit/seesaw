@@ -231,3 +231,12 @@
 	#define SEESAW_NEOPIXEL_SHOW 0x05
 
 #endif
+
+//* ============== TOUCH =================== *//
+#define SEESAW_TOUCH_BASE 0x0F
+
+    /****** CHANNELS *****/
+    #define SEESAW_TOUCH_CHANNEL_0 0x10
+    #define SEESAW_TOUCH_CHANNEL_1 0x11
+    #define SEESAW_TOUCH_CHANNEL_2 0x12
+    #define SEESAW_TOUCH_CHANNEL_3 0x13
