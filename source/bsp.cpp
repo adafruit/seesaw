@@ -38,6 +38,7 @@
 #include "bsp_nvmctrl.h"
 #include "sam.h"
 #include "bsp_gpio.h"
+#include "bsp_sercom.h"
 
 #include "SeesawConfig.h"
 #include "Delegate.h"
@@ -48,6 +49,7 @@
 #define ENABLE_BSP_PRINT
 
 volatile uint32_t lastGPIOState = 0;
+volatile uint32_t _systemMs = 0;
 
 void operator delete(void * p)
 {
@@ -90,6 +92,16 @@ void BspInit() {
 	EIC->CTRL.bit.ENABLE = 1;
 	while (EIC->STATUS.bit.SYNCBUSY == 1) { }
 		*/
+
+#ifdef ENABLE_LOGGING
+	pinPeripheral(CONFIG_LOG_UART_PIN_TX, CONFIG_LOG_UART_PIN_TX_MUX);
+
+	initUART(CONFIG_LOG_SERCOM, SAMPLE_RATE_x16, CONFIG_LOG_UART_BAUD_RATE);
+	initFrame(CONFIG_LOG_SERCOM, CONFIG_LOG_UART_CHAR_SIZE, LSB_FIRST, CONFIG_LOG_UART_PARITY, CONFIG_LOG_UART_STOP_BIT);
+	initPads(CONFIG_LOG_SERCOM, CONFIG_LOG_UART_PAD_TX, CONFIG_LOG_UART_PAD_RX);
+
+	enableUART(CONFIG_LOG_SERCOM);
+#endif
 }
 
 void BspWrite(char const *buf, uint32_t len) {
@@ -97,14 +109,14 @@ void BspWrite(char const *buf, uint32_t len) {
 }
 
 uint32_t GetSystemMs() {
-	//TODO:
-	return 0;
+	return _systemMs;
 }
 
 extern "C" {
 	void SysTick_Handler(void) {
 		QXK_ISR_ENTRY();
 		QP::QF::tickX_(0);
+		_systemMs++;
 		
 		//process GPIO interrupts
 		uint32_t GPIOState = gpio_read_bulk();

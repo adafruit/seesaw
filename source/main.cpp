@@ -144,7 +144,7 @@ int main(void)
 	BspInit();
 	
 	bootBfin();
-	
+
 	//Start active objects.
 	sys.Start(PRIO_SYSTEM);
 	del.Start(PRIO_DELEGATE);

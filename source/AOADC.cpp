@@ -171,6 +171,7 @@ QState AOADC::Started(AOADC * const me, QEvt const * const e) {
 			break;
 		}
 		case ADC_READ_REG_REQ: {
+			LOG_EVENT(e);
 			ADCReadRegReq const &req = static_cast<ADCReadRegReq const &>(*e);
 			Fifo *dest = req.getDest();
 			uint8_t reg = req.getReg();
@@ -251,6 +252,7 @@ seesaw_adc_read:
 			break;
 		}
 		case ADC_WRITE_REG_REQ: {
+			LOG_EVENT(e);
 			ADCWriteRegReq const &req = static_cast<ADCWriteRegReq const &>(*e);
 			uint8_t reg = req.getReg();
 			
@@ -279,6 +281,7 @@ seesaw_adc_read:
 			break;
 		}
 		case ADC_WRITE_WINMON_REQ: {
+			LOG_EVENT(e);
 			ADCWriteWinmonThresh const &req = static_cast<ADCWriteWinmonThresh const &>(*e);
 			ADC->WINLT.reg = req.getLower();
 			ADC->WINUT.reg = req.getUpper();

@@ -55,7 +55,7 @@ typedef enum
 	SERCOM_RX_PAD_0 = 0,
 	SERCOM_RX_PAD_1,
 	SERCOM_RX_PAD_2,
-	SERCOM_RX_PAD_3
+	SERCOM_RX_PAD_3,
 } SercomRXPad;
 
 typedef enum
@@ -270,6 +270,7 @@ inline bool isEnabledUART( Sercom * sercom )
 }
 
 int writeDataUART( Sercom * sercom ,uint8_t data);
+int writeDataUART( Sercom * sercom , char const *buffer);
 
 void initSPI( Sercom * sercom, SercomSpiTXPad mosi, SercomRXPad miso, SercomSpiCharSize charSize, SercomDataOrder dataOrder) ;
 void initSPISlave( Sercom *sercom, SercomSpiTXPad miso, SercomRXPad mosi, SercomSpiCharSize charSize, SercomDataOrder dataOrder) ;

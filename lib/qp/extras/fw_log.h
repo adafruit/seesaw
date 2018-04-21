@@ -33,11 +33,22 @@
 #include "qpcpp.h"
 #include "fw_pipe.h"
 
+#include <stdio.h>
+
 #define FW_LOG_ASSERT(t_) ((t_) ? (void)0 : Q_onAssert("fw_log.h", (int_t)__LINE__))
 
 namespace FW {
 
-#define PRINT(format_, ...)      Log::Print(format_, ## __VA_ARGS__)
+//#define PRINT(format_, ...)      Log::Print(format_, ## __VA_ARGS__)
+#ifdef ENABLE_LOGGING
+#define PRINT(format_, ...)	{ \
+						char __str[80]; \
+						sprintf(__str, format_, ## __VA_ARGS__); \
+						writeDataUART(CONFIG_LOG_SERCOM, __str); \
+						}
+#else
+#define PRINT(format_, ...)
+#endif
 // The following macros can only be used within an HSM. Newline is automatically appended.
 #define DEBUG(format_, ...)      Log::Debug(me->m_name, __FUNCTION__, format_, ## __VA_ARGS__);
 
@@ -46,7 +57,7 @@ public:
     static void AddInterface(Fifo *fifo, QP::QSignal sig);
     static void DeleteInterface();
     static void Write(char const *buf, uint32_t len);
-    static uint32_t Print(char const *format, ...);
+    static void Print(char const *format, ...);
     static void Event(char const *name, char const *func, const char *evtName, int sig);
     static void Debug(char const *name, char const *func, char const *format, ...);
     

@@ -108,6 +108,8 @@ static inline void dmac_start(uint8_t channel)
 {
     DMAC->CHID.bit.ID    = channel;
     DMAC->CHCTRLA.bit.ENABLE = 1; // Enable the transfer channel
+
+    while(!DMAC->CHCTRLA.bit.ENABLE);
 }
 
 static inline void dmac_abort(uint8_t channel)

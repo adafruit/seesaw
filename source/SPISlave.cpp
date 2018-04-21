@@ -193,6 +193,7 @@ QState SPISlave::Started(SPISlave * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
+            enableSPI(me->m_sercom);
             status = Q_HANDLED();
             break;
         }
@@ -202,7 +203,6 @@ QState SPISlave::Started(SPISlave * const me, QEvt const * const e) {
         }
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
-			enableWIRE( me->m_sercom );
             status = Q_HANDLED();
             break;
         }
@@ -215,6 +215,7 @@ QState SPISlave::Started(SPISlave * const me, QEvt const * const e) {
 			break;
 		}
 		case DELEGATE_DATA_READY:{
+			LOG_EVENT(e);
 			DelegateDataReady const &req = static_cast<DelegateDataReady const &>(*e);
 			
 			//host may have cancelled transaction
@@ -261,7 +262,7 @@ QState SPISlave::Idle(SPISlave * const me, QEvt const * const e) {
 			
 			SPISlaveReceive const &req = static_cast<SPISlaveReceive const &>(*e);
 			
-			if(req.getLen() > 0){
+			if((req.getLowByte() > 0 || req.getHighByte() > 0) && req.getLen() > 0){
 				//write data, no response needed
 				Evt *evt = new DelegateProcessCommand(me->m_id, req.getHighByte(), req.getLowByte(), req.getLen(), m_inFifo);
 				QF::PUBLISH(evt, me);
@@ -300,7 +301,8 @@ QState SPISlave::Busy(SPISlave * const me, QEvt const * const e) {
 		case Q_ENTRY_SIG: {
 			LOG_EVENT(e);
 			
-			dmac_abort(0);
+			//dmac_abort(0);
+			slave_busy = true;
 			
 			//assume default output fifo
 			m_outFifo = m_defaultOutFifo;
@@ -310,6 +312,7 @@ QState SPISlave::Busy(SPISlave * const me, QEvt const * const e) {
 			break;
 		}
 		case DELEGATE_DATA_READY: {
+			LOG_EVENT(e);
 			DelegateDataReady const &req = static_cast<DelegateDataReady const &>(*e);
 			if(req.getRequesterId() == me->m_id){
 				if(req.getFifo() != NULL){
@@ -336,12 +339,14 @@ QState SPISlave::Busy(SPISlave * const me, QEvt const * const e) {
 			break;
 		}
 		case SPI_SLAVE_RECEIVE: {
+			LOG_EVENT(e);
 			status = Q_TRAN(&SPISlave::Idle);
 			break;
 		}
 		
 		case Q_EXIT_SIG: {
 			LOG_EVENT(e);
+			slave_busy = false;
 			//PORT->Group[PORTA].OUTCLR.reg = (1ul<<PIN_ACTIVITY_LED); //activity led off
 			status = Q_HANDLED();
 			break;
@@ -374,7 +379,8 @@ extern "C" {
 			dmac_abort(1);
             dmac_abort(0);
 
-			bytes_received = dmac_get_transfer_count(0);
+            if(!slave_busy)
+            	bytes_received = dmac_get_transfer_count(0);
 
 			m_inFifo->Reset();
 			m_inFifo->SetIndex(bytes_received);
@@ -387,6 +393,7 @@ extern "C" {
 			low_byte = 0;
 
 			bytes_received = 0;
+			dmac_start(0);
 		}
 		
 		QXK_ISR_EXIT();
