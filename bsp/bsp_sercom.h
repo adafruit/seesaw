@@ -268,5 +268,6 @@ inline bool isEnabledUART( Sercom * sercom )
 }
 
 int writeDataUART( Sercom * sercom ,uint8_t data);
+int writeDataUART( Sercom * sercom , char const *buffer);
 
 #endif

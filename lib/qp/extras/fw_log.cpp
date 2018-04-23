@@ -33,6 +33,8 @@
 #include "qpcpp.h"
 #include "fw_pipe.h"
 #include "fw_log.h"
+#include "SeesawConfig.h"
+#include "bsp_sercom.h"
 
 Q_DEFINE_THIS_FILE
 
@@ -102,32 +104,28 @@ uint32_t Log::Print(char const *format, ...) {
 void Log::Event(char const *name, char const *func, const char *evtName, int sig) {
 #ifdef ENABLE_LOGGING
     Q_ASSERT(name && func && sig && evtName);
-	__BKPT();
+
+    char __ms[20];
+    sprintf(__ms, "[%li] ", GetSystemMs());
+    writeDataUART(CONFIG_LOG_SERCOM, __ms);
+    writeDataUART(CONFIG_LOG_SERCOM, name);
+    writeDataUART(CONFIG_LOG_SERCOM, "(");
+    writeDataUART(CONFIG_LOG_SERCOM, func);
+    writeDataUART(CONFIG_LOG_SERCOM, "): ");
+    writeDataUART(CONFIG_LOG_SERCOM, evtName);
+    writeDataUART(CONFIG_LOG_SERCOM, "\n");
 #endif
 }
 
 void Log::Debug(char const *name, char const *func, char const *format, ...) {
-//DM: TODO: this
-/*
-    char buf[BUF_LEN];
-    // Reserve 2 bytes for newline.
-    const uint32_t MAX_LEN = sizeof(buf) - 2;
-    // Note there is no space after type name.
-    uint32_t len = snprintf(buf, MAX_LEN, "[%lu] %s (%s): ", GetSystemMs(), name, func);
-    len = LESS(len, (MAX_LEN - 1));
-    if (len < (MAX_LEN - 1)) {
-        va_list arg;
-        va_start(arg, format);
-        len += vsnprintf(&buf[len], MAX_LEN - len, format, arg);
-        va_end(arg);
-        len = LESS(len, MAX_LEN - 1);
-    }
-    Q_ASSERT(len <= (sizeof(buf) - 3));
-    buf[len++] = '\n';
-    buf[len++] = '\r';
-    buf[len] = 0;
-    Write(buf, len);
-*/
+#ifdef ENABLE_LOGGING
+    writeDataUART(CONFIG_LOG_SERCOM, name);
+    writeDataUART(CONFIG_LOG_SERCOM, "(");
+    writeDataUART(CONFIG_LOG_SERCOM, func);
+    writeDataUART(CONFIG_LOG_SERCOM, "): ");
+    writeDataUART(CONFIG_LOG_SERCOM, format);
+    writeDataUART(CONFIG_LOG_SERCOM, "\n");
+#endif
 }
 
 } // namespace FW

@@ -47,7 +47,9 @@
 //* ============== TOUCH =================== *//
 #define CONFIG_TOUCH 1
 
-#define CONFIG_TOUCH0 1
+#ifndef ENABLE_LOGGING
+#define CONFIG_TOUCH0 1 //this is the UART log pin
+#endif
 #define CONFIG_TOUCH1 1
 #define CONFIG_TOUCH2 1
 #define CONFIG_TOUCH3 1
