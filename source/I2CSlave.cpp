@@ -53,6 +53,36 @@ volatile bool slave_busy;
 
 volatile uint8_t bytes_received, high_byte, low_byte;
 
+#if CONFIG_I2C_SLAVE_FLOW_CONTROL
+#if CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN >= 32
+#define FLOW_CONTROL_LOW            PORT->Group[PORTB].OUTCLR.reg = (1ul<<(CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN-32));
+#else
+#define FLOW_CONTROL_LOW            PORT->Group[PORTA].OUTCLR.reg = (1ul<<CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN);
+#endif
+#else
+#define FLOW_CONTROL_LOW
+#endif
+
+#if CONFIG_I2C_SLAVE_FLOW_CONTROL
+#if CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN >= 32
+#define FLOW_CONTROL_HIGH           PORT->Group[PORTB].OUTSET.reg = (1ul<<(CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN-32));
+#else
+#define FLOW_CONTROL_HIGH            PORT->Group[PORTA].OUTSET.reg = (1ul<<CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN);
+#endif
+#else
+#define FLOW_CONTROL_HIGH
+#endif
+
+#if CONFIG_I2C_SLAVE_FLOW_CONTROL
+#if CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN >= 32
+#define FLOW_CONTROL_INIT            gpio_init(PORTB, CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN-32, 1); //set as output
+#else
+#define FLOW_CONTROL_INIT            gpio_init(PORTA, CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN, 1); //set as output
+#endif
+#else
+#define FLOW_CONTROL_INIT
+#endif
+
 I2CSlave::I2CSlave( Sercom *sercom) :
     QActive((QStateHandler)&I2CSlave::InitialPseudoState), 
     m_id(I2C_SLAVE), m_name("I2C Slave"), m_sercom(sercom),
@@ -148,6 +178,9 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
 			val = (gpio_read_bulk() >> PIN_ADDR_0);
 			val ^= 0x03;
 #endif
+
+			FLOW_CONTROL_INIT
+
 			initSlaveWIRE( me->m_sercom, addr + (val & 0x03) );
 			enableWIRE( me->m_sercom );
 			NVIC_ClearPendingIRQ( CONFIG_I2C_SLAVE_IRQn );
@@ -245,6 +278,7 @@ QState I2CSlave::Idle(I2CSlave * const me, QEvt const * const e) {
             LOG_EVENT(e);
 			
 			slave_busy = false;
+			FLOW_CONTROL_HIGH
 			
             status = Q_HANDLED();
             break;
@@ -266,16 +300,21 @@ QState I2CSlave::Idle(I2CSlave * const me, QEvt const * const e) {
 			
 			I2CSlaveReceive const &req = static_cast<I2CSlaveReceive const &>(*e);
 			
-			if(req.getLen() > 0){
+			if((req.getLowByte() > 0 || req.getHighByte() > 0) && req.getLen() > 0){
 				Evt *evt = new DelegateProcessCommand(me->m_id, req.getHighByte(), req.getLowByte(), req.getLen(), m_inFifo);
 				QF::PUBLISH(evt, me);
+				FLOW_CONTROL_HIGH
 				status = Q_HANDLED();
 			}
-			else {
+			else if(req.getLowByte() > 0 || req.getHighByte() > 0) {
 				m_defaultOutFifo->Reset();	
 				Evt *evt = new DelegateProcessCommand(me->m_id, req.getHighByte(), req.getLowByte(), 0, m_defaultOutFifo);
 				QF::PUBLISH(evt, me);
 				status = Q_TRAN(&I2CSlave::Busy);
+			}
+			else{
+			    FLOW_CONTROL_HIGH
+			    status = Q_HANDLED();
 			}
 			
 			break;
@@ -356,6 +395,7 @@ extern "C" {
 		else if(isStopDetectedWIRE( CONFIG_I2C_SLAVE_SERCOM ) ||
 		(isAddressMatch( CONFIG_I2C_SLAVE_SERCOM ) && isRestartDetectedWIRE( CONFIG_I2C_SLAVE_SERCOM ) && !isMasterReadOperationWIRE( CONFIG_I2C_SLAVE_SERCOM ))) //Stop or Restart detected
 		{
+		    FLOW_CONTROL_LOW
 			prepareAckBitWIRE(CONFIG_I2C_SLAVE_SERCOM);
 			prepareCommandBitsWire(CONFIG_I2C_SLAVE_SERCOM, 0x03);
 			

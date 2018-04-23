@@ -148,6 +148,8 @@
 //override default mux
 #define CONFIG_I2C_SLAVE_MUX 3
 
+#define CONFIG_I2C_SLAVE_FLOW_CONTROL 0
+
 //* ============== SERCOM =================== *//
 #define CONFIG_SERCOM0 0
 #define CONFIG_SERCOM1 0

@@ -49,6 +49,7 @@
 #define ENABLE_BSP_PRINT
 
 volatile uint32_t lastGPIOState = 0;
+volatile uint32_t _systemMs = 0;
 
 void operator delete(void * p)
 {
@@ -101,14 +102,14 @@ void BspWrite(char const *buf, uint32_t len) {
 }
 
 uint32_t GetSystemMs() {
-	//TODO:
-	return 0;
+    return _systemMs;
 }
 
 extern "C" {
 	void SysTick_Handler(void) {
 		QXK_ISR_ENTRY();
 		QP::QF::tickX_(0);
+		_systemMs++;
 		
 		//process GPIO interrupts
 		uint32_t GPIOState = gpio_read_bulk();
