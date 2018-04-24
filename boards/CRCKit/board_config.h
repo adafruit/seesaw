@@ -12,12 +12,12 @@
 #define CONFIG_NO_ADDR
 
 //* ============== POOL SIZES =================== *//
-#define EVT_SIZE_SMALL 16
-#define EVT_SIZE_MEDIUM 32
-#define EVT_SIZE_LARGE 64
-#define EVT_COUNT_SMALL 16
-#define EVT_COUNT_MEDIUM 8
-#define EVT_COUNT_LARGE 1
+#define EVT_SIZE_SMALL 32
+#define EVT_SIZE_MEDIUM 64
+#define EVT_SIZE_LARGE 256
+#define EVT_COUNT_SMALL 128
+#define EVT_COUNT_MEDIUM 64
+#define EVT_COUNT_LARGE 8
 
 //* ============== ADC =================== *//
 #define CONFIG_ADC 1
@@ -148,7 +148,7 @@
 //override default mux
 #define CONFIG_I2C_SLAVE_MUX 3
 
-#define CONFIG_I2C_SLAVE_FLOW_CONTROL 0
+#define CONFIG_I2C_SLAVE_FLOW_CONTROL 1
 
 //* ============== SERCOM =================== *//
 #define CONFIG_SERCOM0 0

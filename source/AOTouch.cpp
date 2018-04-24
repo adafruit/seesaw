@@ -223,6 +223,7 @@ QState AOTouch::Started(AOTouch * const me, QEvt const * const e) {
 			break;
 		}
 		case TOUCH_READ_REG_REQ: {
+		    LOG_EVENT(e);
             TouchReadRegReq const &req = static_cast<TouchReadRegReq const &>(*e);
 
 #if CONFIG_TOUCH

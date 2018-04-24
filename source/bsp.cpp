@@ -58,7 +58,7 @@ void operator delete(void * p)
 
 void BspInit() {
 	//initialize some clocks
-#if defined(__SAMD21G18A__)
+#if defined(SAMD21)
 	PM->APBCMASK.reg |= PM_APBCMASK_SERCOM0 | PM_APBCMASK_SERCOM1 | PM_APBCMASK_SERCOM2 | PM_APBCMASK_SERCOM3 | PM_APBCMASK_SERCOM4 | PM_APBCMASK_SERCOM5 ;
 	PM->APBCMASK.reg |= PM_APBCMASK_TCC0 | PM_APBCMASK_TCC1 | PM_APBCMASK_TCC2 | PM_APBCMASK_TC3 | PM_APBCMASK_TC4 | PM_APBCMASK_TC5 ;
 #else
@@ -223,7 +223,15 @@ extern "C" void Q_onAssert(char const * const module, int loc) {
     //
 
     QF_INT_DISABLE();
-	__BKPT();
+#ifdef ENABLE_LOGGING
+    char __ms[50];
+    sprintf(__ms, "[%li] ***QASSERT**** ", GetSystemMs());
+    writeDataUART(CONFIG_LOG_SERCOM, __ms);
+    writeDataUART(CONFIG_LOG_SERCOM, module);
+    sprintf(__ms, " at %i", loc);
+    writeDataUART(CONFIG_LOG_SERCOM, __ms);
+#endif
+    __BKPT();
 	while(1);
 }
 

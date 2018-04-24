@@ -377,7 +377,7 @@ QState AOTimer::Started(AOTimer * const me, QEvt const * const e) {
 			break;
 		}
 		case TIMER_WRITE_PWM: {
-			
+		    LOG_EVENT(e);
 			TimerWritePWM const &req = static_cast<TimerWritePWM const &>(*e);
 			PWMWrite(req.getPwm(), req.getValue());
 			
@@ -385,7 +385,7 @@ QState AOTimer::Started(AOTimer * const me, QEvt const * const e) {
 			break;
 		}
 		case TIMER_SET_FREQ: {
-			
+		    LOG_EVENT(e);
 			TimerSetFreq const &req = static_cast<TimerSetFreq const &>(*e);
 			setFreq(req.getPwm(), req.getFreq());
 			

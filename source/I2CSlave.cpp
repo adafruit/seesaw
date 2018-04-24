@@ -344,6 +344,7 @@ QState I2CSlave::Busy(I2CSlave * const me, QEvt const * const e) {
 			break;
 		}
 		case DELEGATE_DATA_READY: {
+		    LOG_EVENT(e);
 			DelegateDataReady const &req = static_cast<DelegateDataReady const &>(*e);
 			if(req.getRequesterId() == me->m_id){
 				if(req.getFifo() != NULL){
@@ -400,6 +401,8 @@ extern "C" {
 			prepareCommandBitsWire(CONFIG_I2C_SLAVE_SERCOM, 0x03);
 			
 			I2CSlave::ReceiveCallback(high_byte, low_byte, (bytes_received > 0 ? bytes_received - 2 : 0) );
+			high_byte = 0;
+			low_byte = 0;
 			bytes_received = 0;
 		}
 		else if(isAddressMatch(CONFIG_I2C_SLAVE_SERCOM))  //Address Match
