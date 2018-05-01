@@ -158,8 +158,12 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
         case I2C_SLAVE_START_REQ: {
             LOG_EVENT(e);
 			
+#if CONFIG_EEPROM
 			//see if there is an I2C addr set
 			uint8_t addr = eeprom_read_byte(SEESAW_EEPROM_I2C_ADDR);
+#else
+			uint8_t addr = CONFIG_I2C_SLAVE_ADDR;
+#endif
 			uint32_t val = 0;
 			addr = (addr > 0x7F ? CONFIG_I2C_SLAVE_ADDR : addr);
 

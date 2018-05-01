@@ -143,7 +143,7 @@ void board_init(void)
   /* DFLL Configuration in Closed Loop mode, cf product datasheet chapter 15.6.7.1 - Closed-Loop Operation */
 
   /* Remove the OnDemand mode, Bug http://avr32.icgroup.norway.atmel.com/bugzilla/show_bug.cgi?id=9905 */
-  SYSCTRL->DFLLCTRL.bit.ONDEMAND = 0 ;
+  SYSCTRL->DFLLCTRL.reg = SYSCTRL_DFLLCTRL_ENABLE;
 
   while ( (SYSCTRL->PCLKSR.reg & SYSCTRL_PCLKSR_DFLLRDY) == 0 )
   {
@@ -162,23 +162,31 @@ void board_init(void)
 #if defined(CRYSTALLESS)
 
 #if defined(SAMD21)
-  #define NVM_SW_CALIB_DFLL48M_COARSE_VAL 58
-  #define NVM_SW_CALIB_DFLL48M_FINE_VAL   64
+    #define NVM_SW_CALIB_DFLL48M_COARSE_VAL 58
 
-  // Turn on DFLL
-  uint32_t coarse =( *((uint32_t *)(NVMCTRL_OTP4) + (NVM_SW_CALIB_DFLL48M_COARSE_VAL / 32)) >> (NVM_SW_CALIB_DFLL48M_COARSE_VAL % 32) )
-                   & ((1 << 6) - 1);
-  if (coarse == 0x3f) {
-    coarse = 0x1f;
-  }
-  uint32_t fine =( *((uint32_t *)(NVMCTRL_OTP4) + (NVM_SW_CALIB_DFLL48M_FINE_VAL / 32)) >> (NVM_SW_CALIB_DFLL48M_FINE_VAL % 32) )
-                 & ((1 << 10) - 1);
-  if (fine == 0x3ff) {
-    fine = 0x1ff;
-  }
+    // Turn on DFLL
+    uint32_t coarse =( *((uint32_t *)(NVMCTRL_OTP4) + (NVM_SW_CALIB_DFLL48M_COARSE_VAL / 32)) >> (NVM_SW_CALIB_DFLL48M_COARSE_VAL % 32) )
+                     & ((1 << 6) - 1);
+    if (coarse == 0x3f) {
+      coarse = 0x1f;
+    }
+    // TODO(tannewt): Load this value from memory we've written previously. There
+    // isn't a value from the Atmel factory.
+    uint32_t fine = 0x1ff;
 
-  SYSCTRL->DFLLVAL.bit.COARSE = coarse;
-  SYSCTRL->DFLLVAL.bit.FINE = fine;
+    SYSCTRL->DFLLVAL.bit.COARSE = coarse;
+    SYSCTRL->DFLLVAL.bit.FINE = fine;
+    /* Write full configuration to DFLL control register */
+    SYSCTRL->DFLLMUL.reg = SYSCTRL_DFLLMUL_CSTEP( 0x1f / 4 ) | // Coarse step is 31, half of the max value
+                           SYSCTRL_DFLLMUL_FSTEP( 10 ) |
+                           SYSCTRL_DFLLMUL_MUL( (48000) ) ;
+
+    SYSCTRL->DFLLCTRL.reg = 0;
+
+    while ( (SYSCTRL->PCLKSR.reg & SYSCTRL_PCLKSR_DFLLRDY) == 0 )
+    {
+      /* Wait for synchronization */
+    }
 #else
 	#define CONF_DEFAULT_CORASE ((FUSES_DFLL48M_COARSE_CAL_Msk & (*((uint32_t *)FUSES_DFLL48M_COARSE_CAL_ADDR))) >> FUSES_DFLL48M_COARSE_CAL_Pos)
 
@@ -240,7 +248,7 @@ void board_init(void)
   /* Write Generic Clock Generator 0 configuration */
   GCLK->GENCTRL.reg = GCLK_GENCTRL_ID( GENERIC_CLOCK_GENERATOR_MAIN ) | // Generic Clock Generator 0
                       GCLK_GENCTRL_SRC_DFLL48M | // Selected source is DFLL 48MHz
-                      GCLK_GENCTRL_OE | // Output clock to a pin for tests
+                      //GCLK_GENCTRL_OE | // Output clock to a pin for tests
                       GCLK_GENCTRL_IDC | // Set 50/50 duty cycle
                       GCLK_GENCTRL_GENEN ;
 

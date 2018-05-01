@@ -11,6 +11,9 @@
 //don't use address pins
 #define CONFIG_NO_ADDR
 
+//don't use eeprom
+#define CONFIG_NO_EEPROM
+
 //* ============== POOL SIZES =================== *//
 #define EVT_SIZE_SMALL 32
 #define EVT_SIZE_MEDIUM 64

@@ -337,14 +337,17 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 
 #endif //DAP
 
+#if CONFIG_EEPROM
 					case SEESAW_EEPROM_BASE:{
 						Fifo *fifo = req.getFifo();
 						uint8_t r = eeprom_read_byte(lowByte);
 						fifo->Write(&r, 1);
+
 						Evt *evt = new DelegateDataReady(req.getRequesterId());
 						QF::PUBLISH(evt, me);
 						break;
 					}
+#endif
 
 #if CONFIG_NEOPIXEL					
 					case SEESAW_NEOPIXEL_BASE:{
@@ -358,6 +361,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								break;
 							}
 						}
+						break;
 					}
 #endif
 					
@@ -642,6 +646,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								break;
 							}
 						}
+						break;
 					}
 #endif //TIMER
 
@@ -654,13 +659,16 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 
 #endif //DAP
 
+#if CONFIG_EEPROM
 					case SEESAW_EEPROM_BASE:{
 						Fifo *fifo = req.getFifo();
 						uint8_t c[req.getLen()];
 						fifo->Read(c, req.getLen());
+
 						eeprom_write(lowByte, c, req.getLen());
 						break;
 					}
+#endif
 					
 #if CONFIG_NEOPIXEL					
 					case SEESAW_NEOPIXEL_BASE: {
@@ -705,6 +713,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							}
 							break;
 						}
+						break;
 					}
 #endif //NEOPIXEL
 

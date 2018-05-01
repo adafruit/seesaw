@@ -317,6 +317,10 @@
 #define CONFIG_ADDR 0ul
 #endif
 
+#ifndef CONFIG_NO_EEPROM
+#define CONFIG_EEPROM 1ul
+#endif
+
 #ifndef PIN_ACTIVITY_LED
 #define PIN_ACTIVITY_LED 27
 #endif

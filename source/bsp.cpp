@@ -77,7 +77,9 @@ void BspInit() {
 	PM->APBCMASK.reg |= PM_APBCMASK_ADC | PM_APBCMASK_DAC ;
 #endif
 
+#if CONFIG_EEPROM
 	eeprom_init();
+#endif
 
 /*
 	GCLK->CLKCTRL.reg = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID(GCLK_CLKCTRL_ID_EIC_Val));
