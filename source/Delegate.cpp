@@ -210,6 +210,11 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								uint8_t ret[4];
 								me->break32Bit(data, ret);
 								fifo->Write(ret, 4);
+#ifdef HAS_PORTB
+								data = gpio_read_bulk(PORTB);
+								me->break32Bit(data, ret);
+                                fifo->Write(ret, 4);
+#endif
 								Evt *evt = new DelegateDataReady(req.getRequesterId());
 								QF::PUBLISH(evt, me);
 								
@@ -390,7 +395,6 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						break;
 					}
 					case SEESAW_GPIO_BASE: {
-					
 						Fifo *fifo = req.getFifo();
 						switch(lowByte){
 							case SEESAW_GPIO_DIRSET_BULK: {
@@ -399,6 +403,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+
 								gpio_dirset_bulk(PORTA, combined & CONFIG_GPIO_A_MASK);
 #ifdef HAS_PORTB
 								if(len > 0){
@@ -499,7 +504,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
                                     len-=4;
 
                                     uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-                                    gpio_pullenset_bulk(PORTB, combined & CONFIG_GPIO_B_MASK);
+                                    gpio_pullenset_bulk(combined & CONFIG_GPIO_B_MASK, PORTB);
                                 }
 #endif
 								break;
@@ -517,7 +522,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
                                     len-=4;
 
                                     uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-                                    gpio_pullenclr_bulk(PORTB, combined & CONFIG_GPIO_B_MASK);
+                                    gpio_pullenclr_bulk(combined & CONFIG_GPIO_B_MASK, PORTB);
                                 }
 #endif
 								break;
