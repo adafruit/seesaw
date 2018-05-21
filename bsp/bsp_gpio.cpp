@@ -36,6 +36,7 @@ void gpio_set_inen(uint32_t mask, uint8_t port)
 	for(uint32_t i=0; i<32; i++){
 		if( (mask & (1ul << i)) ){
 			PORT->Group[port].PINCFG[i].bit.INEN = 1;
+			PORT->Group[port].PINCFG[i].bit.DRVSTR = 1;
 		}
 	}
 }
