@@ -19,7 +19,7 @@ void pinPeripheral(uint8_t pin, uint32_t ulPeripheral){
 		// Set new muxing
 		PORT->Group[port].PMUX[(uint32_t)pin >> 1].reg = temp|PORT_PMUX_PMUXO( ulPeripheral ) ;
 		// Enable port mux
-		PORT->Group[port].PINCFG[pin].reg |= PORT_PINCFG_PMUXEN ;
+		PORT->Group[port].PINCFG[pin].reg |= PORT_PINCFG_PMUXEN | PORT_PINCFG_DRVSTR ;
 	}
 	else // even pin
 	{
@@ -27,7 +27,7 @@ void pinPeripheral(uint8_t pin, uint32_t ulPeripheral){
 
 		temp = (PORT->Group[port].PMUX[(uint32_t)pin >> 1].reg) & PORT_PMUX_PMUXO( 0xF ) ;
 		PORT->Group[port].PMUX[(uint32_t)pin >> 1].reg = temp|PORT_PMUX_PMUXE( ulPeripheral ) ;
-		PORT->Group[port].PINCFG[(uint32_t)pin].reg |= PORT_PINCFG_PMUXEN ; // Enable port mux
+		PORT->Group[port].PINCFG[(uint32_t)pin].reg |= PORT_PINCFG_PMUXEN | PORT_PINCFG_DRVSTR ; // Enable port mux
 	}
 }
 
