@@ -103,6 +103,7 @@ SOURCES = $(COMMON_SRC) \
 	bsp/bsp_sercom.cpp \
 	bsp/bsp_timer.cpp \
 	bsp/pinmux.cpp \
+	bsp/bsp_neopix.cpp \
 	bsp/adafruit_ptc.cpp \
 
 SOBJECTS = $(patsubst %.S,$(BUILD_PATH)/%.o,$(SSOURCES))

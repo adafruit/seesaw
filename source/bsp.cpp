@@ -39,6 +39,7 @@
 #include "sam.h"
 #include "bsp_gpio.h"
 #include "bsp_sercom.h"
+#include "bsp_neopix.h"
 
 #include "SeesawConfig.h"
 #include "Delegate.h"
@@ -79,6 +80,10 @@ void BspInit() {
 
 #if CONFIG_EEPROM
 	eeprom_init();
+#endif
+
+#ifdef BOARD_SPECIFIC_INITS
+	BOARD_SPECIFIC_INITS
 #endif
 
 /*

@@ -5,6 +5,13 @@
 
 #define CONFIG_USB 0ul
 
+//turn off the neopixel
+#define BOARD_SPECIFIC_INITS { \
+    gpio_init(PORTA, 27, 1); \
+    uint32_t __color = 0; \
+    neopix_show_800k(27, (uint8_t *)&__color, 4);\
+    };\
+
 //override default activity led pin
 #define PIN_ACTIVITY_LED (32 + 22) //PB22
 
