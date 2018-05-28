@@ -250,7 +250,9 @@ void board_init(void)
   /* Write Generic Clock Generator 0 configuration */
   GCLK->GENCTRL.reg = GCLK_GENCTRL_ID( GENERIC_CLOCK_GENERATOR_MAIN ) | // Generic Clock Generator 0
                       GCLK_GENCTRL_SRC_DFLL48M | // Selected source is DFLL 48MHz
-                      //GCLK_GENCTRL_OE | // Output clock to a pin for tests
+#ifdef CORE_CLKOUT
+                      GCLK_GENCTRL_OE | // Output clock to a pin for tests
+#endif
                       GCLK_GENCTRL_IDC | // Set 50/50 duty cycle
 					  //GCLK_GENCTRL_DIVSEL | //divide by 2
                       GCLK_GENCTRL_GENEN ;

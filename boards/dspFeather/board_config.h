@@ -3,6 +3,11 @@
 
 #define PRODUCT_CODE 0x1234
 
+#define USB_UART_DIRECT
+#define CORE_CLKOUT
+#define BFIN_HWRST_PIN 23
+#define BFIN_CLK_PIN 27
+
 //* ============== POOL SIZES =================== *//
 #define EVT_SIZE_SMALL 32
 #define EVT_SIZE_MEDIUM 64

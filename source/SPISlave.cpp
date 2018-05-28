@@ -45,6 +45,8 @@ Q_DEFINE_THIS_FILE
 
 using namespace FW;
 
+#if CONFIG_SPI_SLAVE
+
 static Fifo *m_inFifo;
 static Fifo *m_outFifo;
 
@@ -363,8 +365,6 @@ void SPISlave::ReceiveCallback(uint8_t highByte, uint8_t lowByte, uint8_t len){
 	Evt *evt = new SPISlaveReceive(highByte, lowByte, len);
 	QF::PUBLISH(evt, 0);
 }
-
-#if CONFIG_SPI_SLAVE
 
 extern "C" {
 	void CONFIG_SPI_SLAVE_HANDLER(void){

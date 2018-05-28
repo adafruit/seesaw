@@ -33,6 +33,7 @@
 #include "AOTouch.h"
 #include "Neopixel.h"
 #include "AOUSB.h"
+#include "AOPedal.h"
 
 #include "bsp_gpio.h"
 
@@ -102,6 +103,10 @@ static Neopixel neopixel;
 static AOUSB usb;
 #endif
 
+#if CONFIG_PEDAL
+static AOPedal pedal( CONFIG_PEDAL_SERCOM) ;
+#endif
+
 static inline void doNothing(int delay)
 {
 	while (delay > 0){
@@ -124,16 +129,18 @@ static void bootBfin()
 		gpio_outclr_bulk(PORTA, 1UL << 16);
 
 		//dsp !reset
-		gpio_init(PORTA, 23, 1);
+		gpio_init(PORTA, BFIN_HWRST_PIN, 1);
 		
+#ifdef CORE_CLKOUT
 		//DSP FEATHER SPECIFIC: start clock output
-		pinPeripheral(27, 7);
+		pinPeripheral(BFIN_CLK_PIN, 7);
+#endif
 		
 		//pulse reset
 		doNothing(100ul);
-		gpio_write(PORTA, 23, 0);
+		gpio_write(PORTA, BFIN_HWRST_PIN, 0);
 		doNothing(100ul);
-		gpio_write(PORTA, 23, 1);
+		gpio_write(PORTA, BFIN_HWRST_PIN, 1);
 }
 
 int main(void)
@@ -210,6 +217,10 @@ int main(void)
 
 #if CONFIG_USB
 	usb.Start(PRIO_USB);
+#endif
+
+#if CONFIG_PEDAL
+	pedal.Start(PRIO_PEDAL);
 #endif
 	
 	//publish a start request

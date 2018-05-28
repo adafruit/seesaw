@@ -96,6 +96,17 @@ char const * const eventName[] = {
     "DAC_STOP_REQ",
     "DAC_STOP_CFM",
 
+    "USB_START_REQ",
+	"USB_START_CFM",
+	"USB_STOP_REQ",
+	"USB_STOP_CFM",
+
+    "PEDAL_START_REQ",
+    "PEDAL_START_CFM",
+    "PEDAL_STOP_REQ",
+    "PEDAL_STOP_CFM",
+    "PEDAL_SYNC",
+
     "DAP_START_REQ",
     "DAP_START_CFM",
     "DAP_STOP_REQ",

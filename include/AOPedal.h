@@ -27,48 +27,62 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef HSM_ID_H
-#define HSM_ID_H
 
-enum {
-    SYSTEM = 1,
-	DELEGATE,
-	I2C_SLAVE,
-	SPI_SLAVE,
-	AO_DAC,
-	AO_USB,
-	AO_TIMER,
-	AO_ADC,
-	AO_TOUCH,
-	AO_SERCOM0,
-	AO_SERCOM1,
-	AO_SERCOM2,
-	AO_SERCOM5,
-	AO_INTERRUPT,
-	AO_DAP,
-	AO_NEOPIXEL,
-	AO_PEDAL,
+#ifndef AO_PEDAL_H
+#define AO_PEDAL_H
+
+#include "qpcpp.h"
+#include "qp_extras.h"
+
+#include "hsm_id.h"
+
+#include "sam.h"
+
+using namespace QP;
+using namespace FW;
+
+class AOPedal : public QActive {
+public:
+    AOPedal(Sercom *sercom);
+    ~AOPedal() {}
+    void Start(uint8_t prio) {
+        QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
+    }
+
+protected:
+    static QState InitialPseudoState(AOPedal * const me, QEvt const * const e);
+    static QState Root(AOPedal * const me, QEvt const * const e);
+    static QState Stopped(AOPedal * const me, QEvt const * const e);
+    static QState Started(AOPedal * const me, QEvt const * const e);
+
+    enum {
+        EVT_QUEUE_COUNT = 8,
+    };
+    QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
+    uint8_t m_id;
+	uint16_t m_nextSequence;
+    char const * m_name;
+
+    QTimeEvt m_syncTimer;
+
+    struct pedalState {
+        uint16_t adcPrimary[6];
+        uint16_t adcAlt[6];
+        union {
+            struct {
+                uint8_t footswitch1:1;
+                uint8_t footswitch2:1;
+                uint8_t alt:1;
+            } bit;
+            uint8_t reg;
+        } btns;
+    };
+    struct pedalState m_pedalState;
+
+    Sercom *m_sercom;
 };
 
-// Higher value corresponds to higher priority.
-// The maximum priority is defined in qf_port.h as QF_MAX_ACTIVE (32)
-enum
-{
-    PRIO_SYSTEM     = 18,
-	PRIO_I2C_SLAVE	= 27,
-	PRIO_SPI_SLAVE  = 29,
-	PRIO_USB		= 28,
-	PRIO_ADC		= 24,
-	PRIO_TOUCH      = 19,
-	PRIO_TIMER		= 25,
-	PRIO_DAC		= 23,
-	PRIO_SERCOM		= 26,
-	PRIO_DELEGATE   = 30,
-	PRIO_INTERRUPT  = 31,
-	PRIO_DAP		= 21,
-	PRIO_NEOPIXEL	= 20,
-	PRIO_PEDAL		= 22,
-};
+
+#endif // AO_PEDAL_H
 
 
-#endif // HSM_ID_H
