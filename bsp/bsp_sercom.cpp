@@ -266,12 +266,11 @@ int writeDataUART( Sercom * sercom ,uint8_t data)
 	return 1;
 }
 
-
 int writeDataUART( Sercom * sercom , char const *buffer){
-	  while(*buffer != '\0')
-		  writeDataUART(sercom, *buffer++);
+      while(*buffer != '\0')
+          writeDataUART(sercom, *buffer++);
 
-	  return 1;
+      return 1;
 }
 
 void enableUART( Sercom * sercom )

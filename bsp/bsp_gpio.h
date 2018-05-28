@@ -24,11 +24,11 @@ void gpio_set_inen(uint32_t mask, uint8_t port = 0);
 
 inline void gpio_dirset_bulk(int port, uint32_t mask) {
 	PORT->Group[port].DIRSET.reg = mask;
-	gpio_set_inen(mask);
+	gpio_set_inen(mask, port);
 }
 inline void gpio_dirclr_bulk(int port, uint32_t mask) {
 	PORT->Group[port].DIRCLR.reg = mask;
-	gpio_set_inen(mask);
+	gpio_set_inen(mask, port);
 }
 
 inline void gpio_outset_bulk(int port, uint32_t mask) {

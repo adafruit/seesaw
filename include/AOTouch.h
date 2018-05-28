@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) Lawrence Lo (https://github.com/galliumstudio). 
+ * Copyright (C) Dean Miller
  * All rights reserved.
  *
  * This program is open source software: you can redistribute it and/or
@@ -27,51 +27,63 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef FW_LOG_H
-#define FW_LOG_H
+
+#ifndef AO_TOUCH_H
+#define AO_TOUCH_H
 
 #include "qpcpp.h"
-#include "fw_pipe.h"
+#include "qp_extras.h"
 
-#include <stdio.h>
+#include "hsm_id.h"
 
-#define FW_LOG_ASSERT(t_) ((t_) ? (void)0 : Q_onAssert("fw_log.h", (int_t)__LINE__))
+#include "adafruit_ptc.h"
 
-namespace FW {
+#include "SeesawConfig.h"
 
-//#define PRINT(format_, ...)      Log::Print(format_, ## __VA_ARGS__)
-#ifdef ENABLE_LOGGING
-#define PRINT(format_, ...) { \
-                        char __str[80]; \
-                        sprintf(__str, format_, ## __VA_ARGS__); \
-                        writeDataUART(CONFIG_LOG_SERCOM, __str); \
-                        }
-#else
-#define PRINT(format_, ...)
-#endif
-// The following macros can only be used within an HSM. Newline is automatically appended.
-#define DEBUG(format_, ...)      Log::Debug(me->m_name, __FUNCTION__, format_, ## __VA_ARGS__);
+using namespace QP;
+using namespace FW;
 
-class Log {
+class AOTouch : public QActive {
 public:
-    static void AddInterface(Fifo *fifo, QP::QSignal sig);
-    static void DeleteInterface();
-    static void Write(char const *buf, uint32_t len);
-    static void Print(char const *format, ...);
-    static void Event(char const *name, char const *func, const char *evtName, int sig);
-    static void Debug(char const *name, char const *func, char const *format, ...);
-    
-private:
+    AOTouch();
+    ~AOTouch() {}
+    void Start(uint8_t prio) {
+        QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
+    }
+
+protected:
+    static QState InitialPseudoState(AOTouch * const me, QEvt const * const e);
+    static QState Root(AOTouch * const me, QEvt const * const e);
+    static QState Stopped(AOTouch * const me, QEvt const * const e);
+    static QState Started(AOTouch * const me, QEvt const * const e);
 
     enum {
-        BUF_LEN = 160,
+        EVT_QUEUE_COUNT = 8,
     };
+    QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
+    uint8_t m_id;
+	uint16_t m_nextSequence;
+    char const * m_name;
 
-    static Fifo *m_fifo;
-    static QP::QSignal m_sig;
-    static char const m_truncatedError[];
+#if CONFIG_TOUCH0
+    struct adafruit_ptc_config config0;
+#endif
+
+#if CONFIG_TOUCH1
+    struct adafruit_ptc_config config1;
+#endif
+
+#if CONFIG_TOUCH2
+    struct adafruit_ptc_config config2;
+#endif
+
+#if CONFIG_TOUCH3
+    struct adafruit_ptc_config config3;
+#endif
+
 };
 
-} // namespace FW
 
-#endif // FW_LOG_H
+#endif // AO_TOUCH_H
+
+

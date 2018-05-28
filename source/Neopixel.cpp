@@ -156,6 +156,7 @@ QState Neopixel::Started(Neopixel * const me, QEvt const * const e) {
 			break;
 		}
 		case NEOPIXEL_SET_PIN_REQ: {
+		    LOG_EVENT(e);
 			NeopixelSetPinReq const &req = static_cast<NeopixelSetPinReq const &>(*e);
 #ifdef HAS_PORTB
 			uint8_t port = PORTA;
@@ -174,6 +175,7 @@ QState Neopixel::Started(Neopixel * const me, QEvt const * const e) {
 			break;
 		}
 		case NEOPIXEL_SET_SPEED_REQ: {
+		    LOG_EVENT(e);
 			NeopixelSetSpeedReq const &req = static_cast<NeopixelSetSpeedReq const &>(*e);
 			
 			me->m_speed = req.getSpeed();
@@ -182,6 +184,7 @@ QState Neopixel::Started(Neopixel * const me, QEvt const * const e) {
 			break;
 		}
 		case NEOPIXEL_SET_BUFFER_LEN_REQ: {
+		    LOG_EVENT(e);
 			NeopixelSetBufferLengthReq const &req = static_cast<NeopixelSetBufferLengthReq const &>(*e);
 			uint16_t len = req.getLen();
 			
@@ -192,7 +195,7 @@ QState Neopixel::Started(Neopixel * const me, QEvt const * const e) {
 			break;
 		}
 		case NEOPIXEL_SET_BUFFER_REQ: {
-			
+		    LOG_EVENT(e);
 			NeopixelSetBufferReq const &req = static_cast<NeopixelSetBufferReq const &>(*e);
 			uint16_t start = req.getAddr();
 			Fifo *fifo = req.getSource();
@@ -208,6 +211,7 @@ QState Neopixel::Started(Neopixel * const me, QEvt const * const e) {
 			break;
 		}
 		case NEOPIXEL_SHOW_REQ: {
+		    LOG_EVENT(e);
 			QF_CRIT_STAT_TYPE crit;
 			QF_CRIT_ENTRY(crit);
 			switch(me->m_speed){

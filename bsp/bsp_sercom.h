@@ -182,7 +182,7 @@ inline void disableWIRE(Sercom *sercom)
 	disableInterruptsWIRE( sercom );
 	// I2C Master and Slave modes share the ENABLE bit function.
 
-	// Enable the I²C master mode
+	// Enable the Iï¿½C master mode
 	sercom->I2CM.CTRLA.bit.ENABLE = 0 ;
 
 	while ( sercom->I2CM.SYNCBUSY.bit.ENABLE != 0 )

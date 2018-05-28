@@ -39,6 +39,7 @@
 #include "sam.h"
 #include "bsp_gpio.h"
 #include "bsp_sercom.h"
+#include "bsp_neopix.h"
 
 #include "SeesawConfig.h"
 #include "Delegate.h"
@@ -65,7 +66,7 @@ void * operator new(size_t n)
 
 void BspInit() {
 	//initialize some clocks
-#if defined(__SAMD21G18A__) || defined(__SAMD21E18A__) || defined(__SAMD21E17A__)
+#if defined(SAMD21)
 	PM->APBCMASK.reg |= PM_APBCMASK_SERCOM0 | PM_APBCMASK_SERCOM1 | PM_APBCMASK_SERCOM2 | PM_APBCMASK_SERCOM3 | PM_APBCMASK_SERCOM4 | PM_APBCMASK_SERCOM5 ;
 	PM->APBCMASK.reg |= PM_APBCMASK_TCC0 | PM_APBCMASK_TCC1 | PM_APBCMASK_TCC2 | PM_APBCMASK_TC3 | PM_APBCMASK_TC4 | PM_APBCMASK_TC5 ;
 #else
@@ -84,7 +85,13 @@ void BspInit() {
 	PM->APBCMASK.reg |= PM_APBCMASK_ADC | PM_APBCMASK_DAC ;
 #endif
 
+#if CONFIG_EEPROM
 	eeprom_init();
+#endif
+
+#ifdef BOARD_SPECIFIC_INITS
+	BOARD_SPECIFIC_INITS
+#endif
 
 /*
 	GCLK->CLKCTRL.reg = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID(GCLK_CLKCTRL_ID_EIC_Val));
@@ -94,13 +101,13 @@ void BspInit() {
 		*/
 
 #ifdef ENABLE_LOGGING
-	pinPeripheral(CONFIG_LOG_UART_PIN_TX, CONFIG_LOG_UART_PIN_TX_MUX);
+    pinPeripheral(CONFIG_LOG_UART_PIN_TX, CONFIG_LOG_UART_PIN_TX_MUX);
 
-	initUART(CONFIG_LOG_SERCOM, SAMPLE_RATE_x16, CONFIG_LOG_UART_BAUD_RATE);
-	initFrame(CONFIG_LOG_SERCOM, CONFIG_LOG_UART_CHAR_SIZE, LSB_FIRST, CONFIG_LOG_UART_PARITY, CONFIG_LOG_UART_STOP_BIT);
-	initPads(CONFIG_LOG_SERCOM, CONFIG_LOG_UART_PAD_TX, CONFIG_LOG_UART_PAD_RX);
+    initUART(CONFIG_LOG_SERCOM, SAMPLE_RATE_x16, CONFIG_LOG_UART_BAUD_RATE);
+    initFrame(CONFIG_LOG_SERCOM, CONFIG_LOG_UART_CHAR_SIZE, LSB_FIRST, CONFIG_LOG_UART_PARITY, CONFIG_LOG_UART_STOP_BIT);
+    initPads(CONFIG_LOG_SERCOM, CONFIG_LOG_UART_PAD_TX, CONFIG_LOG_UART_PAD_RX);
 
-	enableUART(CONFIG_LOG_SERCOM);
+    enableUART(CONFIG_LOG_SERCOM);
 #endif
 }
 
@@ -109,7 +116,7 @@ void BspWrite(char const *buf, uint32_t len) {
 }
 
 uint32_t GetSystemMs() {
-	return _systemMs;
+    return _systemMs;
 }
 
 extern "C" {
@@ -260,7 +267,15 @@ extern "C" void Q_onAssert(char const * const module, int loc) {
     //
 
     QF_INT_DISABLE();
-	__BKPT();
+#ifdef ENABLE_LOGGING
+    char __ms[50];
+    sprintf(__ms, "[%li] ***QASSERT**** ", GetSystemMs());
+    writeDataUART(CONFIG_LOG_SERCOM, __ms);
+    writeDataUART(CONFIG_LOG_SERCOM, module);
+    sprintf(__ms, " at %i", loc);
+    writeDataUART(CONFIG_LOG_SERCOM, __ms);
+#endif
+    __BKPT();
 	while(1);
 }
 

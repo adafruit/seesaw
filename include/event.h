@@ -124,6 +124,12 @@ enum {
 	NEOPIXEL_SET_BUFFER_LEN_REQ,
 	NEOPIXEL_SHOW_REQ,
 	
+	TOUCH_START_REQ,
+    TOUCH_START_CFM,
+    TOUCH_STOP_REQ,
+    TOUCH_STOP_CFM,
+    TOUCH_READ_REG_REQ,
+
 	INTERRUPT_START_REQ,
 	INTERRUPT_START_CFM,
 	INTERRUPT_STOP_REQ,
@@ -468,6 +474,34 @@ class NeopixelSetBufferReq : public Evt {
 	private:
 	uint16_t _addr;
 	Fifo *_source;
+};
+
+//* ==========================  TOUCH ======================= *//
+
+class TouchStartCfm : public ErrorEvt {
+    public:
+    TouchStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+    ErrorEvt(TOUCH_START_CFM, seq, error, reason) {}
+};
+
+class TouchStopCfm : public ErrorEvt {
+    public:
+    TouchStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+    ErrorEvt(TOUCH_STOP_CFM, seq, error, reason) {}
+};
+
+class TouchReadRegReq : public Evt {
+    public:
+    TouchReadRegReq(uint8_t requesterId, uint8_t reg, Fifo *dest) :
+    Evt(TOUCH_READ_REG_REQ), _requesterId(requesterId), _reg(reg), _dest(dest) {}
+
+    uint8_t getRequesterId() const { return _requesterId; }
+    uint8_t getReg() const { return _reg; }
+    Fifo *getDest() const { return _dest; }
+
+    private:
+    uint8_t _requesterId, _reg;
+    Fifo *_dest;
 };
 
 //* ==========================  Interrupt ======================= *//

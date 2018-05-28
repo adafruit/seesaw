@@ -111,27 +111,236 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
         }
         case TIMER_START_REQ: {
             LOG_EVENT(e);
-			
+#if CONFIG_TIMER			
 #if CONFIG_TIMER_PWM_OUT0
-			pinPeripheral( CONFIG_TIMER_PWM_OUT0_PIN, 4);
+#ifdef USE_TCC_TIMERS
+#ifdef CONFIG_TIMER_PWM_OUT0_IS_TCC
+            if(CONFIG_TIMER_PWM_OUT0_TCC == TCC2)
+                pinPeripheral(CONFIG_TIMER_PWM_OUT0_PIN, 4);
+            else
+                pinPeripheral(CONFIG_TIMER_PWM_OUT0_PIN, 5);
+
+			initTimerPWM( CONFIG_TIMER_PWM_OUT0_TCC );
+#else 
+            pinPeripheral(CONFIG_TIMER_PWM_OUT0_PIN, 4);
 			initTimerPWM( CONFIG_TIMER_PWM_OUT0_TC );
-#endif
+#endif //NOT_ON_TC
+#else 
+            pinPeripheral(CONFIG_TIMER_PWM_OUT0_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT0_TC );
+#endif //USE_TCC_TIMERS
+#endif //CONFIG_TIMER_PWM_OUTX
 
 #if CONFIG_TIMER_PWM_OUT1
-			pinPeripheral( CONFIG_TIMER_PWM_OUT1_PIN, 4);
-			initTimerPWM( CONFIG_TIMER_PWM_OUT1_TC );
-#endif
+#ifdef USE_TCC_TIMERS
+#ifdef CONFIG_TIMER_PWM_OUT1_IS_TCC
+            if(CONFIG_TIMER_PWM_OUT1_TCC == TCC2)
+                pinPeripheral(CONFIG_TIMER_PWM_OUT1_PIN, 4);
+            else
+                pinPeripheral(CONFIG_TIMER_PWM_OUT1_PIN, 5);
+
+            initTimerPWM( CONFIG_TIMER_PWM_OUT1_TCC );
+#else 
+            pinPeripheral(CONFIG_TIMER_PWM_OUT1_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT1_TC );
+#endif //NOT_ON_TC
+#else 
+            pinPeripheral(CONFIG_TIMER_PWM_OUT1_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT1_TC );
+#endif //USE_TCC_TIMERS
+#endif //CONFIG_TIMER_PWM_OUTX
 
 #if CONFIG_TIMER_PWM_OUT2
-			pinPeripheral( CONFIG_TIMER_PWM_OUT2_PIN, 4);
-			initTimerPWM( CONFIG_TIMER_PWM_OUT2_TC );
-#endif
+#ifdef USE_TCC_TIMERS
+#ifdef CONFIG_TIMER_PWM_OUT2_IS_TCC
+            if(CONFIG_TIMER_PWM_OUT2_TCC == TCC2)
+                pinPeripheral(CONFIG_TIMER_PWM_OUT2_PIN, 4);
+            else
+                pinPeripheral(CONFIG_TIMER_PWM_OUT2_PIN, 5);
+
+            initTimerPWM( CONFIG_TIMER_PWM_OUT2_TCC );
+#else 
+            pinPeripheral(CONFIG_TIMER_PWM_OUT2_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT2_TC );
+#endif //NOT_ON_TC
+#else 
+            pinPeripheral(CONFIG_TIMER_PWM_OUT2_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT2_TC );
+#endif //USE_TCC_TIMERS
+#endif //CONFIG_TIMER_PWM_OUTX
 
 #if CONFIG_TIMER_PWM_OUT3
-			pinPeripheral( CONFIG_TIMER_PWM_OUT3_PIN, 4);
-			initTimerPWM( CONFIG_TIMER_PWM_OUT3_TC );
-#endif
-			
+#ifdef USE_TCC_TIMERS
+#ifdef CONFIG_TIMER_PWM_OUT3_IS_TCC
+            if(CONFIG_TIMER_PWM_OUT3_TCC == TCC2)
+                pinPeripheral(CONFIG_TIMER_PWM_OUT3_PIN, 4);
+            else
+                pinPeripheral(CONFIG_TIMER_PWM_OUT3_PIN, 5);
+
+            initTimerPWM( CONFIG_TIMER_PWM_OUT3_TCC );
+#else 
+            pinPeripheral(CONFIG_TIMER_PWM_OUT3_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT3_TC );
+#endif //NOT_ON_TC
+#else 
+            pinPeripheral(CONFIG_TIMER_PWM_OUT3_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT3_TC );
+#endif //USE_TCC_TIMERS
+#endif //CONFIG_TIMER_PWM_OUTX
+
+#if CONFIG_TIMER_PWM_OUT4
+#ifdef USE_TCC_TIMERS
+#ifdef CONFIG_TIMER_PWM_OUT4_IS_TCC
+            if(CONFIG_TIMER_PWM_OUT4_TCC == TCC2)
+                pinPeripheral(CONFIG_TIMER_PWM_OUT4_PIN, 4);
+            else
+                pinPeripheral(CONFIG_TIMER_PWM_OUT4_PIN, 5);
+
+            initTimerPWM( CONFIG_TIMER_PWM_OUT4_TCC );
+#else 
+            pinPeripheral(CONFIG_TIMER_PWM_OUT4_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT4_TC );
+#endif //NOT_ON_TC
+#else 
+            pinPeripheral(CONFIG_TIMER_PWM_OUT4_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT4_TC );
+#endif //USE_TCC_TIMERS
+#endif //CONFIG_TIMER_PWM_OUTX
+
+#if CONFIG_TIMER_PWM_OUT5
+#ifdef USE_TCC_TIMERS
+#ifdef CONFIG_TIMER_PWM_OUT5_IS_TCC
+            if(CONFIG_TIMER_PWM_OUT5_TCC == TCC2)
+                pinPeripheral(CONFIG_TIMER_PWM_OUT5_PIN, 4);
+            else
+                pinPeripheral(CONFIG_TIMER_PWM_OUT5_PIN, 5);
+
+            initTimerPWM( CONFIG_TIMER_PWM_OUT5_TCC );
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT5_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT5_TC );
+#endif //NOT_ON_TC
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT5_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT5_TC );
+#endif //USE_TCC_TIMERS
+#endif //CONFIG_TIMER_PWM_OUTX
+
+#if CONFIG_TIMER_PWM_OUT6
+#ifdef USE_TCC_TIMERS
+#ifdef CONFIG_TIMER_PWM_OUT6_IS_TCC
+            if(CONFIG_TIMER_PWM_OUT6_TCC == TCC2)
+                pinPeripheral(CONFIG_TIMER_PWM_OUT6_PIN, 4);
+            else
+                pinPeripheral(CONFIG_TIMER_PWM_OUT6_PIN, 5);
+
+            initTimerPWM( CONFIG_TIMER_PWM_OUT6_TCC );
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT6_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT6_TC );
+#endif //NOT_ON_TC
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT6_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT6_TC );
+#endif //USE_TCC_TIMERS
+#endif //CONFIG_TIMER_PWM_OUTX
+
+#if CONFIG_TIMER_PWM_OUT7
+#ifdef USE_TCC_TIMERS
+#ifdef CONFIG_TIMER_PWM_OUT7_IS_TCC
+            if(CONFIG_TIMER_PWM_OUT7_TCC == TCC2)
+                pinPeripheral(CONFIG_TIMER_PWM_OUT7_PIN, 4);
+            else
+                pinPeripheral(CONFIG_TIMER_PWM_OUT7_PIN, 5);
+
+            initTimerPWM( CONFIG_TIMER_PWM_OUT7_TCC );
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT7_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT7_TC );
+#endif //NOT_ON_TC
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT7_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT7_TC );
+#endif //USE_TCC_TIMERS
+#endif //CONFIG_TIMER_PWM_OUTX
+
+#if CONFIG_TIMER_PWM_OUT8
+#ifdef USE_TCC_TIMERS
+#ifdef CONFIG_TIMER_PWM_OUT8_IS_TCC
+            if(CONFIG_TIMER_PWM_OUT8_TCC == TCC2)
+                pinPeripheral(CONFIG_TIMER_PWM_OUT8_PIN, 4);
+            else
+                pinPeripheral(CONFIG_TIMER_PWM_OUT8_PIN, 5);
+
+            initTimerPWM( CONFIG_TIMER_PWM_OUT8_TCC );
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT8_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT8_TC );
+#endif //NOT_ON_TC
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT8_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT8_TC );
+#endif //USE_TCC_TIMERS
+#endif //CONFIG_TIMER_PWM_OUTX
+
+#if CONFIG_TIMER_PWM_OUT9
+#ifdef USE_TCC_TIMERS
+#ifdef CONFIG_TIMER_PWM_OUT9_IS_TCC
+            if(CONFIG_TIMER_PWM_OUT9_TCC == TCC2)
+                pinPeripheral(CONFIG_TIMER_PWM_OUT9_PIN, 4);
+            else
+                pinPeripheral(CONFIG_TIMER_PWM_OUT9_PIN, 5);
+
+            initTimerPWM( CONFIG_TIMER_PWM_OUT9_TCC );
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT9_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT9_TC );
+#endif //NOT_ON_TC
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT9_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT9_TC );
+#endif //USE_TCC_TIMERS
+#endif //CONFIG_TIMER_PWM_OUTX
+
+#if CONFIG_TIMER_PWM_OUT10
+#ifdef USE_TCC_TIMERS
+#ifdef CONFIG_TIMER_PWM_OUT10_IS_TCC
+            if(CONFIG_TIMER_PWM_OUT10_TCC == TCC2)
+                pinPeripheral(CONFIG_TIMER_PWM_OUT10_PIN, 4);
+            else
+                pinPeripheral(CONFIG_TIMER_PWM_OUT10_PIN, 5);
+
+            initTimerPWM( CONFIG_TIMER_PWM_OUT10_TCC );
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT10_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT10_TC );
+#endif //NOT_ON_TC
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT10_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT10_TC );
+#endif //USE_TCC_TIMERS
+#endif //CONFIG_TIMER_PWM_OUTX
+
+#if CONFIG_TIMER_PWM_OUT11
+#ifdef USE_TCC_TIMERS
+#ifdef CONFIG_TIMER_PWM_OUT11_IS_TCC
+            if(CONFIG_TIMER_PWM_OUT11_TCC == TCC2)
+                pinPeripheral(CONFIG_TIMER_PWM_OUT11_PIN, 4);
+            else
+                pinPeripheral(CONFIG_TIMER_PWM_OUT11_PIN, 5);
+
+            initTimerPWM( CONFIG_TIMER_PWM_OUT11_TCC );
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT11_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT11_TC );
+#endif //NOT_ON_TC
+#else
+            pinPeripheral(CONFIG_TIMER_PWM_OUT11_PIN, 4);
+            initTimerPWM( CONFIG_TIMER_PWM_OUT11_TC );
+#endif //USE_TCC_TIMERS
+#endif //CONFIG_TIMER_PWM_OUTX
+#endif //CONFIG_TIMER
+
 			Evt const &req = EVT_CAST(*e);
 			Evt *evt = new TimerStartCfm(req.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
@@ -169,7 +378,7 @@ QState AOTimer::Started(AOTimer * const me, QEvt const * const e) {
 			break;
 		}
 		case TIMER_WRITE_PWM: {
-			
+		    LOG_EVENT(e);
 			TimerWritePWM const &req = static_cast<TimerWritePWM const &>(*e);
 			PWMWrite(req.getPwm(), req.getValue());
 			
@@ -177,7 +386,7 @@ QState AOTimer::Started(AOTimer * const me, QEvt const * const e) {
 			break;
 		}
 		case TIMER_SET_FREQ: {
-			
+		    LOG_EVENT(e);
 			TimerSetFreq const &req = static_cast<TimerSetFreq const &>(*e);
 			setFreq(req.getPwm(), req.getFreq());
 			

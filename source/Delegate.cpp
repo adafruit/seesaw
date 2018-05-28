@@ -42,6 +42,7 @@
 #include "bsp_sercom.h"
 
 #include "bsp_nvmctrl.h"
+#include "bsp_sercom.h"
 
 Q_DEFINE_THIS_FILE
 
@@ -157,9 +158,9 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 			uint8_t highByte = req.getHighByte();
 			uint8_t lowByte = req.getLowByte();
 			uint8_t len = req.getLen();
-
+			
 #ifdef ENABLE_LOGGING
-			PRINT("DELEGATE_PROCESS_COMMAND: (0x%x, 0x%x) %i\n", highByte, lowByte, len);
+            PRINT("DELEGATE_PROCESS_COMMAND: (0x%x, 0x%x) %i\n", highByte, lowByte, len);
 #endif
 
 			if(!len){
@@ -210,6 +211,11 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								uint8_t ret[4];
 								me->break32Bit(data, ret);
 								fifo->Write(ret, 4);
+#ifdef HAS_PORTB
+								data = gpio_read_bulk(PORTB);
+								me->break32Bit(data, ret);
+                                fifo->Write(ret, 4);
+#endif
 								Evt *evt = new DelegateDataReady(req.getRequesterId());
 								QF::PUBLISH(evt, me);
 								
@@ -278,11 +284,25 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
                             default: {
 							    Evt *evt = new ADCReadRegReq(req.getRequesterId(), lowByte, req.getFifo());
                                 QF::PUBLISH(evt, me);
+                                break;
 							}
 						}
 						break;
 					}
 #endif //ADC
+
+#if CONFIG_TOUCH
+                    case SEESAW_TOUCH_BASE: {
+                        switch(lowByte){
+                            default: {
+                                Evt *evt = new TouchReadRegReq(req.getRequesterId(), lowByte, req.getFifo());
+                                QF::PUBLISH(evt, me);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+#endif //TOUCH
 
 #if CONFIG_SERCOM0 || CONFIG_SERCOM1 || CONFIG_SERCOM2 || CONFIG_SERCOM3 || CONFIG_SERCOM4 || CONFIG_SERCOM5 
 					case SEESAW_SERCOM0_BASE:
@@ -323,14 +343,17 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 
 #endif //DAP
 
+#if CONFIG_EEPROM
 					case SEESAW_EEPROM_BASE:{
 						Fifo *fifo = req.getFifo();
 						uint8_t r = eeprom_read_byte(lowByte);
 						fifo->Write(&r, 1);
+
 						Evt *evt = new DelegateDataReady(req.getRequesterId());
 						QF::PUBLISH(evt, me);
 						break;
 					}
+#endif
 
 #if CONFIG_NEOPIXEL					
 					case SEESAW_NEOPIXEL_BASE:{
@@ -344,6 +367,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								break;
 							}
 						}
+						break;
 					}
 #endif
 					
@@ -372,7 +396,6 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						break;
 					}
 					case SEESAW_GPIO_BASE: {
-					
 						Fifo *fifo = req.getFifo();
 						switch(lowByte){
 							case SEESAW_GPIO_DIRSET_BULK: {
@@ -381,6 +404,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								len-=4;
 								
 								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+
 								gpio_dirset_bulk(PORTA, combined & CONFIG_GPIO_A_MASK);
 #ifdef HAS_PORTB
 								if(len > 0){
@@ -481,7 +505,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
                                     len-=4;
 
                                     uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-                                    gpio_pullenset_bulk(PORTB, combined & CONFIG_GPIO_B_MASK);
+                                    gpio_pullenset_bulk(combined & CONFIG_GPIO_B_MASK, PORTB);
                                 }
 #endif
 								break;
@@ -499,7 +523,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
                                     len-=4;
 
                                     uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
-                                    gpio_pullenclr_bulk(PORTB, combined & CONFIG_GPIO_B_MASK);
+                                    gpio_pullenclr_bulk(combined & CONFIG_GPIO_B_MASK, PORTB);
                                 }
 #endif
 								break;
@@ -628,6 +652,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								break;
 							}
 						}
+						break;
 					}
 #endif //TIMER
 
@@ -640,13 +665,16 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 
 #endif //DAP
 
+#if CONFIG_EEPROM
 					case SEESAW_EEPROM_BASE:{
 						Fifo *fifo = req.getFifo();
 						uint8_t c[req.getLen()];
 						fifo->Read(c, req.getLen());
+
 						eeprom_write(lowByte, c, req.getLen());
 						break;
 					}
+#endif
 					
 #if CONFIG_NEOPIXEL					
 					case SEESAW_NEOPIXEL_BASE: {
@@ -691,6 +719,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							}
 							break;
 						}
+						break;
 					}
 #endif //NEOPIXEL
 

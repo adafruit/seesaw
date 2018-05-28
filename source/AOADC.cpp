@@ -172,6 +172,7 @@ QState AOADC::Started(AOADC * const me, QEvt const * const e) {
 		}
 		case ADC_READ_REG_REQ: {
 			LOG_EVENT(e);
+#if CONFIG_ADC
 			ADCReadRegReq const &req = static_cast<ADCReadRegReq const &>(*e);
 			Fifo *dest = req.getDest();
 			uint8_t reg = req.getReg();
@@ -179,7 +180,6 @@ QState AOADC::Started(AOADC * const me, QEvt const * const e) {
 			//there should be nothing in the destination pipe
 			Q_ASSERT(!dest->GetUsedCount());
 
-#if CONFIG_ADC
 			uint16_t valueRead = 0;
 			switch(reg){
 #if CONFIG_ADC_INPUT_0

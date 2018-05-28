@@ -143,6 +143,11 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
 	me->subscribe(USB_STOP_CFM);
 #endif
       
+#if CONFIG_TOUCH
+    me->subscribe(TOUCH_START_CFM);
+    me->subscribe(TOUCH_STOP_CFM);
+#endif
+
     return Q_TRAN(&System::Root);
 }
 
@@ -286,6 +291,11 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 			QF::PUBLISH(evt, me);
 #endif
 			
+#if CONFIG_TOUCH
+            evt = new Evt(TOUCH_STOP_REQ);
+            QF::PUBLISH(evt, me);
+#endif
+
 			status = Q_HANDLED();
 			break;
 		}
@@ -305,6 +315,7 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 		case DAP_STOP_CFM:
 		case NEOPIXEL_STOP_CFM:
 		case USB_STOP_CFM:
+		case TOUCH_STOP_CFM:
 		case DELEGATE_STOP_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);
@@ -408,6 +419,11 @@ QState System::Starting(System * const me, QEvt const * const e) {
 			QF::PUBLISH(evt, me);
 #endif
 
+#if CONFIG_TOUCH
+            evt = new Evt(TOUCH_START_REQ);
+            QF::PUBLISH(evt, me);
+#endif
+
 			status = Q_HANDLED();
 			break;
 		}
@@ -428,6 +444,7 @@ QState System::Starting(System * const me, QEvt const * const e) {
 		case DAP_START_CFM:
 		case NEOPIXEL_START_CFM:
 		case USB_START_CFM:
+		case TOUCH_START_CFM:
 		case DELEGATE_START_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);

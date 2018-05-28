@@ -33,8 +33,8 @@
 #include "qpcpp.h"
 #include "fw_pipe.h"
 #include "fw_log.h"
-#include "bsp_sercom.h"
 #include "SeesawConfig.h"
+#include "bsp_sercom.h"
 
 Q_DEFINE_THIS_FILE
 

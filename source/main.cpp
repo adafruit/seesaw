@@ -30,8 +30,11 @@
 #include "AOInterrupt.h"
 #include "AOSERCOM.h"
 #include "AODAP.h"
+#include "AOTouch.h"
 #include "Neopixel.h"
 #include "AOUSB.h"
+
+#include "bsp_gpio.h"
 
 using namespace QP;
 
@@ -61,6 +64,10 @@ static AOADC adc;
 
 #if CONFIG_TIMER
 static AOTimer tmr;
+#endif
+
+#if CONFIG_TOUCH
+static AOTouch touch;
 #endif
 
 #if CONFIG_INTERRUPT
@@ -167,6 +174,10 @@ int main(void)
 
 #if CONFIG_TIMER
 	tmr.Start(PRIO_TIMER);
+#endif
+
+#if CONFIG_TOUCH
+    touch.Start(PRIO_TOUCH);
 #endif
 
 #if CONFIG_INTERRUPT
