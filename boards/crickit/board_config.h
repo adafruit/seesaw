@@ -1,7 +1,7 @@
 #ifndef SEESAW_DEVICE_CONFIG_H
 #define SEESAW_DEVICE_CONFIG_H
 
-#define PRODUCT_CODE 9999
+#define PRODUCT_CODE 3093
 
 #define CONFIG_USB 0ul
 
