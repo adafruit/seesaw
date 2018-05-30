@@ -39,9 +39,7 @@
 #include "bsp_sercom.h"
 #include "bsp_adc.h"
 
-#if 0
 #include "bsp_dma.h"
-#endif
 
 Q_DEFINE_THIS_FILE
 
@@ -49,9 +47,14 @@ using namespace FW;
 
 #if CONFIG_PEDAL
 
-static uint16_t last_adc[6]
-static const uint8_t adc_channels[] = [CONFIG_PEDAL_A0_CHANNEL, CONFIG_PEDAL_A1_CHANNEL, CONFIG_PEDAL_A2_CHANNEL,
-                                        CONFIG_PEDAL_A3_CHANNEL, CONFIG_PEDAL_A4_CHANNEL, CONFIG_PEDAL_A5_CHANNEL];
+#define PEDAL_INPUT_MASK (1ul << CONFIG_PEDAL_BTN_PIN) | (1ul << CONFIG_PEDAL_FS1_PIN) \
+                            | (1ul << CONFIG_PEDAL_FS2_PIN) | (1ul << CONFIG_PEDAL_START_PIN)
+
+#define ADC_ERROR 3
+
+static uint16_t last_adc[PEDAL_NUM_ADC];
+static const uint8_t adc_channels[] = { CONFIG_PEDAL_A0_CHANNEL, CONFIG_PEDAL_A1_CHANNEL, CONFIG_PEDAL_A2_CHANNEL,
+                                        CONFIG_PEDAL_A3_CHANNEL, CONFIG_PEDAL_A4_CHANNEL, CONFIG_PEDAL_A5_CHANNEL };
 
 AOPedal::AOPedal(Sercom *sercom) :
     QActive((QStateHandler)&AOPedal::InitialPseudoState), 
@@ -120,18 +123,9 @@ QState AOPedal::Stopped(AOPedal * const me, QEvt const * const e) {
         }
         case PEDAL_START_REQ: {
             LOG_EVENT(e);
-
-            pinPeripheral(CONFIG_PEDAL_PIN_MOSI, CONFIG_PEDAL_MUX);
-			//pinPeripheral(CONFIG_PEDAL_PIN_MISO, CONFIG_PEDAL_MUX);
-			pinPeripheral(CONFIG_PEDAL_PIN_SCK, CONFIG_PEDAL_MUX);
-			//pinPeripheral(CONFIG_PEDAL_PIN_SS, CONFIG_PEDAL_MUX);
-
-			initSPI( me->m_sercom, CONFIG_PEDAL_PAD_TX, CONFIG_PEDAL_PAD_RX, CONFIG_PEDAL_CHAR_SIZE,CONFIG_PEDAL_DATA_ORDER);
-			setClockModeSPI( me->m_sercom, SERCOM_SPI_MODE_3);
 			
             //set inputs
-            uint32_t mask = (1ul << CONFIG_PEDAL_BTN_PIN) | (1ul << CONFIG_PEDAL_FS1_PIN) 
-                            | (1ul << CONFIG_PEDAL_FS2_PIN) | (1ul << CONFIG_PEDAL_START_PIN);
+            uint32_t mask = PEDAL_INPUT_MASK;
 			gpio_dirclr_bulk(PORTA, mask);
 			gpio_pullenset_bulk(mask);
 			gpio_outset_bulk(PORTA, mask);
@@ -147,8 +141,16 @@ QState AOPedal::Stopped(AOPedal * const me, QEvt const * const e) {
 
             adc_init();
 
+            //pinPeripheral(CONFIG_PEDAL_PIN_MISO, CONFIG_PEDAL_MUX);
+			pinPeripheral(CONFIG_PEDAL_PIN_SCK, CONFIG_PEDAL_MUX);
+            pinPeripheral(CONFIG_PEDAL_PIN_MOSI, CONFIG_PEDAL_MUX);
+
+            disableSPI( me->m_sercom );
+			initSPI( me->m_sercom, CONFIG_PEDAL_PAD_TX, CONFIG_PEDAL_PAD_RX, CONFIG_PEDAL_CHAR_SIZE,CONFIG_PEDAL_DATA_ORDER);
+            initSPIClock( me->m_sercom, CONFIG_PEDAL_DATA_MODE, CONFIG_PEDAL_BAUD_RATE);
+            enableSPI( me->m_sercom );
+
             //TODO: midi init
-#if 0
             dmac_init();
             dmac_alloc(CONFIG_PEDAL_DMAC_CHANNEL);
 
@@ -156,14 +158,13 @@ QState AOPedal::Stopped(AOPedal * const me, QEvt const * const e) {
             dmac_set_trigger(CONFIG_PEDAL_DMAC_CHANNEL, CONFIG_PEDAL_DMAC_TRIGGER);
 
             dmac_set_descriptor(
-	              CONFIG_PEDAL_DMAC_CHANNEL,
-	              (void *)&m_pedalState,
-	              (void *)&me->m_sercom->SPI.DATA.reg,
-	              sizeof(struct pedalState),
-	              DMA_BEAT_SIZE_BYTE,
-	              true,
-	              false);
-#endif
+                CONFIG_PEDAL_DMAC_CHANNEL,
+                (void *)&me->m_pedalState,
+                (void *)&me->m_sercom->SPI.DATA.reg,
+                sizeof(struct pedalState),
+                DMA_BEAT_SIZE_BYTE,
+                true,
+                false);
 
 			Evt const &req = EVT_CAST(*e);
 			Evt *evt = new PedalStartCfm(req.GetSeq(), ERROR_SUCCESS);
@@ -204,15 +205,36 @@ QState AOPedal::Started(AOPedal * const me, QEvt const * const e) {
 			break;
 		}
         case PEDAL_SYNC: {
-            LOG_EVENT(e);
+            //LOG_EVENT(e);
 
-            //read alt button
+            //read digital inputs
+            uint32_t inputs = gpio_read_bulk();
+            me->m_pedalState.btns.bit.alt = !((inputs >> CONFIG_PEDAL_BTN_PIN) & 0x01);
+            me->m_pedalState.btns.bit.footswitch1 = !((inputs >> CONFIG_PEDAL_FS1_PIN) & 0x01);
+            me->m_pedalState.btns.bit.footswitch2 = !((inputs >> CONFIG_PEDAL_FS2_PIN) & 0x01);
 
             //read all ADC, record if changed
+            for(int i=0; i<PEDAL_NUM_ADC; i++){
+                uint16_t reading = adc_read(adc_channels[i]);
+                if(reading > last_adc[i] + ADC_ERROR || reading < last_adc[i] - ADC_ERROR){
+                    if(!me->m_pedalState.btns.bit.alt)
+                        me->m_pedalState.adcAlt[i] = reading;
+                    else
+                        me->m_pedalState.adcPrimary[i] = reading;
+                    last_adc[i] = reading;
+                }
+            }
 
-            //read footswitches
-
-            //send all data
+            //send all data if the host is ready
+            if(!((inputs >> CONFIG_PEDAL_START_PIN) & 0x01)){
+                gpio_outclr_bulk(PORTA, 1UL << CONFIG_PEDAL_PIN_SS);
+                dmac_start(CONFIG_PEDAL_DMAC_CHANNEL);
+                //wait for transfer to complete
+                while(dmac_is_active(CONFIG_PEDAL_DMAC_CHANNEL) || me->m_sercom->SPI.INTFLAG.bit.DRE == 0);
+                while(me->m_sercom->SPI.INTFLAG.bit.TXC == 0);
+                gpio_outset_bulk(PORTA, 1UL << CONFIG_PEDAL_PIN_SS);
+            }
+            
             status = Q_HANDLED();
             break;
         }

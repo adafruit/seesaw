@@ -41,6 +41,8 @@
 using namespace QP;
 using namespace FW;
 
+#define PEDAL_NUM_ADC 6
+
 class AOPedal : public QActive {
 public:
     AOPedal(Sercom *sercom);
@@ -66,8 +68,8 @@ protected:
     QTimeEvt m_syncTimer;
 
     struct pedalState {
-        uint16_t adcPrimary[6];
-        uint16_t adcAlt[6];
+        uint16_t adcPrimary[PEDAL_NUM_ADC];
+        uint16_t adcAlt[PEDAL_NUM_ADC];
         union {
             struct {
                 uint8_t footswitch1:1;
