@@ -55,6 +55,8 @@ protected:
 	static QState Stopping(System * const me, QEvt const * const e);
 	static QState Starting(System * const me, QEvt const * const e);
     static QState Started(System * const me, QEvt const * const e);
+    static QState Idle(System * const me, QEvt const * const e);
+    static QState Conflicted(System * const me, QEvt const * const e);
 	
 	void HandleCfm(ErrorEvt const &e, uint8_t expectedCnt);
 
@@ -71,7 +73,11 @@ protected:
 	uint8_t m_cfmCount;
     char const * m_name;
 	
-    //QTimeEvt m_testTimer;
+#if CONFIG_POWER_SENSE
+    QTimeEvt m_powerSenseTimer;
+    QTimeEvt m_powerSenseBlinkTimer;
+    bool m_powerSenseLEDState;
+#endif
 
 #if CONFIG_I2C_SLAVE
 	enum {

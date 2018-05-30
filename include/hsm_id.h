@@ -51,7 +51,7 @@ enum {
 // The maximum priority is defined in qf_port.h as QF_MAX_ACTIVE (32)
 enum
 {
-    PRIO_SYSTEM     = 22,
+    PRIO_SYSTEM     = 10,
 	PRIO_I2C_SLAVE	= 27,
 	PRIO_ADC		= 24,
 	PRIO_TOUCH      = 19,

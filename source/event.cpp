@@ -44,7 +44,8 @@ char const * const eventName[] = {
     "SYSTEM_START_CFM",
     "SYSTEM_STOP_REQ",
     "SYSTEM_STOP_CFM",
-    "SYSTEM_TEST_TIMER",
+    "SYSTEM_POWER_SENSE_TIMER",
+    "SYSTEM_POWER_SENSE_BLINK",
     "SYSTEM_DONE",
     "SYSTEM_FAIL",
 

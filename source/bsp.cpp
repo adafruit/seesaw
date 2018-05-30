@@ -40,6 +40,7 @@
 #include "bsp_gpio.h"
 #include "bsp_sercom.h"
 #include "bsp_neopix.h"
+#include "bsp_adc.h"
 
 #include "SeesawConfig.h"
 #include "Delegate.h"
@@ -81,11 +82,6 @@ void BspInit() {
 #if CONFIG_EEPROM
 	eeprom_init();
 #endif
-
-#ifdef BOARD_SPECIFIC_INITS
-	BOARD_SPECIFIC_INITS
-#endif
-
 /*
 	GCLK->CLKCTRL.reg = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID(GCLK_CLKCTRL_ID_EIC_Val));
 	// Enable EIC
