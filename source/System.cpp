@@ -553,9 +553,9 @@ QState System::Conflicted(System * const me, QEvt const * const e) {
         }
         case SYSTEM_POWER_SENSE_BLINK: {
             LOG_EVENT(e);
-            me->m_powerSenseLEDState = !me->m_powerSenseLEDState;
+            me->m_powerSenseLEDState = (me->m_powerSenseLEDState + 1) % 30;
             uint32_t color = 0;
-            if(me->m_powerSenseLEDState){
+            if(me->m_powerSenseLEDState % 2 && me->m_powerSenseLEDState < 12){
                 color = 0x002000;
             }
             neopix_show_800k(CONFIG_POWER_SENSE_NEOPIX_PIN, (uint8_t *)&color, 4);

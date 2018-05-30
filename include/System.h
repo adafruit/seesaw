@@ -76,7 +76,7 @@ protected:
 #if CONFIG_POWER_SENSE
     QTimeEvt m_powerSenseTimer;
     QTimeEvt m_powerSenseBlinkTimer;
-    bool m_powerSenseLEDState;
+    uint8_t m_powerSenseLEDState;
 #endif
 
 #if CONFIG_I2C_SLAVE
