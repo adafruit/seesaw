@@ -50,7 +50,7 @@ using namespace FW;
 #define PEDAL_INPUT_MASK (1ul << CONFIG_PEDAL_BTN_PIN) | (1ul << CONFIG_PEDAL_FS1_PIN) \
                             | (1ul << CONFIG_PEDAL_FS2_PIN) | (1ul << CONFIG_PEDAL_START_PIN)
 
-#define ADC_ERROR 3
+#define ADC_ERROR 5
 
 static uint16_t last_adc[PEDAL_NUM_ADC];
 static const uint8_t adc_channels[] = { CONFIG_PEDAL_A0_CHANNEL, CONFIG_PEDAL_A1_CHANNEL, CONFIG_PEDAL_A2_CHANNEL,
@@ -217,7 +217,7 @@ QState AOPedal::Started(AOPedal * const me, QEvt const * const e) {
             for(int i=0; i<PEDAL_NUM_ADC; i++){
                 uint16_t reading = adc_read(adc_channels[i]);
                 if(reading > last_adc[i] + ADC_ERROR || reading < last_adc[i] - ADC_ERROR){
-                    if(!me->m_pedalState.btns.bit.alt)
+                    if(me->m_pedalState.btns.bit.alt)
                         me->m_pedalState.adcAlt[i] = reading;
                     else
                         me->m_pedalState.adcPrimary[i] = reading;
