@@ -486,7 +486,7 @@ QState System::Idle(System * const me, QEvt const * const e) {
             LOG_EVENT(e);
 
 #if CONFIG_POWER_SENSE
-            uint32_t color = 0x000020;
+            uint32_t color = 0x000004;
             neopix_show_800k(CONFIG_POWER_SENSE_NEOPIX_PIN, (uint8_t *)&color, 4);
 #endif
             status = Q_HANDLED();
