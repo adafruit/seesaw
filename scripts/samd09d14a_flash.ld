@@ -139,4 +139,5 @@ SECTIONS
 
     . = ALIGN(4);
     _end = . ;
+    PROVIDE(end = .);
 }

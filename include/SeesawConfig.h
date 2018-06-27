@@ -263,7 +263,9 @@
 #define CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN 28
 #endif
 
+#ifndef CONFIG_I2C_SLAVE_ADDR
 #define CONFIG_I2C_SLAVE_ADDR 0x49
+#endif
 
 //* ============== SERCOM =================== *//
 
