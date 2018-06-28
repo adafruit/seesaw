@@ -240,9 +240,17 @@
 
 //* ============== I2C SLAVE =================== *//
 
+#ifndef CONFIG_I2C_SLAVE_SERCOM
 #define CONFIG_I2C_SLAVE_SERCOM SERCOM1
+#endif
+
+#ifndef CONFIG_I2C_SLAVE_HANDLER
 #define CONFIG_I2C_SLAVE_HANDLER SERCOM1_Handler
+#endif
+
+#ifndef CONFIG_I2C_SLAVE_IRQn
 #define CONFIG_I2C_SLAVE_IRQn SERCOM1_IRQn
+#endif
 
 #ifndef CONFIG_I2C_SLAVE_PIN_SDA
 #define CONFIG_I2C_SLAVE_PIN_SDA 22
