@@ -2,4 +2,4 @@ CHIP_FAMILY = SAMD21
 CHIP_VARIANT = SAMD21G18A
 BOARD_NAME = DSP_PEDAL
 
-LINKER_SCRIPT=scripts/samd21g18a_flash.ld
+LINKER_SCRIPT=scripts/samd21g18a_flash_with_bootloader.ld
