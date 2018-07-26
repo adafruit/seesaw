@@ -3,6 +3,12 @@
 
 #define PRODUCT_CODE 0000
 
+//override default I2C addr
+#define CONFIG_I2C_SLAVE_ADDR 0x5E
+
+#define CONFIG_NO_ACTIVITY_LED
+#define CONFIG_NO_EEPROM
+
 //* ============== POOL SIZES =================== *//
 #define	EVT_SIZE_SMALL 16
 #define EVT_SIZE_MEDIUM 32
@@ -27,16 +33,21 @@
 //* ============== TIMER =================== *//
 #define CONFIG_TIMER 0
 
+//override default PWM0 pin
 #define CONFIG_TIMER_PWM_OUT0 1
 
-#define CONFIG_TIMER_PWM_OUT1 1
+#define CONFIG_TIMER_PWM_OUT0_TC TC1
+#define CONFIG_TIMER_PWM_OUT0_WO 1
+#define CONFIG_TIMER_PWM_OUT0_PIN 5
+
+#define CONFIG_TIMER_PWM_OUT1 0
 
 #define CONFIG_TIMER_PWM_OUT2 0
 
 #define CONFIG_TIMER_PWM_OUT3 0
 
 //* ============== INTERRUPT =================== *//
-#define CONFIG_INTERRUPT 0
+#define CONFIG_INTERRUPT 1
 #define CONFIG_INTERRUPT_PIN 8
 
 //* ============== I2C SLAVE =================== *//
@@ -58,6 +69,29 @@
 //* =========== NEOPIXEL ================ *//
 #define CONFIG_NEOPIXEL 1
 
-#define CONFIG_NEOPIXEL_BUF_MAX 1024
+#define CONFIG_NEOPIXEL_BUF_MAX (16*4)
+
+//* =========== KEYPAD ================ *//
+#define CONFIG_KEYPAD 1
+
+#define CONFIG_KEYPAD_ROW0 1
+#define CONFIG_KEYPAD_ROW1 1
+#define CONFIG_KEYPAD_ROW2 1
+#define CONFIG_KEYPAD_ROW3 1
+
+#define CONFIG_KEYPAD_COL0 1
+#define CONFIG_KEYPAD_COL1 1
+#define CONFIG_KEYPAD_COL2 1
+#define CONFIG_KEYPAD_COL3 1
+
+#define CONFIG_KEYPAD_ROW0_PIN 4
+#define CONFIG_KEYPAD_ROW1_PIN 5
+#define CONFIG_KEYPAD_ROW2_PIN 9
+#define CONFIG_KEYPAD_ROW3_PIN 10
+
+#define CONFIG_KEYPAD_COL0_PIN 2
+#define CONFIG_KEYPAD_COL1_PIN 6
+#define CONFIG_KEYPAD_COL2_PIN 7
+#define CONFIG_KEYPAD_COL3_PIN 8
 
 #endif

@@ -129,6 +129,14 @@ char const * const eventName[] = {
     "SERCOM_WRITE_REG_REQ",
     "SERCOM_READ_REG_REQ",
     "SERCOM_RX_INTERRUPT",
+
+    "KEYPAD_START_REQ",
+	"KEYPAD_START_CFM",
+	"KEYPAD_STOP_REQ",
+	"KEYPAD_STOP_CFM",
+	"KEYPAD_SYNC",
+	"KEYPAD_WRITE_REG_REQ",
+	"KEYPAD_READ_REG_REQ",
 };  
   
 char const * GetEvtName(QP::QSignal sig) {

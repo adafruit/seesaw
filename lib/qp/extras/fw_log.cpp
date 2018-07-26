@@ -90,6 +90,7 @@ void Log::Write(char const *buf, uint32_t len) {
 	*/
 }
 
+#if 0
 uint32_t Log::Print(char const *format, ...) {
     va_list arg;
     va_start(arg, format);
@@ -100,6 +101,7 @@ uint32_t Log::Print(char const *format, ...) {
     Write(buf, len);
     return len;
 }
+#endif
 
 void Log::Event(char const *name, char const *func, const char *evtName, int sig) {
 #ifdef ENABLE_LOGGING

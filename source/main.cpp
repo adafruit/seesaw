@@ -28,6 +28,7 @@
 #include "AODAP.h"
 #include "AOTouch.h"
 #include "Neopixel.h"
+#include "AOKeypad.h"
 
 #include "bsp_gpio.h"
 
@@ -87,6 +88,10 @@ static AODAP dap;
 
 #if CONFIG_NEOPIXEL
 static Neopixel neopixel;
+#endif
+
+#if CONFIG_KEYPAD
+static AOKeypad keypad;
 #endif
 
 int main(void)
@@ -153,6 +158,10 @@ int main(void)
 
 #if CONFIG_NEOPIXEL
 	neopixel.Start(PRIO_NEOPIXEL);
+#endif
+
+#if CONFIG_KEYPAD
+	keypad.Start(PRIO_KEYPAD);
 #endif
 	
 	//publish a start request

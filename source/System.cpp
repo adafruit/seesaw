@@ -79,6 +79,10 @@ System::System() :
 #if CONFIG_DAP
 	,m_DAPRxFifo(m_DAPRxFifoStor, DAP_FIFO_ORDER)
 #endif
+
+#if CONFIG_KEYPAD
+	,m_keypadFifo(m_keypadFifoStor, KEYPAD_FIFO_ORDER)
+#endif
 	{}
 
 QState System::InitialPseudoState(System * const me, QEvt const * const e) {
@@ -140,6 +144,11 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
 #if CONFIG_TOUCH
     me->subscribe(TOUCH_START_CFM);
     me->subscribe(TOUCH_STOP_CFM);
+#endif
+
+#if CONFIG_KEYPAD
+    me->subscribe(KEYPAD_START_CFM);
+    me->subscribe(KEYPAD_STOP_CFM);
 #endif
 
     return Q_TRAN(&System::Root);
@@ -280,6 +289,11 @@ QState System::Stopping(System * const me, QEvt const * const e) {
             QF::PUBLISH(evt, me);
 #endif
 
+#if CONFIG_KEYPAD
+            evt = new Evt(KEYPAD_STOP_REQ);
+            QF::PUBLISH(evt, me);
+#endif
+
 			status = Q_HANDLED();
 			break;
 		}
@@ -298,6 +312,7 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 		case DAP_STOP_CFM:
 		case NEOPIXEL_STOP_CFM:
 		case TOUCH_STOP_CFM:
+		case KEYPAD_STOP_CFM:
 		case DELEGATE_STOP_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);
@@ -396,6 +411,11 @@ QState System::Starting(System * const me, QEvt const * const e) {
             QF::PUBLISH(evt, me);
 #endif
 
+#if CONFIG_KEYPAD
+            evt = new KeypadStartReq(&me->m_keypadFifo);
+            QF::PUBLISH(evt, me);
+#endif
+
 #if CONFIG_POWER_SENSE
             gpio_init(PORTA, CONFIG_POWER_SENSE_NEOPIX_PIN, 1);
             uint32_t color = 0;
@@ -423,6 +443,7 @@ QState System::Starting(System * const me, QEvt const * const e) {
 		case DAP_START_CFM:
 		case NEOPIXEL_START_CFM:
 		case TOUCH_START_CFM:
+		case KEYPAD_START_CFM:
 		case DELEGATE_START_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);

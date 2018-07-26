@@ -369,6 +369,14 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						break;
 					}
 #endif
+
+#if CONFIG_KEYPAD
+					case SEESAW_KEYPAD_BASE:{
+						Evt *evt = new KeypadReadRegReq(req.getRequesterId(), lowByte, req.getFifo());
+						QF::PUBLISH(evt, me);
+						break;
+					}
+#endif
 					
 					
 					default:
@@ -721,6 +729,19 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						break;
 					}
 #endif //NEOPIXEL
+
+#if CONFIG_KEYPAD
+					case SEESAW_KEYPAD_BASE:{
+						Fifo *fifo = req.getFifo();
+						uint8_t dataBytes[2];
+						fifo->Read(dataBytes, 2);
+						len-=2;
+						
+						Evt *evt = new KeypadWriteRegReq(lowByte, (dataBytes[0] << 8) | dataBytes[1]);
+						QF::PUBLISH(evt, me);
+						break;
+					}
+#endif
 
 					default:
 						break;

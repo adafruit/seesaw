@@ -135,6 +135,14 @@ enum {
 	SERCOM_WRITE_REG_REQ,
 	SERCOM_READ_REG_REQ,
 	SERCOM_RX_INTERRUPT,
+
+	KEYPAD_START_REQ,
+	KEYPAD_START_CFM,
+	KEYPAD_STOP_REQ,
+	KEYPAD_STOP_CFM,
+	KEYPAD_SYNC,
+	KEYPAD_WRITE_REG_REQ,
+	KEYPAD_READ_REG_REQ,
 	
     MAX_PUB_SIG
 };
@@ -613,6 +621,57 @@ class I2CSlaveReceive : public Evt {
 		
 	private:
 	uint8_t _highByte, _lowByte, _len;
+};
+
+//* ==========================  KEYPAD ======================= *//
+
+class KeypadStartReq : public Evt {
+	public:
+	KeypadStartReq(Fifo *fifo) :
+	Evt(KEYPAD_START_REQ), _fifo(fifo) {}
+	
+	Fifo *getFifo() const { return _fifo; }
+	private:
+	Fifo *_fifo;
+};
+
+class KeypadStartCfm : public ErrorEvt {
+	public:
+	KeypadStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(KEYPAD_START_CFM, seq, error, reason) {}
+};
+
+class KeypadStopCfm : public ErrorEvt {
+	public:
+	KeypadStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(KEYPAD_STOP_CFM, seq, error, reason) {}
+};
+
+class KeypadWriteRegReq : public Evt {
+	public:
+	KeypadWriteRegReq(uint8_t reg, uint32_t value) :
+	Evt(KEYPAD_WRITE_REG_REQ), _reg(reg), _value(value) {}
+	
+	uint8_t getReg() const { return _reg; }
+	uint32_t getValue() const { return _value; }
+	
+	private:
+	uint8_t _reg;
+	uint32_t _value;
+};
+
+class KeypadReadRegReq : public Evt {
+	public:
+	KeypadReadRegReq(uint8_t requesterId, uint8_t reg, Fifo *dest) : 
+	Evt(KEYPAD_READ_REG_REQ), _requesterId(requesterId), _reg(reg), _dest(dest) {}
+		
+	uint8_t getRequesterId() const { return _requesterId; }
+	uint8_t getReg() const { return _reg; }
+	Fifo *getDest() const { return _dest; }
+		
+	private:
+	uint8_t _requesterId, _reg;
+	Fifo *_dest;	
 };
 
 #endif
