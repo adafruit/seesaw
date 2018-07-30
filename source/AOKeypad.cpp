@@ -95,6 +95,8 @@ QState AOKeypad::InitialPseudoState(AOKeypad * const me, QEvt const * const e) {
     me->subscribe(KEYPAD_START_REQ);
     me->subscribe(KEYPAD_STOP_REQ);
     me->subscribe(KEYPAD_SYNC);
+    me->subscribe(KEYPAD_WRITE_REG_REQ);
+    me->subscribe(KEYPAD_READ_REG_REQ);
       
     return Q_TRAN(&AOKeypad::Root);
 }
@@ -222,10 +224,12 @@ QState AOKeypad::Started(AOKeypad * const me, QEvt const * const e) {
                 if((1 << i) & KEYPAD_ACTIVE_ROWS){
                     //set the row high
                     gpio_outset_bulk(PORTA, keypad_output_masks[i]);
-                    in = gpio_read_bulk(); //read everything at once
+                    //short delay
+                    for(int __tmr = 0; __tmr<100; __tmr++) __asm__ volatile ("NOP;");
+                    in = gpio_read_bulk() & KEYPAD_INPUT_MASK; //read everything at once
                     for(int j=0; j<KEYPAD_MAX_COLS; j++){
                         if((1 << j) & KEYPAD_ACTIVE_COLS){
-                            val = (in & keypad_input_masks[i]) > 0;
+                            val = (in & keypad_input_masks[j]) > 0;
                             keyevent.bit.NUM = KEYPAD_EVENT(i, j);
                             ks = &me->m_state[keyevent.bit.NUM];
 
