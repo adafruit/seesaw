@@ -9,6 +9,15 @@
 #define CONFIG_NO_ACTIVITY_LED
 #define CONFIG_NO_EEPROM
 
+#define CONFIG_ADDR_2 1
+#define CONFIG_ADDR_3 1
+#define CONFIG_ADDR_4 1
+#define PIN_ADDR_0 17
+#define PIN_ADDR_1 16
+#define PIN_ADDR_2 15
+#define PIN_ADDR_3 14
+#define PIN_ADDR_4 11
+
 //* ============== POOL SIZES =================== *//
 #define	EVT_SIZE_SMALL 16
 #define EVT_SIZE_MEDIUM 32

@@ -169,7 +169,8 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
 
 #if CONFIG_ADDR
 			
-			uint32_t mask = (1ul << PIN_ADDR_0) | (1ul << PIN_ADDR_1);
+			uint32_t mask = (1ul << PIN_ADDR_0) | (1ul << PIN_ADDR_1) | (CONFIG_ADDR_2 << PIN_ADDR_2) |
+			(CONFIG_ADDR_3 << PIN_ADDR_3) | (CONFIG_ADDR_4 << PIN_ADDR_4);
 			gpio_dirclr_bulk(PORTA, mask);
 			gpio_pullenset_bulk(mask);
 			gpio_outset_bulk(PORTA, mask);
@@ -179,13 +180,30 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
 				asm("nop");
 			}
 			
+#if CONFIG_ADDR_2 || CONFIG_ADDR_3 || CONFIG_ADDR_4
+			uint32_t addrs = gpio_read_bulk();
+			val = ((addrs & (1ul << PIN_ADDR_0)) > 0) 
+				| (((addrs & (1ul << PIN_ADDR_1)) > 0) << 1)
+				| (((addrs & (CONFIG_ADDR_2 << PIN_ADDR_2)) > 0) << 2)
+				| (((addrs & (CONFIG_ADDR_3 << PIN_ADDR_3)) > 0) << 3)
+				| (((addrs & (CONFIG_ADDR_4 << PIN_ADDR_4)) > 0) << 4);
+			
+			val ^= 0x1F;
+#else
 			val = (gpio_read_bulk() >> PIN_ADDR_0);
 			val ^= 0x03;
 #endif
 
+#endif
+
 			FLOW_CONTROL_INIT
 
+#if CONFIG_ADDR_2 || CONFIG_ADDR_3 || CONFIG_ADDR_4
+			initSlaveWIRE( me->m_sercom, addr + (val & 0x1F) );
+#else
 			initSlaveWIRE( me->m_sercom, addr + (val & 0x03) );
+#endif
+
 			enableWIRE( me->m_sercom );
 			NVIC_ClearPendingIRQ( CONFIG_I2C_SLAVE_IRQn );
 			

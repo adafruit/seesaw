@@ -437,13 +437,46 @@
 #define PIN_ACTIVITY_LED 27
 #endif
 
+#ifndef PIN_ADDR_0
 #define PIN_ADDR_0 16
+#endif
+
+#ifndef PIN_ADDR_1
 #define PIN_ADDR_1 17
+#endif
+
+#ifndef CONFIG_ADDR_2
+#define CONFIG_ADDR_2 0
+#endif
+
+#ifndef CONFIG_ADDR_3
+#define CONFIG_ADDR_3 0
+#endif
+
+#ifndef CONFIG_ADDR_4
+#define CONFIG_ADDR_4 0
+#endif
+
+#ifndef PIN_ADDR_2
+#define PIN_ADDR_2 0
+#endif
+
+#ifndef PIN_ADDR_3
+#define PIN_ADDR_3 0
+#endif
+
+#ifndef PIN_ADDR_4
+#define PIN_ADDR_4 0
+#endif
+
 #define PIN_USB_DM 24
 #define PIN_USB_DP 25
 
 #define CONFIG_GPIO_MASK (((unsigned long long) 0xFFFFFFFFFFFFFFFF) ^ ( ((uint64_t)CONFIG_USB << PIN_USB_DM) | ((uint64_t)CONFIG_USB << PIN_USB_DP) \
-	    | ((uint64_t)CONFIG_ADDR << PIN_ADDR_0) | ((uint64_t)CONFIG_ADDR << PIN_ADDR_1) | ((uint64_t)CONFIG_ACTIVITY_LED << PIN_ACTIVITY_LED) | ((uint64_t)CONFIG_POWER_SENSE << CONFIG_POWER_SENSE_NEOPIX_PIN) \
+	    | ((uint64_t)CONFIG_ADDR << PIN_ADDR_0) | ((uint64_t)CONFIG_ADDR << PIN_ADDR_1) \
+		| ((uint64_t)CONFIG_ADDR_2 << PIN_ADDR_2) | ((uint64_t)CONFIG_ADDR_3 << PIN_ADDR_3) \
+		| ((uint64_t)CONFIG_ADDR_4 << PIN_ADDR_4) \
+		| ((uint64_t)CONFIG_ACTIVITY_LED << PIN_ACTIVITY_LED) | ((uint64_t)CONFIG_POWER_SENSE << CONFIG_POWER_SENSE_NEOPIX_PIN) \
 		| ((uint64_t)(CONFIG_TIMER & CONFIG_TIMER_PWM_OUT0) << CONFIG_TIMER_PWM_OUT0_PIN) \
 		| ((uint64_t)(CONFIG_TIMER & CONFIG_TIMER_PWM_OUT1) << CONFIG_TIMER_PWM_OUT1_PIN) \
 		| ((uint64_t)(CONFIG_TIMER & CONFIG_TIMER_PWM_OUT2) << CONFIG_TIMER_PWM_OUT2_PIN) \
