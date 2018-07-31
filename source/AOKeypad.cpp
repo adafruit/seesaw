@@ -281,6 +281,13 @@ QState AOKeypad::Started(AOKeypad * const me, QEvt const * const e) {
             Evt *evt;
 
             if(reg == SEESAW_KEYPAD_FIFO){
+                me->m_status.bit.DATA_RDY = 0;
+                if(me->m_inten.bit.DATA_RDY){
+                    //post an interrupt event
+                    evt = new InterruptClearReq( SEESAW_INTERRUPT_KEYPAD_DATA_RDY );
+                    QF::PUBLISH(evt, me);
+                }
+
                 //give the requester our pipe
                 evt = new DelegateDataReady(req.getRequesterId(), me->m_fifo);
             }
@@ -312,10 +319,10 @@ QState AOKeypad::Started(AOKeypad * const me, QEvt const * const e) {
             uint32_t c = req.getValue();
             switch (req.getReg()){
                 case SEESAW_KEYPAD_INTENSET:
-                    me->m_inten.reg |= c;
+                    me->m_inten.reg |= c >> 8;
                     break;
                 case SEESAW_KEYPAD_INTENCLR:
-                    me->m_inten.reg &= ~(c);
+                    me->m_inten.reg &= ~(c >> 8);
                     break;
                 case SEESAW_KEYPAD_EVENT:
                     //turn an event on or off

@@ -238,6 +238,10 @@
 
 //* ============== INTERRUPT =================== *//
 
+#ifndef CONFIG_INTERRUPT_OPEN_DRAIN
+#define CONFIG_INTERRUPT_OPEN_DRAIN 0
+#endif
+
 //* ============== I2C SLAVE =================== *//
 
 #ifndef CONFIG_I2C_SLAVE_SERCOM

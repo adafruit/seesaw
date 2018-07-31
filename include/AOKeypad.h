@@ -112,7 +112,7 @@ protected:
     };
     status m_status;
 	
-	struct inten {
+	union inten {
         struct {
             /* fire an interrupt when the FIFO is not empty */
 		    uint8_t DATA_RDY: 1;
