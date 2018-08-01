@@ -58,17 +58,10 @@ void board_init(void)
   uint32_t calib = (*((uint32_t *) FUSES_OSC32K_ADDR) & FUSES_OSC32K_Msk) >> FUSES_OSC32K_Pos;
 #endif
 
-#if defined(SAMD21)
   SYSCTRL->OSC32K.reg = SYSCTRL_OSC32K_CALIB(calib) |
                         SYSCTRL_OSC32K_STARTUP( 0x6u ) | // cf table 15.10 of product datasheet in chapter 15.8.6
                         SYSCTRL_OSC32K_EN32K |
                         SYSCTRL_OSC32K_ENABLE;
-#else
-  SYSCTRL->OSC32K.reg = SYSCTRL_OSC32K_CALIB(calib) |
-					  SYSCTRL_OSC32K_STARTUP( 0x6u ) |
-					  SYSCTRL_OSC32K_EN32K |
-					  SYSCTRL_OSC32K_ENABLE;
-#endif
 
   while ( (SYSCTRL->PCLKSR.reg & SYSCTRL_PCLKSR_OSC32KRDY) == 0 ); // Wait for oscillator stabilization
 
@@ -161,7 +154,6 @@ void board_init(void)
 
 #if defined(CRYSTALLESS)
 
-#if defined(SAMD21)
     #define NVM_SW_CALIB_DFLL48M_COARSE_VAL 58
 
     // Turn on DFLL
@@ -187,11 +179,7 @@ void board_init(void)
     {
       /* Wait for synchronization */
     }
-#else
-	#define CONF_DEFAULT_CORASE ((FUSES_DFLL48M_COARSE_CAL_Msk & (*((uint32_t *)FUSES_DFLL48M_COARSE_CAL_ADDR))) >> FUSES_DFLL48M_COARSE_CAL_Pos)
 
-	SYSCTRL->DFLLVAL.reg = SYSCTRL_DFLLVAL_COARSE(((CONF_DEFAULT_CORASE) == 0x3F) ? 0x1F : (CONF_DEFAULT_CORASE)) | SYSCTRL_DFLLVAL_FINE(512);
-#endif
 
   /* Write full configuration to DFLL control register */
   SYSCTRL->DFLLCTRL.reg =  SYSCTRL_DFLLCTRL_USBCRM | /* USB correction */
@@ -248,7 +236,7 @@ void board_init(void)
   /* Write Generic Clock Generator 0 configuration */
   GCLK->GENCTRL.reg = GCLK_GENCTRL_ID( GENERIC_CLOCK_GENERATOR_MAIN ) | // Generic Clock Generator 0
                       GCLK_GENCTRL_SRC_DFLL48M | // Selected source is DFLL 48MHz
-                      //GCLK_GENCTRL_OE | // Output clock to a pin for tests
+                      GCLK_GENCTRL_OE | // Output clock to a pin for tests
                       GCLK_GENCTRL_IDC | // Set 50/50 duty cycle
                       GCLK_GENCTRL_GENEN ;
 
