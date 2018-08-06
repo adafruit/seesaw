@@ -36,6 +36,14 @@
 
 #include "RegisterMap.h"
 
+#if CONFIG_POWER_SENSE
+#include "bsp_gpio.h"
+#include "bsp_adc.h"
+#include "bsp_neopix.h"
+#endif
+
+#include "bsp_sercom.h"
+
 Q_DEFINE_THIS_FILE
 
 using namespace FW;
@@ -43,7 +51,10 @@ using namespace FW;
 System::System() :
     QActive((QStateHandler)&System::InitialPseudoState), 
     m_id(SYSTEM), m_name("SYSTEM")
-    //,m_testTimer(this, SYSTEM_TEST_TIMER)
+#if CONFIG_POWER_SENSE
+    ,m_powerSenseTimer(this, SYSTEM_POWER_SENSE_TIMER)
+    ,m_powerSenseBlinkTimer(this, SYSTEM_POWER_SENSE_BLINK)
+#endif
 #if CONFIG_I2C_SLAVE
     ,m_I2CSlaveOutFifo(m_I2CSlaveOutFifoStor, I2C_SLAVE_OUT_FIFO_ORDER),
     m_I2CSlaveInFifo(m_I2CSlaveInFifoStor, I2C_SLAVE_IN_FIFO_ORDER) 
@@ -86,7 +97,10 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
 
     me->subscribe(SYSTEM_START_REQ);
     me->subscribe(SYSTEM_STOP_REQ);
-    //me->subscribe(SYSTEM_TEST_TIMER);
+#if CONFIG_POWER_SENSE
+    me->subscribe(SYSTEM_POWER_SENSE_TIMER);
+    me->subscribe(SYSTEM_POWER_SENSE_BLINK);
+#endif
     me->subscribe(SYSTEM_DONE);
     me->subscribe(SYSTEM_FAIL);
 	
@@ -435,9 +449,12 @@ QState System::Starting(System * const me, QEvt const * const e) {
             QF::PUBLISH(evt, me);
 #endif
 
-#if CONFIG_PEDAL
-            evt = new Evt(PEDAL_START_REQ);
-            QF::PUBLISH(evt, me);
+#if CONFIG_POWER_SENSE
+            gpio_init(PORTA, CONFIG_POWER_SENSE_NEOPIX_PIN, 1);
+            uint32_t color = 0;
+            neopix_show_800k(CONFIG_POWER_SENSE_NEOPIX_PIN, (uint8_t *)&color, 4);
+            adc_init();
+            pinPeripheral(CONFIG_POWER_SENSE_ADC_PIN, 1);
 #endif
 
 			status = Q_HANDLED();
@@ -492,38 +509,118 @@ QState System::Started(System * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
-            //me->m_testTimer.armX(2000, 2000);
-			
+#if CONFIG_POWER_SENSE
+            me->m_powerSenseTimer.armX(1000, 1000);
+#endif
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_INIT_SIG: {
+            status = Q_TRAN(&System::Idle);
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+#if CONFIG_POWER_SENSE
+            me->m_powerSenseTimer.disarm();
+#endif
+            status = Q_HANDLED();
+            break;
+        }
+        default: {
+            status = Q_SUPER(&System::Root);
+            break;
+        }
+    }
+    return status;
+}
+
+QState System::Idle(System * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+
+#if CONFIG_POWER_SENSE
+            uint32_t color = 0x000004;
+            neopix_show_800k(CONFIG_POWER_SENSE_NEOPIX_PIN, (uint8_t *)&color, 4);
+#endif
+            status = Q_HANDLED();
+            break;
+        }
+#if CONFIG_POWER_SENSE
+        case SYSTEM_POWER_SENSE_TIMER: {
+            LOG_EVENT(e);
+
+            uint16_t vsense = adc_read(CONFIG_POWER_SENSE_ADC_CHANNEL);
+
+            if(vsense >= CONFIG_POWER_SENSE_HI_THRESH || vsense <= CONFIG_POWER_SENSE_LO_THRESH)
+                status = Q_TRAN(&System::Conflicted);
+            else
+                status = Q_HANDLED();
+
+            break;
+        }
+#endif
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        default: {
+            status = Q_SUPER(&System::Started);
+            break;
+        }
+    }
+    return status;
+}
+
+QState System::Conflicted(System * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+#if CONFIG_POWER_SENSE
+            me->m_powerSenseBlinkTimer.armX(100, 100);
+#endif
             status = Q_HANDLED();
             break;
         }
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
-            //me->m_testTimer.disarm();
+#if CONFIG_POWER_SENSE
+            me->m_powerSenseBlinkTimer.disarm();
+#endif
             status = Q_HANDLED();
             break;
         }
-        case SYSTEM_TEST_TIMER: {
-			//when the timer goes off, this will get hit. Log the event and publish another event
+#if CONFIG_POWER_SENSE
+        case SYSTEM_POWER_SENSE_TIMER: {
             LOG_EVENT(e);
-			
-			/*
-			const uint8_t pinmodeData = 0x82;
-			me->m_I2CSlaveInFifo.Write(&pinmodeData, 1);
-            Evt *evt = new DelegateProcessCommand(me->m_id, SEESAW_GPIO_BASE, SEESAW_GPIO_PINMODE_CMD, 1, &me->m_I2CSlaveInFifo);
-            QF::PUBLISH(evt, me);
-			
-			const uint8_t pinToggleData = 0x02;
-			me->m_I2CSlaveInFifo.Write(&pinToggleData, 1);
-			evt = new DelegateProcessCommand(me->m_id, SEESAW_GPIO_BASE, SEESAW_GPIO_TOGGLE_CMD, 1, &me->m_I2CSlaveInFifo);
-			QF::PUBLISH(evt, me);
-			*/
-			
-			status = Q_HANDLED();
+
+            uint16_t vsense = adc_read(CONFIG_POWER_SENSE_ADC_CHANNEL);
+
+            if(vsense < CONFIG_POWER_SENSE_HI_THRESH && vsense > CONFIG_POWER_SENSE_LO_THRESH)
+                status = Q_TRAN(&System::Idle);
+            else
+                status = Q_HANDLED();
+
             break;
         }
+        case SYSTEM_POWER_SENSE_BLINK: {
+            LOG_EVENT(e);
+            me->m_powerSenseLEDState = (me->m_powerSenseLEDState + 1) % 30;
+            uint32_t color = 0;
+            if(me->m_powerSenseLEDState % 2 && me->m_powerSenseLEDState < 12){
+                color = 0x002000;
+            }
+            neopix_show_800k(CONFIG_POWER_SENSE_NEOPIX_PIN, (uint8_t *)&color, 4);
+            status = Q_HANDLED();
+            break;
+        }
+#endif
         default: {
-            status = Q_SUPER(&System::Root);
+            status = Q_SUPER(&System::Started);
             break;
         }
     }

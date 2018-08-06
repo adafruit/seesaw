@@ -5,13 +5,6 @@
 
 #define CONFIG_USB 0ul
 
-//turn off the neopixel
-#define BOARD_SPECIFIC_INITS { \
-    gpio_init(PORTA, 27, 1); \
-    uint32_t __color = 0; \
-    neopix_show_800k(27, (uint8_t *)&__color, 4);\
-    };\
-
 //override default activity led pin
 #define PIN_ACTIVITY_LED (32 + 22) //PB22
 
@@ -177,5 +170,13 @@
 #define CONFIG_NEOPIXEL 1
 
 #define CONFIG_NEOPIXEL_BUF_MAX 512
+
+//* =========== POWER SENSE ================ *//
+#define CONFIG_POWER_SENSE 1
+#define CONFIG_POWER_SENSE_ADC_PIN (32 + 3)
+#define CONFIG_POWER_SENSE_ADC_CHANNEL 11
+#define CONFIG_POWER_SENSE_NEOPIX_PIN 27
+#define CONFIG_POWER_SENSE_HI_THRESH 375
+#define CONFIG_POWER_SENSE_LO_THRESH 256
 
 #endif

@@ -42,7 +42,7 @@ void initTimerPWM( Tc *TCx )
 	TCx->COUNT16.CTRLA.bit.ENABLE = 0;
 	syncTC_16(TCx);
 	// Set Timer counter Mode to 16 bits, normal PWM, prescaler 1/16
-	TCx->COUNT16.CTRLA.reg |= TC_CTRLA_MODE_COUNT16 | TC_CTRLA_WAVEGEN_NPWM | TC_CTRLA_PRESCALER_DIV16;
+	TCx->COUNT16.CTRLA.reg = TC_CTRLA_MODE_COUNT16 | TC_CTRLA_WAVEGEN_NPWM | TC_CTRLA_PRESCALER_DIV1;
 	syncTC_16(TCx);
 	
 	// Set the initial values
@@ -90,7 +90,7 @@ void PWMWrite( uint8_t pwm, uint16_t value)
 #ifdef USE_TCC_TIMERS
     }
     else{
-        uint32_t top = p.tcc->PER.reg;
+        uint32_t top = p.tcc->PER.reg + 1;
         uint32_t val = (uint32_t)value * top / 65535UL; //map to current top value
         while (p.tcc->SYNCBUSY.bit.CTRLB);
         while (p.tcc->SYNCBUSY.bit.CC0 || p.tcc->SYNCBUSY.bit.CC1);

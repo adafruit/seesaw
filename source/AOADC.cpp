@@ -44,6 +44,8 @@ Q_DEFINE_THIS_FILE
 
 using namespace FW;
 
+#if CONFIG_ADC
+
 AOADC::AOADC() :
     QActive((QStateHandler)&AOADC::InitialPseudoState), 
     m_id(AO_ADC), m_name("ADC") {}
@@ -368,3 +370,5 @@ QState AOADC::Freeruning(AOADC * const me, QEvt const * const e) {
 	}
 	return status;
 }
+
+#endif

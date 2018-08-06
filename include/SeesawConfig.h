@@ -394,9 +394,29 @@
 	
 //* =========== NEOPIXEL ================ *//
 
-//* =========== PEDAL ================ *//
-#ifndef CONFIG_PEDAL
-#define CONFIG_PEDAL 0
+//* =========== POWER SENSE ================ *//
+#ifndef CONFIG_POWER_SENSE
+#define CONFIG_POWER_SENSE 0
+#endif
+
+#ifndef CONFIG_POWER_SENSE_ADC_PIN
+#define CONFIG_POWER_SENSE_ADC_PIN (32 + 3)
+#endif
+
+#ifndef CONFIG_POWER_SENSE_ADC_CHANNEL
+#define CONFIG_POWER_SENSE_ADC_CHANNEL 11
+#endif
+
+#ifndef CONFIG_POWER_SENSE_NEOPIX_PIN
+#define CONFIG_POWER_SENSE_NEOPIX_PIN 27
+#endif
+
+#ifndef CONFIG_POWER_SENSE_HI_THRESH
+#define CONFIG_POWER_SENSE_HI_THRESH 375
+#endif
+
+#ifndef CONFIG_POWER_SENSE_LO_THRESH
+#define CONFIG_POWER_SENSE_LO_THRESH 256
 #endif
 
 //* ============== GPIO ================= *//
@@ -424,7 +444,8 @@
 #define PIN_USB_DM 24
 #define PIN_USB_DP 25
 
-#define CONFIG_GPIO_MASK (((unsigned long long) 0xFFFFFFFFFFFFFFFF) ^ (( ((uint64_t)CONFIG_USB << PIN_USB_DM) | ((uint64_t)CONFIG_USB << PIN_USB_DP) | ((uint64_t)CONFIG_ADDR << PIN_ADDR_0) | ((uint64_t)CONFIG_ADDR << PIN_ADDR_1) | ((uint64_t)CONFIG_ACTIVITY_LED << PIN_ACTIVITY_LED) ) \
+#define CONFIG_GPIO_MASK (((unsigned long long) 0xFFFFFFFFFFFFFFFF) ^ ( ((uint64_t)CONFIG_USB << PIN_USB_DM) | ((uint64_t)CONFIG_USB << PIN_USB_DP) \
+	    | ((uint64_t)CONFIG_ADDR << PIN_ADDR_0) | ((uint64_t)CONFIG_ADDR << PIN_ADDR_1) | ((uint64_t)CONFIG_ACTIVITY_LED << PIN_ACTIVITY_LED) | ((uint64_t)CONFIG_POWER_SENSE << CONFIG_POWER_SENSE_NEOPIX_PIN) \
 		| ((uint64_t)(CONFIG_TIMER & CONFIG_TIMER_PWM_OUT0) << CONFIG_TIMER_PWM_OUT0_PIN) \
 		| ((uint64_t)(CONFIG_TIMER & CONFIG_TIMER_PWM_OUT1) << CONFIG_TIMER_PWM_OUT1_PIN) \
 		| ((uint64_t)(CONFIG_TIMER & CONFIG_TIMER_PWM_OUT2) << CONFIG_TIMER_PWM_OUT2_PIN) \

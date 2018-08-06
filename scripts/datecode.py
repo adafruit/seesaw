@@ -3,7 +3,7 @@ import sys
 
 today = datetime.now()
 
-f = open(sys.argv[1] + '\\build_date.h', 'w')
+f = open("build_date.h", 'w')
 
 f.write("#ifndef BUILD_DATE_H\n#define BUILD_DATE_H\n")
 

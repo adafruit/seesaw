@@ -123,7 +123,7 @@ all: dirs $(EXECUTABLE)
 
 dirs:
 	@echo "Building $(BOARD)"
-	@python scripts/datecode.py .
+	@python scripts/datecode.py
 	-@mkdir -p $(BUILD_PATH)
 	-@mkdir -p $(BUILD_PATH)/lib/qp/source
 	-@mkdir -p $(BUILD_PATH)/lib/qp/include
