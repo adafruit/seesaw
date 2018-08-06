@@ -70,11 +70,11 @@ const uint16_t STRING_LANGUAGE[2] = {
 
 const uint8_t STRING_PRODUCT[] = USB_PRODUCT;
 
-#if USB_VID == 0x2341
+#if USB_VID == 0x239A
 #  if defined(USB_MANUFACTURER)
 #    undef USB_MANUFACTURER
 #  endif
-#  define USB_MANUFACTURER "Arduino LLC"
+#  define USB_MANUFACTURER "Adafruit"
 #elif !defined(USB_MANUFACTURER)
 // Fall through to unknown if no manufacturer name was provided in a macro
 #  define USB_MANUFACTURER "Unknown"
@@ -185,6 +185,15 @@ uint32_t USBDeviceClass::sendConfiguration(uint32_t maxlen)
 	return true;
 }
 
+static void utox8(uint32_t val, char* s) {
+	for (int i = 0; i < 8; i++) {
+		int d = val & 0XF;
+		val = (val >> 4);
+
+		s[7 - i] = d > 9 ? 'A' + d - 10 : '0' + d;
+	}
+}
+
 bool USBDeviceClass::sendDescriptor(USBSetup &setup)
 {
 	uint8_t t = setup.wValueH;
@@ -220,15 +229,26 @@ bool USBDeviceClass::sendDescriptor(USBSetup &setup)
 			return sendStringDescriptor(STRING_MANUFACTURER, setup.wLength);
 		}
 		else if (setup.wValueL == ISERIAL) {
+			// from section 9.3.3 of the datasheet
+			#define SERIAL_NUMBER_WORD_0	*(volatile uint32_t*)(0x0080A00C)
+			#define SERIAL_NUMBER_WORD_1	*(volatile uint32_t*)(0x0080A040)
+			#define SERIAL_NUMBER_WORD_2	*(volatile uint32_t*)(0x0080A044)
+			#define SERIAL_NUMBER_WORD_3	*(volatile uint32_t*)(0x0080A048)
+
+			char name[ISERIAL_MAX_LEN];
+			utox8(SERIAL_NUMBER_WORD_0, &name[0]);
+			utox8(SERIAL_NUMBER_WORD_1, &name[8]);
+			utox8(SERIAL_NUMBER_WORD_2, &name[16]);
+			utox8(SERIAL_NUMBER_WORD_3, &name[24]);
+
+			return sendStringDescriptor((uint8_t*)name, setup.wLength);
 		}
 		else {
 			return false;
 		}
-		/* for some reason this hits an exception w/ -Os
 		if (*desc_addr > setup.wLength) {
 			desc_length = setup.wLength;
 		}
-		*/
 	}
 	else
 	{
@@ -299,7 +319,7 @@ void USBDeviceClass::init()
 	usbd.setUSBDeviceMode();
 	usbd.runInStandby();
 	usbd.setFullSpeed();
-
+	
 	usbd.enable();
 
 	initialized = true;
