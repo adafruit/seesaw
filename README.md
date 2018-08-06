@@ -1,5 +1,3 @@
-### This fork adds USB <-> UART, SPI Slave interface and DSP Feather config
-
 # Introduction
 
 Seesaw is an open source microcontroller friend for other chips. It provides a

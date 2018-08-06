@@ -107,12 +107,6 @@ enum {
 	USB_START_CFM,
 	USB_STOP_REQ,
 	USB_STOP_CFM,
-
-	PEDAL_START_REQ,
-	PEDAL_START_CFM,
-	PEDAL_STOP_REQ,
-	PEDAL_STOP_CFM,
-	PEDAL_SYNC,
 	
 	DAP_START_REQ,
 	DAP_START_CFM,
@@ -351,20 +345,6 @@ class DACStopCfm : public ErrorEvt {
 	public:
 	DACStopCfm(uint16_t seq, Error error, Reason reason = 0) :
 	ErrorEvt(DAC_STOP_CFM, seq, error, reason) {}
-};
-
-//* ==========================  PEDAL ======================= *//
-
-class PedalStartCfm : public ErrorEvt {
-	public:
-	PedalStartCfm(uint16_t seq, Error error, Reason reason = 0) :
-	ErrorEvt(PEDAL_START_CFM, seq, error, reason) {}
-};
-
-class PedalStopCfm : public ErrorEvt {
-	public:
-	PedalStopCfm(uint16_t seq, Error error, Reason reason = 0) :
-	ErrorEvt(PEDAL_STOP_CFM, seq, error, reason) {}
 };
 
 //* ==========================  USB ======================= *//

@@ -18,7 +18,6 @@
 */
 
 #include <sam.h>
-#include "SeesawConfig.h"
 
 /* Master clock frequency */
 #define CPU_FREQUENCY                     (48000000ul)
@@ -246,14 +245,12 @@ void board_init(void)
     /* Wait for synchronization */
   }
   
-  GCLK->GENDIV.reg = GCLK_GENDIV_ID(0) | GCLK_GENDIV_DIV(0);
+  //GCLK->GENDIV.reg = GCLK_GENDIV_ID(0) | GCLK_GENDIV_DIV(0);
 
   /* Write Generic Clock Generator 0 configuration */
   GCLK->GENCTRL.reg = GCLK_GENCTRL_ID( GENERIC_CLOCK_GENERATOR_MAIN ) | // Generic Clock Generator 0
                       GCLK_GENCTRL_SRC_DFLL48M | // Selected source is DFLL 48MHz
-#ifdef CORE_CLKOUT
-                      GCLK_GENCTRL_OE | // Output clock to a pin for tests
-#endif
+                      //GCLK_GENCTRL_OE | // Output clock to a pin for tests
                       GCLK_GENCTRL_IDC | // Set 50/50 duty cycle
 					  //GCLK_GENCTRL_DIVSEL | //divide by 2
                       GCLK_GENCTRL_GENEN ;

@@ -47,14 +47,13 @@ enum {
 	AO_INTERRUPT,
 	AO_DAP,
 	AO_NEOPIXEL,
-	AO_PEDAL,
 };
 
 // Higher value corresponds to higher priority.
 // The maximum priority is defined in qf_port.h as QF_MAX_ACTIVE (32)
 enum
 {
-  PRIO_SYSTEM     = 10,
+  	PRIO_SYSTEM     = 10,
 	PRIO_I2C_SLAVE	= 27,
 	PRIO_SPI_SLAVE  = 29,
 	PRIO_USB		= 28,

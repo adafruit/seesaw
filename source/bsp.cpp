@@ -128,12 +128,15 @@ extern "C" {
 			Delegate::intCallback();
 		}
 		lastGPIOState = GPIOState;
-		
+
+#if defined(SAMD21)
 		tickReset();
+#endif
 		
 		QXK_ISR_EXIT();
 	}
-	
+
+#if defined(SAMD21)	
 	static void (*usb_isr)(void) = NULL;
 
 	void USB_Handler(void)
@@ -146,6 +149,7 @@ extern "C" {
 	{
 		usb_isr = new_usb_isr;
 	}
+#endif
 }
 
 // namespace QP **************************************************************
@@ -168,7 +172,7 @@ void QF::onStartup(void) {
 	NVIC_SetPriority(CONFIG_SPI_SLAVE_IRQn, SPI_SLAVE_ISR_PRIO);
 #endif
 
-#if CONFIG_USB
+#if defined(SAMD21)
 	NVIC_SetPriority(USB_IRQn, USB_ISR_PRIO);
 #endif
 	//NVIC_SetPriority(NVMCTRL_IRQn, NVMCTRL_ISR_PRIO);
@@ -280,6 +284,8 @@ extern "C" void assert_failed(char const *module, int loc) {
 	while(1);
 }
 
+#if defined(SAMD21)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -321,6 +327,7 @@ void tickReset() {
 
 #ifdef __cplusplus
 }
+#endif
 #endif
 
 
