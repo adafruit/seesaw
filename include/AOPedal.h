@@ -81,6 +81,8 @@ protected:
     };
     struct pedalState m_pedalState;
 
+    bool m_active, m_switching;
+
     Sercom *m_sercom;
 };
 

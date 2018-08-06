@@ -1,7 +1,7 @@
 #ifndef SEESAW_DEVICE_CONFIG_H
 #define SEESAW_DEVICE_CONFIG_H
 
-#define PRODUCT_CODE 0x1234
+#define PRODUCT_CODE 0x1235
 #define CONFIG_NO_EEPROM
 #define USB_UART_DIRECT
 #define BFIN_HWRST_PIN 3
@@ -48,7 +48,7 @@
 #define CONFIG_I2C_SLAVE_HANDLER SERCOM4_Handler
 #define CONFIG_I2C_SLAVE_IRQn SERCOM4_IRQn
 #define CONFIG_I2C_SLAVE_PIN_SDA (32 + 8)
-#define CONFIG_I2C_SLAVE_PIN_SCL (32 + 7)
+#define CONFIG_I2C_SLAVE_PIN_SCL (32 + 9)
 #define CONFIG_I2C_SLAVE_MUX 3
 
 //* ============== SPI SLAVE =================== *//
@@ -73,7 +73,7 @@
 #define CONFIG_NEOPIXEL_BUF_MAX 64
 
 //* =========== PEDAL ================ *//
-#define CONFIG_PEDAL 1
+#define CONFIG_PEDAL 0
 #define CONFIG_PEDAL_SERCOM SERCOM2
 #define CONFIG_PEDAL_HANDLER SERCOM2_Handler
 #define CONFIG_PEDAL_IRQn SERCOM2_IRQn

@@ -53,6 +53,7 @@ using namespace FW;
 #define ADC_ERROR 5
 
 static uint16_t last_adc[PEDAL_NUM_ADC];
+static bool bypassLast = false;
 static const uint8_t adc_channels[] = { CONFIG_PEDAL_A0_CHANNEL, CONFIG_PEDAL_A1_CHANNEL, CONFIG_PEDAL_A2_CHANNEL,
                                         CONFIG_PEDAL_A3_CHANNEL, CONFIG_PEDAL_A4_CHANNEL, CONFIG_PEDAL_A5_CHANNEL };
 
@@ -139,6 +140,9 @@ QState AOPedal::Stopped(AOPedal * const me, QEvt const * const e) {
 			gpio_dirset_bulk(PORTA, mask);
 			gpio_outset_bulk(PORTA, mask);
 
+			me->m_active = true;
+			me->m_switching = true;
+
             adc_init();
 
             //pinPeripheral(CONFIG_PEDAL_PIN_MISO, CONFIG_PEDAL_MUX);
@@ -212,6 +216,25 @@ QState AOPedal::Started(AOPedal * const me, QEvt const * const e) {
             me->m_pedalState.btns.bit.alt = !((inputs >> CONFIG_PEDAL_BTN_PIN) & 0x01);
             me->m_pedalState.btns.bit.footswitch1 = !((inputs >> CONFIG_PEDAL_FS1_PIN) & 0x01);
             me->m_pedalState.btns.bit.footswitch2 = !((inputs >> CONFIG_PEDAL_FS2_PIN) & 0x01);
+
+            if(me->m_pedalState.btns.bit.footswitch1 != bypassLast && !bypassLast)
+            	me->m_switching = true;
+            bypassLast = me->m_pedalState.btns.bit.footswitch1;
+
+        	if(me->m_switching){
+        		me->m_switching = false;
+        		if(me->m_active){
+        			gpio_outset_bulk(PORTA, (1ul << CONFIG_PEDAL_RELAY_RST_PIN));
+        			gpio_outclr_bulk(PORTA, (1ul << CONFIG_PEDAL_RELAY_SET_PIN));
+        		}
+        		else{
+        			gpio_outclr_bulk(PORTA, (1ul << CONFIG_PEDAL_RELAY_RST_PIN));
+					gpio_outset_bulk(PORTA, (1ul << CONFIG_PEDAL_RELAY_SET_PIN));
+        		}
+        		me->m_active = !me->m_active;
+        	}
+        	else
+        		gpio_outclr_bulk(PORTA, (1ul << CONFIG_PEDAL_RELAY_SET_PIN) | (1ul << CONFIG_PEDAL_RELAY_RST_PIN));
 
             //read all ADC, record if changed
             for(int i=0; i<PEDAL_NUM_ADC; i++){

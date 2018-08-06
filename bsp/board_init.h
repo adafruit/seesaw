@@ -18,6 +18,7 @@
 */
 
 #include <sam.h>
+#include "SeesawConfig.h"
 
 /* Master clock frequency */
 #define CPU_FREQUENCY                     (48000000ul)
