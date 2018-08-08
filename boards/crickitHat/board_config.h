@@ -161,7 +161,15 @@
 //These are only available on samd21
 #define CONFIG_SERCOM3 0
 #define CONFIG_SERCOM4 0
-#define CONFIG_SERCOM5 0
+#define CONFIG_SERCOM5 1
+
+#define CONFIG_SERCOM_UART_PIN_RX (32 + 23)
+#define CONFIG_SERCOM_UART_PIN_TX (32 + 2)
+#define CONFIG_SERCOM_UART_PAD_TX UART_TX_PAD_0
+#define CONFIG_SERCOM_UART_PAD_RX SERCOM_RX_PAD_3
+#define CONFIG_SERCOM_UART_BAUD_RATE 115200
+#define CONFIG_SERCOM_UART_MUX_TX 3
+#define CONFIG_SERCOM_UART_MUX_RX 3
 
 //* ============== DAP =================== *//
 #define CONFIG_DAP 0
@@ -185,6 +193,6 @@
 #define USB_VID 0x239A
 #define USB_PID 0x001B
 
-#define USB_PRODUCT "DSP Feather"
+#define USB_PRODUCT "Crickit Hat"
 
 #endif

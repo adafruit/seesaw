@@ -62,6 +62,7 @@ void * operator new(size_t n)
 {
   void * const p = malloc(n);
   // handle p == 0
+  //if(p == 0) __BKPT();
   return p;
 }
 

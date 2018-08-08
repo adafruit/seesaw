@@ -190,8 +190,8 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			LOG_EVENT(e);
 			
 			//set up UART
-			pinPeripheral(CONFIG_SERCOM_UART_PIN_RX, 2);
-			pinPeripheral(CONFIG_SERCOM_UART_PIN_TX, 2);
+			pinPeripheral(CONFIG_SERCOM_UART_PIN_RX, CONFIG_SERCOM_UART_MUX_RX);
+			pinPeripheral(CONFIG_SERCOM_UART_PIN_TX, CONFIG_SERCOM_UART_MUX_TX);
 			
 			initUART(me->m_sercom, SAMPLE_RATE_x16, me->m_baud);
 			initFrame(me->m_sercom, CONFIG_SERCOM_UART_CHAR_SIZE, LSB_FIRST, CONFIG_SERCOM_UART_PARITY, CONFIG_SERCOM_UART_STOP_BIT);
