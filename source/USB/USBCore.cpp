@@ -240,6 +240,7 @@ bool USBDeviceClass::sendDescriptor(USBSetup &setup)
 			utox8(SERIAL_NUMBER_WORD_1, &name[8]);
 			utox8(SERIAL_NUMBER_WORD_2, &name[16]);
 			utox8(SERIAL_NUMBER_WORD_3, &name[24]);
+			name[32] = 0;
 
 			return sendStringDescriptor((uint8_t*)name, setup.wLength);
 		}
