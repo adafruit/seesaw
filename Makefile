@@ -37,7 +37,7 @@ BUILD_PATH=build/$(BOARD)
 
 QPPORT = lib/qp/ports/arm-cm/qxk/gnu
 
-INCLUDES = -I. -I./include -I./bsp -I./lib/qp/extras -I./lib/qp/include -I./lib/qp/source -I$(QPPORT)
+INCLUDES = -I. -I./include -I./include/USB -I./bsp -I./lib/qp/extras -I./lib/qp/include -I./lib/qp/source -I$(QPPORT)
 INCLUDES += -I./boards/$(BOARD) -Ilib/cmsis/CMSIS/Include
 INCLUDES += -I$(BUILD_PATH)
 
@@ -95,6 +95,7 @@ SOURCES = $(COMMON_SRC) \
 	source/dap.cpp \
 	source/Delegate.cpp \
 	source/I2CSlave.cpp \
+	source/SPISlave.cpp \
 	source/main.cpp \
 	source/Neopixel.cpp \
 	source/System.cpp \
@@ -103,13 +104,25 @@ SOURCES = $(COMMON_SRC) \
 	bsp/bsp_gpio.cpp \
 	bsp/bsp_sercom.cpp \
 	bsp/bsp_timer.cpp \
+	bsp/bsp_dma.cpp \
 	bsp/pinmux.cpp \
 	bsp/bsp_neopix.cpp \
 	bsp/adafruit_ptc.cpp \
 
+ifeq ($(CHIP_FAMILY), SAMD21)
+FULL_SOURCES = $(SOURCES) \
+	source/AOUSB.cpp \
+	source/USB/CDC.cpp \
+	source/USB/USBCore.cpp
+endif
+
+ifeq ($(CHIP_FAMILY), SAMD09)
+FULL_SOURCES = $(SOURCES)
+endif
+
 SOBJECTS = $(patsubst %.S,$(BUILD_PATH)/%.o,$(SSOURCES))
 COBJECTS = $(patsubst %.c,$(BUILD_PATH)/%.o,$(CSOURCES))
-OBJECTS = $(patsubst %.cpp,$(BUILD_PATH)/%.o,$(SOURCES))
+OBJECTS = $(patsubst %.cpp,$(BUILD_PATH)/%.o,$(FULL_SOURCES))
 
 NAME=seesaw-$(BOARD)
 EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
@@ -124,7 +137,7 @@ dirs:
 	-@mkdir -p $(BUILD_PATH)/lib/qp/include
 	-@mkdir -p $(BUILD_PATH)/lib/qp/extras
 	-@mkdir -p $(BUILD_PATH)/lib/qp/ports/arm-cm/qxk/gnu/
-	-@mkdir -p $(BUILD_PATH)/source
+	-@mkdir -p $(BUILD_PATH)/source/USB
 	-@mkdir -p $(BUILD_PATH)/Device_Startup
 	-@mkdir -p $(BUILD_PATH)/bsp
 

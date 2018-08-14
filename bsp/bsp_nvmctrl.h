@@ -5,6 +5,7 @@
 #include "string.h"
 
 #define EEPROM_SIZE 256
+
 #define EEPROM_ADDR (FLASH_SIZE - EEPROM_SIZE)
 
 #define NVM_MEMORY ((volatile uint16_t *)FLASH_ADDR)

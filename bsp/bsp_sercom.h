@@ -6,6 +6,8 @@
 #define I2C_SLAVE_OPERATION 0x4u
 #define I2C_MASTER_OPERATION 0x5u
 
+#define SERCOM_FREQ_REF 48000000ul
+
 typedef enum
 {
 	SPI_SLAVE_OPERATION = 0x2u,
@@ -53,7 +55,7 @@ typedef enum
 	SERCOM_RX_PAD_0 = 0,
 	SERCOM_RX_PAD_1,
 	SERCOM_RX_PAD_2,
-	SERCOM_RX_PAD_3
+	SERCOM_RX_PAD_3,
 } SercomRXPad;
 
 typedef enum
@@ -180,7 +182,7 @@ inline void disableWIRE(Sercom *sercom)
 	disableInterruptsWIRE( sercom );
 	// I2C Master and Slave modes share the ENABLE bit function.
 
-	// Enable the I²C master mode
+	// Enable the Iï¿½C master mode
 	sercom->I2CM.CTRLA.bit.ENABLE = 0 ;
 
 	while ( sercom->I2CM.SYNCBUSY.bit.ENABLE != 0 )
@@ -269,5 +271,22 @@ inline bool isEnabledUART( Sercom * sercom )
 
 int writeDataUART( Sercom * sercom ,uint8_t data);
 int writeDataUART( Sercom * sercom , char const *buffer);
+
+void initSPI( Sercom * sercom, SercomSpiTXPad mosi, SercomRXPad miso, SercomSpiCharSize charSize, SercomDataOrder dataOrder) ;
+void initSPISlave( Sercom *sercom, SercomSpiTXPad miso, SercomRXPad mosi, SercomSpiCharSize charSize, SercomDataOrder dataOrder) ;
+void initSPIClock( Sercom * sercom, SercomSpiClockMode clockMode, uint32_t baudrate) ;
+
+void resetSPI( Sercom * sercom ) ;
+void enableSPI( Sercom * sercom ) ;
+void disableSPI( Sercom * sercom ) ;
+void setDataOrderSPI( Sercom * sercom, SercomDataOrder dataOrder) ;
+SercomDataOrder getDataOrderSPI( Sercom * sercom ) ;
+void setBaudrateSPI( Sercom * sercom, uint8_t divider) ;
+void setClockModeSPI( Sercom * sercom, SercomSpiClockMode clockMode) ;
+uint8_t transferDataSPI( Sercom * sercom, uint8_t data) ;
+bool isBufferOverflowErrorSPI( Sercom * sercom ) ;
+bool isDataRegisterEmptySPI( Sercom * sercom ) ;
+bool isTransmitCompleteSPI( Sercom * sercom ) ;
+bool isReceiveCompleteSPI( Sercom * sercom ) ;
 
 #endif

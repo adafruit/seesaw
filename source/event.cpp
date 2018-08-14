@@ -62,6 +62,13 @@ char const * const eventName[] = {
     "I2C_SLAVE_STOP_CONDITION",
     "I2C_SLAVE_TIMEOUT",
 
+    "SPI_SLAVE_START_REQ",
+	"SPI_SLAVE_START_CFM",
+	"SPI_SLAVE_STOP_REQ",
+	"SPI_SLAVE_STOP_CFM",
+	"SPI_SLAVE_REQUEST",
+	"SPI_SLAVE_RECEIVE",
+
     "DELEGATE_START_REQ",
     "DELEGATE_START_CFM",
     "DELEGATE_STOP_REQ",
@@ -90,6 +97,11 @@ char const * const eventName[] = {
     "DAC_STOP_REQ",
     "DAC_STOP_CFM",
 
+    "USB_START_REQ",
+	"USB_START_CFM",
+	"USB_STOP_REQ",
+	"USB_STOP_CFM",
+    
     "DAP_START_REQ",
     "DAP_START_CFM",
     "DAP_STOP_REQ",

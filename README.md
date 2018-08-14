@@ -1,4 +1,3 @@
-
 # Introduction
 
 Seesaw is an open source microcontroller friend for other chips. It provides a

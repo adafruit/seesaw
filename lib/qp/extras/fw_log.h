@@ -57,7 +57,7 @@ public:
     static void AddInterface(Fifo *fifo, QP::QSignal sig);
     static void DeleteInterface();
     static void Write(char const *buf, uint32_t len);
-    static uint32_t Print(char const *format, ...);
+    static void Print(char const *format, ...);
     static void Event(char const *name, char const *func, const char *evtName, int sig);
     static void Debug(char const *name, char const *func, char const *format, ...);
     

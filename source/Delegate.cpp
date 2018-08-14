@@ -39,6 +39,7 @@
 #include "PinMap.h"
 
 #include "bsp_gpio.h"
+#include "bsp_sercom.h"
 
 #include "bsp_nvmctrl.h"
 #include "bsp_sercom.h"
@@ -152,7 +153,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
             break;
         }
 		case DELEGATE_PROCESS_COMMAND: {
-			
+			//LOG_EVENT(e);
 			DelegateProcessCommand const &req = static_cast<DelegateProcessCommand const &>(*e);
 			uint8_t highByte = req.getHighByte();
 			uint8_t lowByte = req.getLowByte();
@@ -548,7 +549,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							case SEESAW_ADC_INTEN:
 							case SEESAW_ADC_INTENCLR:{
 								Fifo *fifo = req.getFifo();
-								uint8_t dataByte;
+								uint8_t dataByte = 0;
 								fifo->Read(&dataByte, 1);
 								len--;
 								
@@ -592,7 +593,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 							case SEESAW_SERCOM_STATUS:
 							case SEESAW_SERCOM_INTEN:{
 								Fifo *fifo = req.getFifo();
-								uint8_t dataByte;
+								uint8_t dataByte = 0;
 								fifo->Read(&dataByte, 1);
 								len--;
 								
@@ -754,6 +755,7 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 		
 #if CONFIG_INTERRUPT
 		case GPIO_INTERRUPT_RECEIVED: {
+			LOG_EVENT(e);
 			Q_ASSERT(Delegate::m_intflag > 0);
 			
 			Evt *evt = new InterruptSetReq( SEESAW_INTERRUPT_GPIO );
@@ -810,7 +812,7 @@ void Delegate::break32Bit(uint32_t in, uint8_t *out)
 }
 
 extern "C" {
-	
+
 	/*
 	void EIC_Handler(void)
 	{

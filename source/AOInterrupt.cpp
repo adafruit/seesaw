@@ -145,7 +145,6 @@ QState AOInterrupt::Started(AOInterrupt * const me, QEvt const * const e) {
 			gpio_init(PORTA, me->m_pin, 1); //set as output
 			gpio_write(PORTA, me->m_pin, 1); //write high
 #endif
-			
             status = Q_HANDLED();
             break;
         }

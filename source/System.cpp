@@ -60,6 +60,16 @@ System::System() :
     m_I2CSlaveInFifo(m_I2CSlaveInFifoStor, I2C_SLAVE_IN_FIFO_ORDER) 
 #endif
 
+#if CONFIG_SPI_SLAVE
+	,m_SPISlaveOutFifo(m_SPISlaveOutFifoStor, SPI_SLAVE_OUT_FIFO_ORDER),
+	m_SPISlaveInFifo(m_SPISlaveInFifoStor, SPI_SLAVE_IN_FIFO_ORDER)
+#endif
+
+#if CONFIG_USB
+	,m_USBOutFifo(m_USBOutFifoStor, USB_OUT_FIFO_ORDER),
+	m_USBInFifo(m_USBInFifoStor, USB_IN_FIFO_ORDER)
+#endif
+
 #if CONFIG_SERCOM0
 	,m_sercom0RxFifo(m_sercom0RxFifoStor, SERCOM_FIFO_ORDER)
 #endif
@@ -103,6 +113,11 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
 	me->subscribe(I2C_SLAVE_STOP_CFM);
 #endif
 
+#if CONFIG_SPI_SLAVE
+	me->subscribe(SPI_SLAVE_START_CFM);
+	me->subscribe(SPI_SLAVE_STOP_CFM);
+#endif
+
 #if CONFIG_SERCOM0 || CONFIG_SERCOM1 || CONFIG_SERCOM2 || CONFIG_SERCOM3 || CONFIG_SERCOM4 || CONFIG_SERCOM5
 	me->subscribe(SERCOM_START_CFM);
 	me->subscribe(SERCOM_STOP_CFM);
@@ -141,6 +156,11 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
 	me->subscribe(NEOPIXEL_STOP_CFM);
 #endif
 
+#if CONFIG_USB
+	me->subscribe(USB_START_CFM);
+	me->subscribe(USB_STOP_CFM);
+#endif
+      
 #if CONFIG_TOUCH
     me->subscribe(TOUCH_START_CFM);
     me->subscribe(TOUCH_STOP_CFM);
@@ -227,9 +247,19 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 						
 			Evt *evt = new Evt(DELEGATE_STOP_REQ);
 			QF::PUBLISH(evt, me);
+
+#if CONFIG_INTERRUPT
+			evt = new Evt(INTERRUPT_STOP_REQ);
+			QF::PUBLISH(evt, me);
+#endif
 			
 #if CONFIG_I2C_SLAVE
 			evt = new Evt(I2C_SLAVE_STOP_REQ);
+			QF::PUBLISH(evt, me);
+#endif
+
+#if CONFIG_SPI_SLAVE
+			evt = new Evt(SPI_SLAVE_STOP_REQ);
 			QF::PUBLISH(evt, me);
 #endif
 
@@ -245,11 +275,6 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 
 #if CONFIG_TIMER
 			evt = new Evt(TIMER_STOP_REQ);
-			QF::PUBLISH(evt, me);
-#endif
-
-#if CONFIG_INTERRUPT
-			evt = new Evt(INTERRUPT_STOP_REQ);
 			QF::PUBLISH(evt, me);
 #endif
 
@@ -283,6 +308,11 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 			evt = new Evt(NEOPIXEL_STOP_REQ);
 			QF::PUBLISH(evt, me);
 #endif
+
+#if CONFIG_USB
+			evt = new Evt(USB_STOP_REQ);
+			QF::PUBLISH(evt, me);
+#endif
 			
 #if CONFIG_TOUCH
             evt = new Evt(TOUCH_STOP_REQ);
@@ -308,9 +338,11 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 		case TIMER_STOP_CFM:
 		case SERCOM_STOP_CFM:
 		case I2C_SLAVE_STOP_CFM:
+		case SPI_SLAVE_STOP_CFM:
 		case INTERRUPT_STOP_CFM:
 		case DAP_STOP_CFM:
 		case NEOPIXEL_STOP_CFM:
+		case USB_STOP_CFM:
 		case TOUCH_STOP_CFM:
 		case KEYPAD_STOP_CFM:
 		case DELEGATE_STOP_CFM: {
@@ -350,8 +382,18 @@ QState System::Starting(System * const me, QEvt const * const e) {
 			Evt *evt = new Evt(DELEGATE_START_REQ);
 			QF::PUBLISH(evt, me);
 			
+#if CONFIG_INTERRUPT
+			evt = new Evt(INTERRUPT_START_REQ);
+			QF::PUBLISH(evt, me);
+#endif
+
 #if CONFIG_I2C_SLAVE
 			evt = new I2CSlaveStartReq(&me->m_I2CSlaveOutFifo, &me->m_I2CSlaveInFifo);
+			QF::PUBLISH(evt, me);
+#endif
+
+#if CONFIG_SPI_SLAVE
+			evt = new SPISlaveStartReq(&me->m_SPISlaveOutFifo, &me->m_SPISlaveInFifo);
 			QF::PUBLISH(evt, me);
 #endif
 
@@ -367,11 +409,6 @@ QState System::Starting(System * const me, QEvt const * const e) {
 
 #if CONFIG_TIMER
 			evt = new Evt(TIMER_START_REQ);
-			QF::PUBLISH(evt, me);
-#endif
-
-#if CONFIG_INTERRUPT
-			evt = new Evt(INTERRUPT_START_REQ);
 			QF::PUBLISH(evt, me);
 #endif
 
@@ -403,6 +440,11 @@ QState System::Starting(System * const me, QEvt const * const e) {
 
 #if CONFIG_NEOPIXEL
 			evt = new Evt(NEOPIXEL_START_REQ);
+			QF::PUBLISH(evt, me);
+#endif
+
+#if CONFIG_USB
+			evt = new USBStartReq(&me->m_USBOutFifo, &me->m_USBInFifo);
 			QF::PUBLISH(evt, me);
 #endif
 
@@ -439,9 +481,11 @@ QState System::Starting(System * const me, QEvt const * const e) {
 		case DAC_START_CFM:
 		case SERCOM_START_CFM:
 		case I2C_SLAVE_START_CFM:
+		case SPI_SLAVE_START_CFM:
 		case INTERRUPT_START_CFM:
 		case DAP_START_CFM:
 		case NEOPIXEL_START_CFM:
+		case USB_START_CFM:
 		case TOUCH_START_CFM:
 		case KEYPAD_START_CFM:
 		case DELEGATE_START_CFM: {

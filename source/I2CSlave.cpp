@@ -49,9 +49,9 @@ static Fifo *m_outFifo;
 
 static Fifo *m_defaultOutFifo;
 
-volatile bool slave_busy;
+static volatile bool slave_busy;
 
-volatile uint8_t bytes_received, high_byte, low_byte;
+static volatile uint8_t bytes_received, high_byte, low_byte;
 
 #if CONFIG_I2C_SLAVE_FLOW_CONTROL
 #if CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN >= 32
@@ -408,6 +408,8 @@ void I2CSlave::ReceiveCallback(uint8_t highByte, uint8_t lowByte, uint8_t len){
 	QF::PUBLISH(evt, 0);
 }
 
+#if CONFIG_I2C_SLAVE
+
 extern "C" {
 	void CONFIG_I2C_SLAVE_HANDLER(void){
 		QXK_ISR_ENTRY();
@@ -467,3 +469,5 @@ extern "C" {
 		QXK_ISR_EXIT();
 	}	
 };
+
+#endif

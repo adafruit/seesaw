@@ -58,6 +58,14 @@ void operator delete(void * p)
   free(p);
 }
 
+void * operator new(size_t n)
+{
+  void * const p = malloc(n);
+  // handle p == 0
+  //if(p == 0) __BKPT();
+  return p;
+}
+
 void BspInit() {
 	//initialize some clocks
 #if defined(SAMD21)
@@ -121,9 +129,28 @@ extern "C" {
 			Delegate::intCallback();
 		}
 		lastGPIOState = GPIOState;
+
+#if defined(SAMD21)
+		tickReset();
+#endif
 		
 		QXK_ISR_EXIT();
 	}
+
+#if defined(SAMD21)	
+	static void (*usb_isr)(void) = NULL;
+
+	void USB_Handler(void)
+	{
+		if (usb_isr)
+		usb_isr();
+	}
+
+	void USB_SetHandler(void (*new_usb_isr)(void))
+	{
+		usb_isr = new_usb_isr;
+	}
+#endif
 }
 
 // namespace QP **************************************************************
@@ -138,7 +165,17 @@ void QF::onStartup(void) {
 	NVIC_SetPriority(PendSV_IRQn, 0xFF);
 	SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 	NVIC_SetPriority(SysTick_IRQn, SYSTICK_PRIO);
+#if CONFIG_I2C_SLAVE
 	NVIC_SetPriority(CONFIG_I2C_SLAVE_IRQn, I2C_SLAVE_ISR_PRIO);
+#endif
+
+#if CONFIG_SPI_SLAVE
+	NVIC_SetPriority(CONFIG_SPI_SLAVE_IRQn, SPI_SLAVE_ISR_PRIO);
+#endif
+
+#if defined(SAMD21)
+	NVIC_SetPriority(USB_IRQn, USB_ISR_PRIO);
+#endif
 	//NVIC_SetPriority(NVMCTRL_IRQn, NVMCTRL_ISR_PRIO);
 
 #if defined(SERCOM0)
@@ -172,6 +209,10 @@ void QF::onStartup(void) {
 	NVIC_EnableIRQ(CONFIG_I2C_SLAVE_IRQn);
 #endif
 
+#if CONFIG_SPI_SLAVE
+	NVIC_EnableIRQ(CONFIG_SPI_SLAVE_IRQn);
+#endif
+
 #if CONFIG_SERCOM0
 	NVIC_EnableIRQ(SERCOM0_IRQn);
 #endif
@@ -187,6 +228,10 @@ void QF::onStartup(void) {
 #if CONFIG_SERCOM5
 	NVIC_EnableIRQ(SERCOM5_IRQn);
 #endif
+
+#if CONFIG_USB
+	NVIC_EnableIRQ(USB_IRQn);
+#endif
 }
 
 //............................................................................
@@ -199,8 +244,6 @@ void QXK::onIdle(void) {
 
     //QF_INT_ENABLE();
 
-
-#if defined NDEBUG
     // Put the CPU and peripherals to the low-power mode.
     // you might need to customize the clock management for your application,
     // see the datasheet for your particular Cortex-M3 MCU.
@@ -215,8 +258,7 @@ void QXK::onIdle(void) {
     // The trick with BOOT(0) is it gets the part to run the System Loader
     // instead of your broken code. When done disconnect BOOT0, and start over.
     //
-    //__WFI();   Wait-For-Interrupt
-#endif
+    __WFI(); //  Wait-For-Interrupt
 }
 
 //............................................................................
@@ -242,6 +284,52 @@ extern "C" void assert_failed(char const *module, int loc) {
 	__BKPT();
 	while(1);
 }
+
+#if defined(SAMD21)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+static void banzai() {
+	// Disable all interrupts
+	__disable_irq();
+	
+	//THESE MUST MATCH THE BOOTLOADER
+	#define DOUBLE_TAP_MAGIC 			0xf01669efUL
+	#define BOOT_DOUBLE_TAP_ADDRESS     (HMCRAMC0_ADDR + HMCRAMC0_SIZE - 4)
+
+	unsigned long *a = (unsigned long *)BOOT_DOUBLE_TAP_ADDRESS;
+	*a = DOUBLE_TAP_MAGIC;
+	
+	// Reset the device
+	NVIC_SystemReset() ;
+
+	while (true);
+}
+
+static int ticks = -1;
+
+void initiateReset(int _ticks) {
+	ticks = _ticks;
+}
+
+void cancelReset() {
+	ticks = -1;
+}
+
+void tickReset() {
+	if (ticks == -1)
+		return;
+	ticks--;
+	if (ticks == 0)
+		banzai();
+}
+
+#ifdef __cplusplus
+}
+#endif
+#endif
 
 
 } // namespace QP

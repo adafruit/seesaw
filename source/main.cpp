@@ -14,12 +14,16 @@
 
 #include "event.h"
 #include "bsp.h"
+#include "bsp_gpio.h"
+#include "bsp_sercom.h"
+#include "bsp_nvmctrl.h"
 
 #include "SeesawConfig.h"
 
 #include "System.h"
 #include "Delegate.h"
 #include "I2CSlave.h"
+#include "SPISlave.h"
 #include "AOADC.h"
 #include "AODAC.h"
 #include "AOTimer.h"
@@ -29,6 +33,7 @@
 #include "AOTouch.h"
 #include "Neopixel.h"
 #include "AOKeypad.h"
+#include "AOUSB.h"
 
 #include "bsp_gpio.h"
 
@@ -44,6 +49,10 @@ static Delegate del;
 
 #if CONFIG_I2C_SLAVE
 static I2CSlave i2c( CONFIG_I2C_SLAVE_SERCOM );
+#endif
+
+#if CONFIG_SPI_SLAVE
+static SPISlave spi( CONFIG_SPI_SLAVE_SERCOM );
 #endif
 
 #if CONFIG_DAC
@@ -92,6 +101,9 @@ static Neopixel neopixel;
 
 #if CONFIG_KEYPAD
 static AOKeypad keypad;
+
+#if CONFIG_USB
+static AOUSB usb;
 #endif
 
 int main(void)
@@ -114,6 +126,10 @@ int main(void)
 	
 #if CONFIG_I2C_SLAVE
 	i2c.Start(PRIO_I2C_SLAVE);
+#endif
+
+#if CONFIG_SPI_SLAVE
+	spi.Start(PRIO_SPI_SLAVE);
 #endif
 	
 #if CONFIG_ADC
@@ -162,6 +178,9 @@ int main(void)
 
 #if CONFIG_KEYPAD
 	keypad.Start(PRIO_KEYPAD);
+  
+#if CONFIG_USB
+	usb.Start(PRIO_USB);
 #endif
 	
 	//publish a start request

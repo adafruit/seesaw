@@ -34,7 +34,9 @@ enum {
     SYSTEM = 1,
 	DELEGATE,
 	I2C_SLAVE,
+	SPI_SLAVE,
 	AO_DAC,
+	AO_USB,
 	AO_TIMER,
 	AO_ADC,
 	AO_TOUCH,
@@ -52,8 +54,10 @@ enum {
 // The maximum priority is defined in qf_port.h as QF_MAX_ACTIVE (32)
 enum
 {
-    PRIO_SYSTEM     = 10,
+  	PRIO_SYSTEM     = 10,
 	PRIO_I2C_SLAVE	= 27,
+	PRIO_SPI_SLAVE  = 29,
+	PRIO_USB		= 28,
 	PRIO_ADC		= 24,
 	PRIO_TOUCH      = 19,
 	PRIO_TIMER		= 25,

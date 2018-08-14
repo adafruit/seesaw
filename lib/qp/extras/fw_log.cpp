@@ -38,8 +38,6 @@
 
 Q_DEFINE_THIS_FILE
 
-//#define ENABLE_LOGGING
-
 using namespace QP;
 
 namespace FW {
@@ -90,18 +88,10 @@ void Log::Write(char const *buf, uint32_t len) {
 	*/
 }
 
-#if 0
-uint32_t Log::Print(char const *format, ...) {
-    va_list arg;
-    va_start(arg, format);
-    char buf[BUF_LEN];
-    uint32_t len = vsnprintf(buf, sizeof(buf), format, arg);
-    va_end(arg);
-    len = LESS(len, sizeof(buf) - 1);
-    Write(buf, len);
-    return len;
+
+void Log::Print(char const *format, ...) {
+
 }
-#endif
 
 void Log::Event(char const *name, char const *func, const char *evtName, int sig) {
 #ifdef ENABLE_LOGGING

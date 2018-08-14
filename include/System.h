@@ -91,6 +91,30 @@ protected:
 	Fifo m_I2CSlaveInFifo;
 #endif
 
+#if CONFIG_SPI_SLAVE
+	enum {
+		SPI_SLAVE_OUT_FIFO_ORDER = 5,
+		SPI_SLAVE_IN_FIFO_ORDER = 5,
+	};
+
+	uint8_t m_SPISlaveOutFifoStor[1 << SPI_SLAVE_OUT_FIFO_ORDER];
+	uint8_t m_SPISlaveInFifoStor[1 << SPI_SLAVE_IN_FIFO_ORDER];
+	Fifo m_SPISlaveOutFifo;
+	Fifo m_SPISlaveInFifo;
+#endif
+
+#if CONFIG_USB
+	enum {
+		USB_OUT_FIFO_ORDER = 5,
+		USB_IN_FIFO_ORDER = 5,
+	};
+
+	uint8_t m_USBOutFifoStor[1 << USB_OUT_FIFO_ORDER];
+	uint8_t m_USBInFifoStor[1 << USB_IN_FIFO_ORDER];
+	Fifo m_USBOutFifo;
+	Fifo m_USBInFifo;
+#endif
+
 	enum {
 		SERCOM_FIFO_ORDER = 5,
 	};

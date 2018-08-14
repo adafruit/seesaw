@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) Lawrence Lo (https://github.com/galliumstudio). 
+ * Copyright (C) Dean Miller
  * All rights reserved.
  *
  * This program is open source software: you can redistribute it and/or
@@ -27,51 +27,43 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef BSP_H
-#define BSP_H
 
-//#include <stdint.h>
+#ifndef AO_USB_H
+#define AO_USB_H
+
 #include "qpcpp.h"
-//#include "samd21.h"
+#include "qp_extras.h"
 
-#define BSP_TICKS_PER_SEC            (1000)
-#define BSP_MSEC_PER_TICK            (1000 / BSP_TICKS_PER_SEC)
+#include "hsm_id.h"
 
-enum KernelUnawareISRs { // see NOTE00
-    // ...
-    MAX_KERNEL_UNAWARE_CMSIS_PRI  // keep always last
+using namespace QP;
+using namespace FW;
+
+class AOUSB : public QActive {
+public:
+    AOUSB();
+    void Start(uint8_t prio) {
+        QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
+    }
+	
+	static void ReceiveCallback();
+
+protected:
+    static QState InitialPseudoState(AOUSB * const me, QEvt const * const e);
+    static QState Root(AOUSB * const me, QEvt const * const e);
+    static QState Stopped(AOUSB * const me, QEvt const * const e);
+    static QState Started(AOUSB * const me, QEvt const * const e);
+
+    enum {
+        EVT_QUEUE_COUNT = 128,
+    };
+    QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
+    uint8_t m_id;
+	uint16_t m_nextSequence;
+    char const * m_name;
 };
-// "kernel-unaware" interrupts can't overlap "kernel-aware" interrupts
-Q_ASSERT_COMPILE(MAX_KERNEL_UNAWARE_CMSIS_PRI <= QF_AWARE_ISR_CMSIS_PRI);
 
-// Lower numerical value indicates higher priority.
-enum KernelAwareISRs {
-    SYSTICK_PRIO            = QF_AWARE_ISR_CMSIS_PRI,
-	I2C_SLAVE_ISR_PRIO		= QF_AWARE_ISR_CMSIS_PRI + 1,
-	SPI_SLAVE_ISR_PRIO		= QF_AWARE_ISR_CMSIS_PRI + 1,
-	SERCOM_ISR_PRIO		= QF_AWARE_ISR_CMSIS_PRI + 1,
-	NVMCTRL_ISR_PRIO		= QF_AWARE_ISR_CMSIS_PRI + 1,
-	USB_ISR_PRIO			= QF_AWARE_ISR_CMSIS_PRI + 1,
-    MAX_KERNEL_AWARE_CMSIS_PRI // keep always last
-};
-// "kernel-aware" interrupts should not overlap the PendSV priority
-//DM: not sure if this is relevant for m0+, all are kernel aware?
-//Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
-void BspInit();
-void BspWrite(char const *buf, uint32_t len);
-uint32_t GetSystemMs();
+#endif // AO_USB_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-void initiateReset(int ms);
-void tickReset();
-void cancelReset();
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // BSP_H

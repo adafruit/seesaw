@@ -78,6 +78,9 @@ public:
         QF_CRIT_EXIT(crit);
         return count;
     }
+    void SetIndex(uint32_t count) {
+        IncIndex(m_writeIndex, count);
+    }
     // Since (m_readIndex == m_writeIndex) is regarded as empty, the maximum available count =
     // total storage - 1, i.e. m_mask.
     uint32_t GetAvailCountNoCrit() const {

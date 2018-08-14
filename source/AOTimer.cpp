@@ -111,7 +111,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
         }
         case TIMER_START_REQ: {
             LOG_EVENT(e);
-			
+#if CONFIG_TIMER			
 #if CONFIG_TIMER_PWM_OUT0
 #ifdef USE_TCC_TIMERS
 #ifdef CONFIG_TIMER_PWM_OUT0_IS_TCC
@@ -339,6 +339,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
             initTimerPWM( CONFIG_TIMER_PWM_OUT11_TC );
 #endif //USE_TCC_TIMERS
 #endif //CONFIG_TIMER_PWM_OUTX
+#endif //CONFIG_TIMER
 
 			Evt const &req = EVT_CAST(*e);
 			Evt *evt = new TimerStartCfm(req.GetSeq(), ERROR_SUCCESS);

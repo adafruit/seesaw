@@ -39,6 +39,11 @@
 #include "bsp_sercom.h"
 #include "bsp_gpio.h"
 
+//for direct UART<->USB
+#include "USB/USBCore.h"
+#include "USB/USBAPI.h"
+#include "USB/USBDesc.h"
+
 Q_DEFINE_THIS_FILE
 
 using namespace FW;
@@ -185,8 +190,8 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			LOG_EVENT(e);
 			
 			//set up UART
-			pinPeripheral(CONFIG_SERCOM_UART_PIN_RX, 2);
-			pinPeripheral(CONfIG_SERCOM_UART_PIN_TX, 2);
+			pinPeripheral(CONFIG_SERCOM_UART_PIN_RX, CONFIG_SERCOM_UART_MUX_RX);
+			pinPeripheral(CONFIG_SERCOM_UART_PIN_TX, CONFIG_SERCOM_UART_MUX_TX);
 			
 			initUART(me->m_sercom, SAMPLE_RATE_x16, me->m_baud);
 			initFrame(me->m_sercom, CONFIG_SERCOM_UART_CHAR_SIZE, LSB_FIRST, CONFIG_SERCOM_UART_PARITY, CONFIG_SERCOM_UART_STOP_BIT);
@@ -285,12 +290,20 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			break;
 		}
 		case SERCOM_RX_INTERRUPT: {
+#ifdef USB_UART_DIRECT
+			//messy but just pipe this right out to USB for dsp feather
+			uint8_t toUSB[64];
+			uint8_t bytesRead = m_rxFifo->Read(toUSB, m_rxFifo->GetUsedCount());
+			
+			USBDevice.send(CDC_ENDPOINT_IN, toUSB, bytesRead);
+#else
 			me->m_status.DATA_RDY = 1;
 			if(me->m_inten.DATA_RDY){
 				//post an interrupt event
 				Evt *evt = new InterruptSetReq( (SEESAW_INTERRUPT_SERCOM0_DATA_RDY << me->m_offset) );
 				QF::PUBLISH(evt, me);
 			}
+#endif
 			status = Q_HANDLED();
 			break;
 		}
@@ -343,8 +356,12 @@ void sercom_handler( Sercom * sercom )
 	if( isEnabledUART( sercom ) ){
 		if (availableDataUART( sercom )) {
 			uint8_t c = readDataUART( sercom );
+#ifndef USB_UART_DIRECT
 			m_rxFifo->Write(&c, 1);
 			AOSERCOM::RxCallback();
+#else		
+			USBDevice.send(CDC_ENDPOINT_IN, &c, 1);
+#endif
 		}
 
 		if (isUARTError( sercom )) {
