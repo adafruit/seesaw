@@ -709,8 +709,10 @@ class KeypadReadRegReq : public Evt {
 		
 	private:
 	uint8_t _requesterId, _reg;
-	Fifo *_dest;	
-=======
+	Fifo *_dest;
+
+};
+
 //* ==========================  SPI SLAVE ======================= *//
 
 class SPISlaveStartReq : public Evt {

@@ -590,10 +590,15 @@
 #define PIN_ADDR_4 0
 #endif
 
-#define PIN_USB_DM 24
-#define PIN_USB_DP 25
+#ifndef CONFIG_USBPIN_USB_DM
+#define CONFIG_USBPIN_USB_DM 24
+#endif
 
-#define CONFIG_GPIO_MASK (((unsigned long long) 0xFFFFFFFFFFFFFFFF) ^ ( ((uint64_t)CONFIG_USBPIN_USB_DM) | ((uint64_t)CONFIG_USB << PIN_USB_DP) \
+#ifndef CONFIG_USBPIN_USB_DP
+#define CONFIG_USBPIN_USB_DP 25
+#endif
+
+#define CONFIG_GPIO_MASK (((unsigned long long) 0xFFFFFFFFFFFFFFFF) ^ ( ((uint64_t)CONFIG_USBPIN_USB_DM) | ((uint64_t)CONFIG_USB << CONFIG_USBPIN_USB_DP) \
 	    | ((uint64_t)CONFIG_ADDR << PIN_ADDR_0) | ((uint64_t)CONFIG_ADDR << PIN_ADDR_1) \
 		| ((uint64_t)CONFIG_ADDR_2 << PIN_ADDR_2) | ((uint64_t)CONFIG_ADDR_3 << PIN_ADDR_3) \
 		| ((uint64_t)CONFIG_ADDR_4 << PIN_ADDR_4) \

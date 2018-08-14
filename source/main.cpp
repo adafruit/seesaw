@@ -101,6 +101,7 @@ static Neopixel neopixel;
 
 #if CONFIG_KEYPAD
 static AOKeypad keypad;
+#endif
 
 #if CONFIG_USB
 static AOUSB usb;
@@ -178,7 +179,8 @@ int main(void)
 
 #if CONFIG_KEYPAD
 	keypad.Start(PRIO_KEYPAD);
-  
+#endif
+
 #if CONFIG_USB
 	usb.Start(PRIO_USB);
 #endif
