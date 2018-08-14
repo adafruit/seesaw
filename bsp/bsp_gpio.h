@@ -3,8 +3,12 @@
 
 #include "sam.h"
 
-inline void gpio_init(int port, int pin, int dir) { 
-	PORT->Group[port].DIRSET.reg = ( (dir & 0x01) <<pin);
+inline void gpio_init(int port, int pin, int dir) {
+	if(dir)
+		PORT->Group[port].DIRSET.reg = ( 1UL<<pin);
+	else 
+		PORT->Group[port].DIRCLR.reg = ( 1UL<<pin);
+		
 	PORT->Group[port].PINCFG[pin].reg=(uint8_t)(PORT_PINCFG_INEN);
 }
 

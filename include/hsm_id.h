@@ -47,6 +47,7 @@ enum {
 	AO_INTERRUPT,
 	AO_DAP,
 	AO_NEOPIXEL,
+	AO_KEYPAD,
 };
 
 // Higher value corresponds to higher priority.
@@ -66,6 +67,7 @@ enum
 	PRIO_INTERRUPT  = 31,
 	PRIO_DAP		= 21,
 	PRIO_NEOPIXEL	= 20,
+	PRIO_KEYPAD		= 18,
 };
 
 

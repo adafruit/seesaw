@@ -32,6 +32,7 @@
 #include "AODAP.h"
 #include "AOTouch.h"
 #include "Neopixel.h"
+#include "AOKeypad.h"
 #include "AOUSB.h"
 
 #include "bsp_gpio.h"
@@ -97,6 +98,9 @@ static AODAP dap;
 #if CONFIG_NEOPIXEL
 static Neopixel neopixel;
 #endif
+
+#if CONFIG_KEYPAD
+static AOKeypad keypad;
 
 #if CONFIG_USB
 static AOUSB usb;
@@ -172,6 +176,9 @@ int main(void)
 	neopixel.Start(PRIO_NEOPIXEL);
 #endif
 
+#if CONFIG_KEYPAD
+	keypad.Start(PRIO_KEYPAD);
+  
 #if CONFIG_USB
 	usb.Start(PRIO_USB);
 #endif

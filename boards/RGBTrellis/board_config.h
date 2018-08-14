@@ -4,7 +4,7 @@
 #define PRODUCT_CODE 0000
 
 //override default I2C addr
-#define CONFIG_I2C_SLAVE_ADDR 0x5E
+#define CONFIG_I2C_SLAVE_ADDR 0x2E
 
 #define CONFIG_NO_ACTIVITY_LED
 #define CONFIG_NO_EEPROM

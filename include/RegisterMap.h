@@ -200,7 +200,8 @@
 #define SEESAW_INTERRUPT_SERCOM3_DATA_RDY ( (uint32_t)(1ul << 4) )
 #define SEESAW_INTERRUPT_SERCOM4_DATA_RDY ( (uint32_t)(1ul << 5) )
 #define SEESAW_INTERRUPT_SERCOM5_DATA_RDY ( (uint32_t)(1ul << 6) )
-#define SEESAW_INTERRUPT_SPI_SLAVE_DATA_RDY ( (uint32_t)(1ul << 7) )
+#define SEESAW_INTERRUPT_KEYPAD_DATA_RDY  ( (uint32_t)(1ul << 7) )
+#define SEESAW_INTERRUPT_SPI_SLAVE_DATA_RDY ( (uint32_t)(1ul << 8) )
 
 //* ============== DAP =================== *//
 #define SEESAW_DAP_BASE 0x0C
@@ -241,3 +242,24 @@
     #define SEESAW_TOUCH_CHANNEL_1 0x11
     #define SEESAW_TOUCH_CHANNEL_2 0x12
     #define SEESAW_TOUCH_CHANNEL_3 0x13
+
+//* ============== KEYPAD =================== *//
+#define SEESAW_KEYPAD_BASE 0x10
+
+	/****** STATUS *****/
+	#define SEESAW_KEYPAD_STATUS 0x00
+
+	/****** Enable or disable row/col events *****/
+	#define SEESAW_KEYPAD_EVENT 0x01
+
+	/****** Writing a 1 to any bit in this register will enable the interrupt *****/
+	#define SEESAW_KEYPAD_INTENSET 0x02
+
+	/****** Writing a 1 to any bit in this register will disable the interrupt *****/
+	#define SEESAW_KEYPAD_INTENCLR 0x03
+
+	/****** number of events in the fifo *****/
+	#define SEESAW_KEYPAD_COUNT 0x04
+
+	/****** Reading data from the fifo will clear interrupt and data ready flag *****/
+	#define SEESAW_KEYPAD_FIFO 0x10

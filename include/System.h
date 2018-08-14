@@ -123,6 +123,10 @@ protected:
 		DAP_FIFO_ORDER = 7,
 	};
 
+	enum {
+		KEYPAD_FIFO_ORDER = 5,
+	};
+
 #if CONFIG_SERCOM0
 	uint8_t m_sercom0RxFifoStor[1 << SERCOM_FIFO_ORDER];
 	Fifo m_sercom0RxFifo;
@@ -146,6 +150,11 @@ protected:
 #if CONFIG_DAP
 	uint8_t m_DAPRxFifoStor[1 << DAP_FIFO_ORDER];
 	Fifo m_DAPRxFifo;
+#endif
+
+#if CONFIG_KEYPAD
+	uint8_t m_keypadFifoStor[1 << KEYPAD_FIFO_ORDER];
+	Fifo m_keypadFifo;
 #endif
 
 

@@ -88,6 +88,7 @@ void Log::Write(char const *buf, uint32_t len) {
 	*/
 }
 
+
 void Log::Print(char const *format, ...) {
 
 }
