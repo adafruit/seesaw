@@ -124,7 +124,7 @@ protected:
 	};
 
 	enum {
-		KEYPAD_FIFO_ORDER = 5,
+		KEYPAD_FIFO_ORDER = 7,
 	};
 
 #if CONFIG_SERCOM0
