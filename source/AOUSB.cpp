@@ -38,6 +38,11 @@
 #include "USB/USBAPI.h"
 #include "USB/USBDesc.h"
 
+#include "sam.h"
+#include "bsp_dma.h"
+
+#include "SeesawConfig.h"
+
 Q_DEFINE_THIS_FILE
 
 using namespace FW;
@@ -45,12 +50,17 @@ using namespace FW;
 static Fifo *m_inFifo;
 //static Fifo *m_outFifo;
 
+#ifdef USB_UART_DMA
+static uint8_t DMA_OUT_BUF[1024];
+#endif
+
 AOUSB::AOUSB() :
     QActive((QStateHandler)&AOUSB::InitialPseudoState), 
     m_id(AO_USB), m_name("USB") {}
 
 QState AOUSB::InitialPseudoState(AOUSB * const me, QEvt const * const e) {
     (void)e;
+    me->m_deferQueue.init(me->m_deferQueueStor, ARRAY_COUNT(me->m_deferQueueStor));
 
     me->subscribe(USB_START_REQ);
     me->subscribe(USB_STOP_REQ);
@@ -116,6 +126,12 @@ QState AOUSB::Stopped(AOUSB * const me, QEvt const * const e) {
 			m_inFifo = req.getInFifo();
 			//m_outFifo = req.getOutFifo(); //not needed right now
 			
+#ifdef USB_UART_DMA
+            dmac_alloc(CONFIG_USB_UART_DMA_CHANNEL_TX);
+            dmac_set_action(CONFIG_USB_UART_DMA_CHANNEL_TX, DMA_TRIGGER_ACTON_BEAT);
+            dmac_set_trigger(CONFIG_USB_UART_DMA_CHANNEL_TX, CONFIG_USB_UART_DMA_TRIGGER_TX);
+#endif
+
 			m_inFifo->Reset();
 			//m_outFifo->Reset();
 			
@@ -168,6 +184,31 @@ QState AOUSB::Started(AOUSB * const me, QEvt const * const e) {
 }
 
 void AOUSB::ReceiveCallback(){
+#ifdef USB_UART_DMA
+	uint32_t len = USBDevice.available(CDC_ENDPOINT_OUT);
+    if(len > 0){
+        uint8_t *ptr = DMA_OUT_BUF;
+
+        Q_ASSERT(len < sizeof(DMA_OUT_BUF));
+
+        for(int i=len; i>0; i--){
+            *ptr++ = USBDevice.recv(CDC_ENDPOINT_OUT);
+        }
+
+        while(dmac_is_active(CONFIG_USB_UART_DMA_CHANNEL_TX));
+
+        dmac_set_descriptor(
+            CONFIG_USB_UART_DMA_CHANNEL_TX,
+            (void *)DMA_OUT_BUF,
+            (void *)&CONFIG_USB_UART_SERCOM->USART.DATA.reg,
+            len,
+            DMA_BEAT_SIZE_BYTE,
+            true,
+            false);
+
+        dmac_start(CONFIG_USB_UART_DMA_CHANNEL_TX);
+    }
+#elif defined(USB_UART_DIRECT)
 	//put the data into the fifo
 	uint8_t len = 0;
 	while(USBDevice.available(CDC_ENDPOINT_OUT)){
@@ -178,4 +219,5 @@ void AOUSB::ReceiveCallback(){
 	
 	Evt *evt = new SercomWriteDataReq(m_inFifo, len);
 	QF::PUBLISH(evt, 0);
+#endif
 }

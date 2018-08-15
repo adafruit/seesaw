@@ -38,6 +38,7 @@
 #include "RegisterMap.h"
 #include "bsp_sercom.h"
 #include "bsp_gpio.h"
+#include "bsp_dma.h"
 
 //for direct UART<->USB
 #include "USB/USBCore.h"
@@ -48,15 +49,27 @@ Q_DEFINE_THIS_FILE
 
 using namespace FW;
 
+#ifdef USB_UART_DMA
+static uint8_t DMA_IN_BUF[2][64];
+static bool dma_ix = 0;
+#endif
+
 //TODO: we probably will need these for each sercom
 static Fifo *m_rxFifo;
 
 AOSERCOM::AOSERCOM( Sercom *sercom, uint8_t id, uint8_t offset ) :
-    QActive((QStateHandler)&AOSERCOM::InitialPseudoState), 
+    QActive((QStateHandler)&AOSERCOM::InitialPseudoState),
+#ifdef USB_UART_DMA
+	m_syncTimer(this, SERCOM_UART_SYNC),
+#endif
     m_id(id), m_name("SERCOM"), m_sercom(sercom), m_offset(offset) {}
 
 QState AOSERCOM::InitialPseudoState(AOSERCOM * const me, QEvt const * const e) {
     (void)e;
+#ifdef USB_UART_DMA
+	me->m_deferQueue.init(me->m_deferQueueStor, ARRAY_COUNT(me->m_deferQueueStor));
+	me->subscribe(SERCOM_UART_SYNC);
+#endif
 
     me->subscribe(SERCOM_START_REQ);
     me->subscribe(SERCOM_STOP_REQ);
@@ -196,7 +209,27 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			initUART(me->m_sercom, SAMPLE_RATE_x16, me->m_baud);
 			initFrame(me->m_sercom, CONFIG_SERCOM_UART_CHAR_SIZE, LSB_FIRST, CONFIG_SERCOM_UART_PARITY, CONFIG_SERCOM_UART_STOP_BIT);
 			initPads(me->m_sercom, CONFIG_SERCOM_UART_PAD_TX, CONFIG_SERCOM_UART_PAD_RX);
-			
+
+#ifdef USB_UART_DMA
+			me->m_syncTimer.armX(5, 5);
+			disableInterruptsUART(me->m_sercom);
+			dmac_init();
+
+            dmac_alloc(CONFIG_USB_UART_DMA_CHANNEL_RX);
+            dmac_set_action(CONFIG_USB_UART_DMA_CHANNEL_RX, DMA_TRIGGER_ACTON_BEAT);
+            dmac_set_trigger(CONFIG_USB_UART_DMA_CHANNEL_RX, CONFIG_USB_UART_DMA_TRIGGER_RX);
+
+            dmac_set_descriptor(
+              CONFIG_USB_UART_DMA_CHANNEL_RX,
+              (void *)&me->m_sercom->USART.DATA.reg,
+              (void *)DMA_IN_BUF[0],
+              sizeof(DMA_IN_BUF[0]),
+              DMA_BEAT_SIZE_BYTE,
+              false,
+              true);
+			dmac_start(CONFIG_USB_UART_DMA_CHANNEL_RX);
+#endif
+
 			enableUART(me->m_sercom);
 			
 			status = Q_HANDLED();
@@ -208,8 +241,9 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			SercomWriteDataReq const &req = static_cast<SercomWriteDataReq const &>(*e);
 			Fifo *source = req.getSource();
 			
+			int len = req.getLen();
 			uint8_t c = 0;
-			for(int i=0; i<req.getLen(); i++){
+			for(int i=len; i>0; i--){
 				source->Read(&c, 1);
 				writeDataUART(me->m_sercom, c);
 			}
@@ -289,6 +323,32 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			status = Q_HANDLED();
 			break;
 		}
+#ifdef USB_UART_DMA
+		case SERCOM_UART_SYNC: {
+			//TODO: disable interrupts
+			
+			dmac_abort(CONFIG_USB_UART_DMA_CHANNEL_RX);
+			uint8_t count = dmac_get_transfer_count(CONFIG_USB_UART_DMA_CHANNEL_RX);
+			if(count > 0){
+				//swap the buffers and send the data to USB if anything has been received
+				USBDevice.send(CDC_ENDPOINT_IN, DMA_IN_BUF[dma_ix], count);
+				dma_ix = !dma_ix;
+
+				dmac_set_descriptor(
+					CONFIG_USB_UART_DMA_CHANNEL_RX,
+					(void *)&me->m_sercom->USART.DATA.reg,
+					(void *)DMA_IN_BUF[dma_ix],
+					sizeof(DMA_IN_BUF[dma_ix]),
+					DMA_BEAT_SIZE_BYTE,
+					false,
+					true);
+			}
+			dmac_start(CONFIG_USB_UART_DMA_CHANNEL_RX);
+
+			status = Q_HANDLED();
+			break;
+		}
+#endif
 		case SERCOM_RX_INTERRUPT: {
 #ifdef USB_UART_DIRECT
 			//messy but just pipe this right out to USB for dsp feather
@@ -309,6 +369,9 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 		}
 		case Q_EXIT_SIG: {
 			LOG_EVENT(e);
+#ifdef USB_UART_DMA
+			me->m_syncTimer.disarm();
+#endif
 			resetUART( me->m_sercom );
 			status = Q_HANDLED();
 			break;

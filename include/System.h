@@ -105,8 +105,8 @@ protected:
 
 #if CONFIG_USB
 	enum {
-		USB_OUT_FIFO_ORDER = 5,
-		USB_IN_FIFO_ORDER = 5,
+		USB_OUT_FIFO_ORDER = 10,
+		USB_IN_FIFO_ORDER = 10,
 	};
 
 	uint8_t m_USBOutFifoStor[1 << USB_OUT_FIFO_ORDER];

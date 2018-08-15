@@ -199,6 +199,8 @@ bool isDataRegisterEmptyUART( Sercom * sercom );
 
 void initUART( Sercom * sercom, SercomUartSampleRate sampleRate, uint32_t baudrate);
 
+void disableInterruptsUART(Sercom * sercom);
+
 void initFrame( Sercom * sercom , SercomUartCharSize charSize, SercomDataOrder dataOrder, SercomParityMode parityMode, SercomNumberStopBit nbStopBits);
 
 void initPads( Sercom * sercom , SercomUartTXPad txPad, SercomRXPad rxPad);

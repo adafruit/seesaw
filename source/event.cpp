@@ -141,6 +141,7 @@ char const * const eventName[] = {
     "SERCOM_WRITE_REG_REQ",
     "SERCOM_READ_REG_REQ",
     "SERCOM_RX_INTERRUPT",
+    "SERCOM_UART_SYNC",
 
     "KEYPAD_START_REQ",
 	"KEYPAD_START_CFM",

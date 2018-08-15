@@ -56,8 +56,11 @@ protected:
 
     enum {
         EVT_QUEUE_COUNT = 128,
+        DEFER_QUEUE_COUNT = 16,
     };
     QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
+    QEvt const *m_deferQueueStor[DEFER_QUEUE_COUNT];
+	QEQueue m_deferQueue;
     uint8_t m_id;
 	uint16_t m_nextSequence;
     char const * m_name;

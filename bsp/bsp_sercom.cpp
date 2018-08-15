@@ -234,6 +234,13 @@ void initUART( Sercom * sercom, SercomUartSampleRate sampleRate, uint32_t baudra
 	sercom->USART.BAUD.FRAC.FP   = (baudTimes8 % 8);
 	sercom->USART.BAUD.FRAC.BAUD = (baudTimes8 / 8);
 }
+
+void disableInterruptsUART(Sercom * sercom)
+{
+	  sercom->USART.INTENCLR.reg =	SERCOM_USART_INTENCLR_RXC |  //Received complete
+                                SERCOM_USART_INTENCLR_ERROR; //All others errors
+}
+
 void initFrame( Sercom * sercom , SercomUartCharSize charSize, SercomDataOrder dataOrder, SercomParityMode parityMode, SercomNumberStopBit nbStopBits)
 {
   //Setting the CTRLA register

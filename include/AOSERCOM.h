@@ -38,6 +38,8 @@
 
 #include "sam.h"
 
+#include "SeesawConfig.h"
+
 using namespace QP;
 using namespace FW;
 
@@ -61,8 +63,16 @@ protected:
 
     enum {
         EVT_QUEUE_COUNT = 128,
+#ifdef USB_UART_DMA
+		DEFER_QUEUE_COUNT = 4,
+#endif
     };
     QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
+#ifdef USB_UART_DMA
+	QEvt const *m_deferQueueStor[DEFER_QUEUE_COUNT];
+	QEQueue m_deferQueue;
+	QTimeEvt m_syncTimer;
+#endif
     uint8_t m_id;
 	uint16_t m_nextSequence;
     char const * m_name;

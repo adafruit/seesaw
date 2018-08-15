@@ -136,7 +136,7 @@ QState SPISlave::Stopped(SPISlave * const me, QEvt const * const e) {
 			pinPeripheral(CONFIG_SPI_SLAVE_PIN_SS, 3);
 
 			initSPISlave( me->m_sercom, CONFIG_SPI_SLAVE_PAD_TX, CONFIG_SPI_SLAVE_PAD_RX, CONFIG_SPI_SLAVE_CHAR_SIZE,CONFIG_SPI_SLAVE_DATA_ORDER);
-			setClockModeSPI( me->m_sercom, SERCOM_SPI_MODE_3);
+			setClockModeSPI( me->m_sercom, CONFIG_SPI_SLAVE_MODE);
 			NVIC_ClearPendingIRQ(CONFIG_SPI_SLAVE_IRQn);
 			
 			//enable transaction complete interrupt
@@ -156,13 +156,13 @@ QState SPISlave::Stopped(SPISlave * const me, QEvt const * const e) {
 			gpio_write(PORTA, CONFIG_INTERRUPT_PIN, 0); //write low
 
             dmac_init();
-            dmac_alloc(0);
+            dmac_alloc(CONFIG_SPI_SLAVE_DMA_CHANNEL_RX);
 
-            dmac_set_action(0, DMA_TRIGGER_ACTON_BEAT);
-            dmac_set_trigger(0, SERCOM3_DMAC_ID_RX);
+            dmac_set_action(CONFIG_SPI_SLAVE_DMA_CHANNEL_RX, DMA_TRIGGER_ACTON_BEAT);
+            dmac_set_trigger(CONFIG_SPI_SLAVE_DMA_CHANNEL_RX, CONFIG_SPI_SLAVE_DMA_TRIGGER_RX);
 
             dmac_set_descriptor(
-              0,
+              CONFIG_SPI_SLAVE_DMA_CHANNEL_RX,
               (void *)&me->m_sercom->SPI.DATA.reg,
               (void *)m_inFifo->GetAddr(0),
               64,
@@ -170,9 +170,9 @@ QState SPISlave::Stopped(SPISlave * const me, QEvt const * const e) {
               false,
               true);
 
-            dmac_alloc(1);
-            dmac_set_action(1, DMA_TRIGGER_ACTON_BEAT);
-            dmac_set_trigger(1, SERCOM3_DMAC_ID_TX);
+            dmac_alloc(CONFIG_SPI_SLAVE_DMA_CHANNEL_TX);
+            dmac_set_action(CONFIG_SPI_SLAVE_DMA_CHANNEL_TX, DMA_TRIGGER_ACTON_BEAT);
+            dmac_set_trigger(CONFIG_SPI_SLAVE_DMA_CHANNEL_TX, CONFIG_SPI_SLAVE_DMA_TRIGGER_TX);
 
             //gpio_init(PORTA, PIN_ACTIVITY_LED, 1); //set as output
 
@@ -247,7 +247,7 @@ QState SPISlave::Idle(SPISlave * const me, QEvt const * const e) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
 
-            dmac_start(0);
+            dmac_start(CONFIG_SPI_SLAVE_DMA_CHANNEL_RX);
             gpio_write(PORTA, CONFIG_INTERRUPT_PIN, 1); //write high
 
             status = Q_HANDLED();
@@ -269,7 +269,7 @@ QState SPISlave::Idle(SPISlave * const me, QEvt const * const e) {
 				Evt *evt = new DelegateProcessCommand(me->m_id, req.getHighByte(), req.getLowByte(), req.getLen(), m_inFifo);
 				QF::PUBLISH(evt, me);
 
-				dmac_start(0);
+				dmac_start(CONFIG_SPI_SLAVE_DMA_CHANNEL_RX);
 				gpio_write(PORTA, CONFIG_INTERRUPT_PIN, 1); //signal we are now ready to accept commands again
 
 				status = Q_HANDLED();
@@ -282,7 +282,7 @@ QState SPISlave::Idle(SPISlave * const me, QEvt const * const e) {
 				status = Q_TRAN(&SPISlave::Busy);
 			}
 			else{
-				dmac_start(0);
+				dmac_start(CONFIG_SPI_SLAVE_DMA_CHANNEL_RX);
 				gpio_write(PORTA, CONFIG_INTERRUPT_PIN, 1); //signal we are now ready to accept commands again
 				status = Q_HANDLED();
 			}
@@ -303,7 +303,7 @@ QState SPISlave::Busy(SPISlave * const me, QEvt const * const e) {
 		case Q_ENTRY_SIG: {
 			LOG_EVENT(e);
 			
-			//dmac_abort(0);
+			//dmac_abort(CONFIG_SPI_SLAVE_DMA_CHANNEL_RX);
 			slave_busy = true;
 			
 			//assume default output fifo
@@ -321,7 +321,7 @@ QState SPISlave::Busy(SPISlave * const me, QEvt const * const e) {
 					 m_outFifo = req.getFifo();
 				}
 	            dmac_set_descriptor(
-	              1,
+	              CONFIG_SPI_SLAVE_DMA_CHANNEL_TX,
 	              (void *)m_outFifo->GetAddr(0),
 	              (void *)&me->m_sercom->SPI.DATA.reg,
 	              64,
@@ -329,7 +329,7 @@ QState SPISlave::Busy(SPISlave * const me, QEvt const * const e) {
 	              true,
 	              false);
 
-                dmac_start(1);
+                dmac_start(CONFIG_SPI_SLAVE_DMA_CHANNEL_TX);
 
                 gpio_write(PORTA, CONFIG_INTERRUPT_PIN, 1); //write high
 
@@ -376,11 +376,11 @@ extern "C" {
 
 			CONFIG_SPI_SLAVE_SERCOM->SPI.INTFLAG.bit.TXC = 1;
 
-			dmac_abort(1);
-            dmac_abort(0);
+			dmac_abort(CONFIG_SPI_SLAVE_DMA_CHANNEL_TX);
+            dmac_abort(CONFIG_SPI_SLAVE_DMA_CHANNEL_RX);
 
             if(!slave_busy)
-            	bytes_received = dmac_get_transfer_count(0);
+            	bytes_received = dmac_get_transfer_count(CONFIG_SPI_SLAVE_DMA_CHANNEL_RX);
 
 			m_inFifo->Reset();
 			m_inFifo->SetIndex(bytes_received);
@@ -393,7 +393,7 @@ extern "C" {
 			low_byte = 0;
 
 			bytes_received = 0;
-			dmac_start(0);
+			dmac_start(CONFIG_SPI_SLAVE_DMA_CHANNEL_RX);
 		}
 		
 		QXK_ISR_EXIT();
