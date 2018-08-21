@@ -47,6 +47,7 @@ public:
     }
 	
 	static void ReceiveCallback();
+    static void setBaudRate(uint32_t baud);
 
 protected:
     static QState InitialPseudoState(AOUSB * const me, QEvt const * const e);

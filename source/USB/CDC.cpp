@@ -27,6 +27,9 @@
 #include "USB/USBDesc.h"
 #include "bsp.h"
 
+#include "AOUSB.h"
+#include "SeesawConfig.h"
+
 #ifdef CDC_ENABLED
 
 #define CDC_SERIAL_BUFFER_SIZE	256
@@ -110,6 +113,9 @@ bool CDC_Setup(USBSetup& setup)
 		if (r == CDC_SET_LINE_CODING)
 		{
 			USBDevice.recvControl((void*)&_usbLineInfo, 7);
+#if defined(USB_UART_DMA) || defined(USB_UART_DIRECT)
+			AOUSB::setBaudRate(_usbLineInfo.dwDTERate);
+#endif
 		}
 
 		if (r == CDC_SET_CONTROL_LINE_STATE)

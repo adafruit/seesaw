@@ -221,3 +221,11 @@ void AOUSB::ReceiveCallback(){
 	QF::PUBLISH(evt, 0);
 #endif
 }
+
+void AOUSB::setBaudRate(uint32_t baud)
+{
+#if defined(USB_UART_DMA) || defined(USB_UART_DIRECT)
+	Evt *evt = new SercomWriteRegReq(SEESAW_SERCOM_BAUD, baud);
+	QF::PUBLISH(evt, 0);
+#endif
+}
