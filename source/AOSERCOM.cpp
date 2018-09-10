@@ -185,7 +185,12 @@ QState AOSERCOM::Started(AOSERCOM * const me, QEvt const * const e) {
 			Evt const &req = EVT_CAST(*e);
 			Evt *evt = new SERCOMStopCfm(req.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
+#ifdef USB_UART_DMA
+			//hacky but don't restart if we're doing USB to UART DMA
+			status = Q_HANDLED();
+#else
 			status = Q_TRAN(AOSERCOM::Stopped);
+#endif
 			break;
 		}
         default: {
@@ -376,6 +381,18 @@ QState AOSERCOM::UART(AOSERCOM * const me, QEvt const * const e) {
 			status = Q_HANDLED();
 			break;
 		}
+
+#ifdef USB_UART_DMA
+		case SERCOM_START_REQ:{
+			Evt const &r = EVT_CAST(*e);
+			Evt *evt = new SERCOMStartCfm(r.GetSeq(), ERROR_SUCCESS);
+			QF::PUBLISH(evt, me);
+
+			status = Q_HANDLED();
+			break;
+		}
+#endif
+
 		default: {
 			status = Q_SUPER(&AOSERCOM::Started);
 			break;

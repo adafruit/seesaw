@@ -166,6 +166,15 @@ QState AOUSB::Started(AOUSB * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
+        case USB_START_REQ: {
+            LOG_EVENT(e);
+            USBStartReq const &req = static_cast<USBStartReq const &>(*e);
+            Evt *evt = new USBStartCfm(req.GetSeq(), ERROR_SUCCESS);
+			QF::PUBLISH(evt, me);
+
+            status = Q_HANDLED();
+            break;
+        }
 		case USB_STOP_REQ: {
 			LOG_EVENT(e);
             
