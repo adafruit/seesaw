@@ -168,11 +168,17 @@ QState AOUSB::Started(AOUSB * const me, QEvt const * const e) {
         }
 		case USB_STOP_REQ: {
 			LOG_EVENT(e);
-			Evt const &req = EVT_CAST(*e);
-			USBDevice.detach();
+            
+            Evt const &req = EVT_CAST(*e);
 			Evt *evt = new USBStopCfm(req.GetSeq(), ERROR_SUCCESS);
 			QF::PUBLISH(evt, me);
+
+#if 0       //do not restart usb on soft reboot
+			USBDevice.detach();
 			status = Q_TRAN(AOUSB::Stopped);
+#else  
+            status = Q_HANDLED();
+#endif
 			break;
 		}
         default: {
@@ -187,15 +193,12 @@ void AOUSB::ReceiveCallback(){
 #ifdef USB_UART_DMA
 	uint32_t len = USBDevice.available(CDC_ENDPOINT_OUT);
     if(len > 0){
-        uint8_t *ptr = DMA_OUT_BUF;
 
         Q_ASSERT(len < sizeof(DMA_OUT_BUF));
 
-        for(int i=len; i>0; i--){
-            *ptr++ = USBDevice.recv(CDC_ENDPOINT_OUT);
-        }
-
         while(dmac_is_active(CONFIG_USB_UART_DMA_CHANNEL_TX));
+
+        while(USBDevice.recv(CDC_ENDPOINT_OUT, DMA_OUT_BUF, len) < 0);
 
         dmac_set_descriptor(
             CONFIG_USB_UART_DMA_CHANNEL_TX,
