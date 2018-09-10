@@ -31,6 +31,8 @@ static void sync_config(Ptc const* module_inst) {
 }
 
 void init_clocks_ptc(){
+
+#if defined(SAMD21)
     /* Setup and enable generic clock source for PTC module.
       struct system_gclk_chan_config gclk_chan_conf;
       system_gclk_chan_get_config_defaults(&gclk_chan_conf);
@@ -82,6 +84,82 @@ void init_clocks_ptc(){
 
    // original line: system_apb_clock_set_mask(SYSTEM_CLOCK_APB_APBC, PM_APBCMASK_PTC);
    PM->APBCMASK.reg |= PM_APBCMASK_PTC;
+#else
+
+    // Sets up the clocks needed for the PTC module. The clock setup is described
+    // in the touch.c implementation in the ASF examples I've replaced the ASF
+    // calls with their low-level equivilents. Funny enough, the Generic Clock
+    // Generator 3 is not actually used by arduinio core although it is set up in
+    // various places.
+
+
+    const unsigned int PTC_CLOCK_GCGID = 3;
+
+    // Added for PTC - rough hack - JAG
+
+    SYSCTRL->OSC8M.bit.PRESC = SYSCTRL_OSC8M_PRESC_2_Val ;  // recent versions of CMSIS from Atmel changed the prescaler defines
+    SYSCTRL->OSC8M.bit.ONDEMAND = 1 ;
+    //  SYSCTRL->OSC8M.bit.RUNINSTANDBY = 1 ;
+
+    /* Put OSC8M as source for Generic Clock Generator 3 */
+    GCLK->GENDIV.reg = GCLK_GENDIV_ID( PTC_CLOCK_GCGID) ; // Generic Clock Generator 3
+    while ( (SYSCTRL->PCLKSR.reg & SYSCTRL_PCLKSR_DFLLRDY) == 0 );
+
+    // This magic actually does the assignment
+    GCLK->GENCTRL.reg =
+    ( GCLK_GENCTRL_ID( PTC_CLOCK_GCGID ) |
+        GCLK_GENCTRL_SRC_OSC8M
+        | GCLK_GENCTRL_GENEN
+    );
+    while ( (SYSCTRL->PCLKSR.reg & SYSCTRL_PCLKSR_DFLLRDY) == 0 );
+
+    // Original ASF code
+
+    // const int GCLK_GENERATOR_3 = 3;
+    // struct system_gclk_chan_config gclk_chan_conf;
+
+    // system_gclk_chan_get_config_defaults(&gclk_chan_conf);
+    // gclk_chan_conf->source_generator = GCLK_GENERATOR_0;
+    // equivilent to:
+    //  gclk_chan_conf.source_generator = GCLK_GENERATOR_3;
+
+    //  system_gclk_chan_set_config(PTC_GCLK_ID, &gclk_chan_conf);
+    // equivalent to
+    uint32_t new_clkctrl_config = (PTC_GCLK_ID << GCLK_CLKCTRL_ID_Pos);
+    new_clkctrl_config |= PTC_CLOCK_GCGID << GCLK_CLKCTRL_GEN_Pos;
+
+    //  system_gclk_chan_disable(channel);
+    // this is the "disable" function
+    /* Select the requested generator channel */
+    *((uint8_t*)&GCLK->CLKCTRL.reg) = PTC_CLOCK_GCGID;
+
+    /* Switch to known-working source so that the channel can be disabled */
+    uint32_t prev_gen_id = GCLK->CLKCTRL.bit.GEN;
+    GCLK->CLKCTRL.bit.GEN = 0;
+
+    /* Disable the generic clock */
+    GCLK->CLKCTRL.reg &= ~GCLK_CLKCTRL_CLKEN;
+    while (GCLK->CLKCTRL.reg & GCLK_CLKCTRL_CLKEN) {
+    /* Wait for clock to become disabled */
+    }
+
+    /* Restore previous configured clock generator */
+    GCLK->CLKCTRL.bit.GEN = prev_gen_id;
+
+    /* Write the new configuration */
+    GCLK->CLKCTRL.reg = new_clkctrl_config;
+
+    //  system_gclk_chan_enable(PTC_GCLK_ID);
+    // equivlent to:
+    *((uint8_t*)&GCLK->CLKCTRL.reg) = PTC_GCLK_ID;
+    GCLK->CLKCTRL.reg |= GCLK_CLKCTRL_CLKEN;
+
+
+    // system_apb_clock_set_mask(SYSTEM_CLOCK_APB_APBC, PM_APBCMASK_PTC);
+    // equivilant is:
+    PM->APBCMASK.reg |= PM_APBCMASK_PTC;
+
+#endif
 }
 
 uint16_t touch_measure(struct adafruit_ptc_config *config) {

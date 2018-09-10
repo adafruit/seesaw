@@ -29,7 +29,11 @@
 
 #include <stdint.h>
 
+#if defined(SAMD21)
 #include "samd21_ptc_component.h"
+#else
+#include "samd10_ptc_component.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {

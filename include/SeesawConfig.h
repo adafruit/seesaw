@@ -202,6 +202,22 @@
 #define CONFIG_TIMER_PWM_OUT3_PIN 7
 #endif
 
+#ifndef CONFIG_TIMER_PWM_OUT0
+#define CONFIG_TIMER_PWM_OUT0 0
+#endif
+
+#ifndef CONFIG_TIMER_PWM_OUT1
+#define CONFIG_TIMER_PWM_OUT1 0
+#endif
+
+#ifndef CONFIG_TIMER_PWM_OUT2
+#define CONFIG_TIMER_PWM_OUT2 0
+#endif
+
+#ifndef CONFIG_TIMER_PWM_OUT3
+#define CONFIG_TIMER_PWM_OUT3 0
+#endif
+
 #ifndef CONFIG_TIMER_PWM_OUT4
 #define CONFIG_TIMER_PWM_OUT4 0
 #endif
@@ -281,6 +297,10 @@
 #endif
 
 //* ============== INTERRUPT =================== *//
+
+#ifndef CONFIG_INTERRUPT_PIN
+#define CONFIG_INTERRUPT_PIN 0
+#endif
 
 #ifndef CONFIG_INTERRUPT_OPEN_DRAIN
 #define CONFIG_INTERRUPT_OPEN_DRAIN 0
