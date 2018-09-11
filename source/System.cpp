@@ -36,10 +36,12 @@
 
 #include "RegisterMap.h"
 
+#if CONFIG_POWER_SENSE || CONFIG_TEMP_SENSOR
+#include "bsp_adc.h"
 #if CONFIG_POWER_SENSE
 #include "bsp_gpio.h"
-#include "bsp_adc.h"
 #include "bsp_neopix.h"
+#endif
 #endif
 
 #include "bsp_sercom.h"
@@ -464,6 +466,12 @@ QState System::Starting(System * const me, QEvt const * const e) {
             neopix_show_800k(CONFIG_POWER_SENSE_NEOPIX_PIN, (uint8_t *)&color, 4);
             adc_init();
             pinPeripheral(CONFIG_POWER_SENSE_ADC_PIN, 1);
+#elif CONFIG_TEMP_SENSOR
+			adc_init();
+#endif
+
+#if CONFIG_TEMP_SENSOR
+			init_temp();
 #endif
 
 			status = Q_HANDLED();

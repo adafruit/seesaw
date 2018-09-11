@@ -13,4 +13,8 @@ void adc_set_inputscan(uint8_t channels);
 
 uint16_t adc_read(uint8_t channel);
 
+void init_temp();
+
+int32_t calculate_temperature();
+
 #endif

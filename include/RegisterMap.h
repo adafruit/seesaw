@@ -11,6 +11,8 @@
 	
 	#define SEESAW_STATUS_OPTIONS 0x03
 
+	#define SEESAW_STATUS_TEMP 0x04
+
 	#define SEESAW_STATUS_SWRST 0x7F
 
 //* ============== GPIO =================== *//

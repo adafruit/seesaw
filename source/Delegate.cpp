@@ -40,6 +40,7 @@
 
 #include "bsp_gpio.h"
 #include "bsp_sercom.h"
+#include "bsp_adc.h"
 
 #include "bsp_nvmctrl.h"
 #include "bsp_sercom.h"
@@ -195,6 +196,18 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								QF::PUBLISH(evt, me);
 								break;
 							}
+#if CONFIG_TEMP_SENSOR
+							case SEESAW_STATUS_TEMP: {
+								int32_t data = calculate_temperature();
+
+								uint8_t ret[4];
+								me->break32Bit(data, ret);
+								fifo->Write(ret, 4);
+								Evt *evt = new DelegateDataReady(req.getRequesterId());
+								QF::PUBLISH(evt, me);
+								break;
+							}
+#endif
 							default:
 								//Unrecognized command or unreadable register. Do nothing.
 								Evt *evt = new DelegateDataReady(req.getRequesterId());

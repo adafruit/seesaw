@@ -606,6 +606,10 @@
 #define CONFIG_ADDR 0ul
 #endif
 
+#ifndef CONFIG_TEMP_SENSOR
+#define CONFIG_TEMP_SENSOR 0
+#endif
+
 #ifndef CONFIG_NO_EEPROM
 #define CONFIG_EEPROM 1ul
 #endif

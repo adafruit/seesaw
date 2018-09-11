@@ -5,6 +5,8 @@
 
 #define CONFIG_NO_EEPROM
 
+#define CONFIG_TEMP_SENSOR 1
+
 //* ============== POOL SIZES =================== *//
 #define	EVT_SIZE_SMALL 16
 #define EVT_SIZE_MEDIUM 32
