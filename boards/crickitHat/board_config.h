@@ -185,7 +185,7 @@
 //* =========== NEOPIXEL ================ *//
 #define CONFIG_NEOPIXEL 1
 
-#define CONFIG_NEOPIXEL_BUF_MAX 512
+#define CONFIG_NEOPIXEL_BUF_MAX 1024
 
 //* =========== POWER SENSE ================ *//
 #define CONFIG_POWER_SENSE 1
