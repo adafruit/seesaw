@@ -30,6 +30,8 @@
 #include "AOUSB.h"
 #include "SeesawConfig.h"
 
+#if CONFIG_USB
+
 #ifdef CDC_ENABLED
 
 #define CDC_SERIAL_BUFFER_SIZE	256
@@ -147,5 +149,7 @@ bool CDC_Setup(USBSetup& setup)
 	}
 	return false;
 }
+
+#endif
 
 #endif

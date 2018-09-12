@@ -33,6 +33,8 @@
 #include <limits.h>
 #include <string.h>
 
+#if CONFIG_USB
+
 #define microsecondsToClockCycles(a) ( (a) * (SystemCoreClock / 1000000L) )
 
 USBDevice_SAMD21G18x usbd;
@@ -898,4 +900,6 @@ void USBDeviceClass::ISRHandler()
 
 // USBDevice class instance
 USBDeviceClass USBDevice;
+
+#endif
 

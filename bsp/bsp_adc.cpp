@@ -152,16 +152,16 @@ void init_temp() {
     INT1VR = ((1UL << 16) - 1) - (int16_t)room_int1v_val * 66; //1/1000 V step
     INT1VH = ((1UL << 16) - 1) - (int16_t)hot_int1v_val * 66;
 
-    VADCR = ((((uint64_t)ADCR << 4) * (uint64_t)INT1VR) >> 16);
-    VADCH = ((((uint64_t)ADCH << 4) * (uint64_t)INT1VH) >> 16);
+    VADCR = (((uint64_t)ADCR * (uint64_t)INT1VR) >> 12);
+    VADCH = (((uint64_t)ADCH * (uint64_t)INT1VH) >> 12);
 }
 
 int32_t calculate_temperature()
 {
 
     int32_t VADC;      /* Voltage calculation using ADC result for Coarse Temp calculation */
-    //uint32_t VADCM;     /* Voltage calculation using ADC result for Fine Temp calculation. */
-    //uint32_t INT1VM;    /* Voltage calculation for reality INT1V value during the ADC conversion */
+    int32_t VADCM;     /* Voltage calculation using ADC result for Fine Temp calculation. */
+    int32_t INT1VM;    /* Voltage calculation for reality INT1V value during the ADC conversion */
 
 	ADC->CTRLB.reg = ADC_CTRLB_PRESCALER_DIV32 |    // Divide Clock by 32.
 					ADC_CTRLB_RESSEL_12BIT;         // 12 bits resolution
@@ -175,11 +175,13 @@ int32_t calculate_temperature()
 
 	// Averaging (see datasheet table in AVGCTRL register description)
 	ADC->AVGCTRL.reg = ADC_AVGCTRL_SAMPLENUM_4 | 
-						ADC_AVGCTRL_ADJRES(0);
+						ADC_AVGCTRL_ADJRES(2);
 
 	ADC->REFCTRL.bit.REFSEL = ADC_REFCTRL_REFSEL_INT1V_Val;
 
 	SYSCTRL->VREF.bit.TSEN = 1;
+
+	while( ADC->STATUS.bit.SYNCBUSY == 1 );
 
 	//read the ADC channel
 	uint32_t raw_value = adc_read(ADC_INPUTCTRL_MUXPOS_TEMP_Val);
@@ -191,25 +193,21 @@ int32_t calculate_temperature()
     // of Electrical Characteristics. (adapted from ASF sample code).
     // Coarse Temp Calculation by assume INT1V=1V for this ADC conversion
 
-	int64_t numerator = ( ((int64_t)(VADC - VADCR) * (int64_t)(tempH - tempR)) >> 16 );
+	int64_t numerator = ((int64_t)(VADC - VADCR) * (int64_t)(tempH - tempR));
 
-    int32_t coarse_temp = tempR + ( ( numerator << 16 ) / (VADCH - VADCR) );
+    int32_t coarse_temp = tempR + ( numerator / (VADCH - VADCR) );
 
-    return coarse_temp;
-
-#if 0
     // Calculation to find the real INT1V value during the ADC conversion
-    numerator = ( ((int64_t)(INT1VH - INT1VR) * (int64_t)(coarse_temp - tempR)) >> 16);
-    INT1VM = INT1VR +  ( ( numerator << 16 ) / (tempH - tempR));
+    numerator = ((int64_t)(INT1VH - INT1VR) * (int64_t)(coarse_temp - (int32_t)tempR));
+    INT1VM = (int32_t)INT1VR + ( numerator / (tempH - tempR));
 
 	VADCM = ((int64_t)VADC * INT1VM) >> 16;
 
     // Fine Temp Calculation by replace INT1V=1V by INT1V = INT1Vm for ADC conversion
-	numerator = ( ((int64_t)(VADCM - VADCR) * (int64_t)(tempH - tempR)) >> 16 );
-	int32_t fine_temp = tempR + ( ( numerator << 16 ) / (VADCH - VADCR) );
+	numerator = ((int64_t)(VADCM - VADCR) * (int64_t)(tempH - tempR));
+	int32_t fine_temp = tempR + ( numerator / (VADCH - VADCR) );
 
 	adc_set_defaults();
 
 	return fine_temp;
-#endif
 }

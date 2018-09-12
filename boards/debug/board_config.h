@@ -7,6 +7,8 @@
 
 #define CONFIG_TEMP_SENSOR 1
 
+#define CONFIG_USB 0
+
 //* ============== POOL SIZES =================== *//
 #define	EVT_SIZE_SMALL 16
 #define EVT_SIZE_MEDIUM 32
