@@ -131,3 +131,26 @@ void setFreq( uint8_t pwm, uint16_t freq )
 #endif
 }
 #endif
+
+void initTimer(Tc *TCx, uint16_t frequency)
+{
+    initTimerClocks();
+
+    syncTC_16(TCx);
+    TCx->COUNT8.CTRLA.reg = TC_CTRLA_MODE_COUNT16 | TC_CTRLA_WAVEGEN_MFRQ | TC_CTRLA_PRESCALER_DIV2;
+
+    /* Clear old ctrlb configuration */
+    syncTC_16(TCx);
+    TCx->COUNT8.CTRLBCLR.reg = 0xFF;
+
+    TCx->COUNT8.CTRLC.reg = 0;
+    syncTC_16(TCx);
+
+    TCx->COUNT16.COUNT.reg = 0;
+
+    syncTC_16(TCx);
+
+    TCx->COUNT16.CC[0].reg = (uint16_t)( (SystemCoreClock >> 1) / frequency);
+
+    TCx->COUNT8.INTENSET.reg = TC_INTFLAG_MC0;
+}

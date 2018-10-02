@@ -27,50 +27,74 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef HSM_ID_H
-#define HSM_ID_H
 
-enum {
-    SYSTEM = 1,
-	DELEGATE,
-	I2C_SLAVE,
-	SPI_SLAVE,
-	AO_DAC,
-	AO_USB,
-	AO_TIMER,
-	AO_ADC,
-	AO_TOUCH,
-	AO_SERCOM0,
-	AO_SERCOM1,
-	AO_SERCOM2,
-	AO_SERCOM5,
-	AO_INTERRUPT,
-	AO_DAP,
-	AO_NEOPIXEL,
-	AO_KEYPAD,
-	AO_ENCODER,
+#ifndef AO_ENCODER_H
+#define AO_ENCODER_H
+
+#include "qpcpp.h"
+#include "qp_extras.h"
+
+#include "hsm_id.h"
+
+using namespace QP;
+using namespace FW;
+
+class AOEncoder : public QActive {
+public:
+    AOEncoder();
+    ~AOEncoder() {}
+    void Start(uint8_t prio) {
+        QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
+    }
+
+    static volatile int32_t m_value;
+    static volatile int32_t m_delta;
+    static volatile uint8_t m_enc_prev_pos;
+    static volatile uint8_t m_enc_flags;
+
+    // The status register
+    union status {
+        
+        struct {
+            /* 0: no error
+            *  1: error has occurred
+            */ 
+            uint8_t ERROR: 1;
+
+            /* 0: the value has not changed since last read
+            *  1: the value has changed since last read
+            */ 
+            uint8_t DATA_RDY: 1;
+        } bit;
+        uint8_t reg;
+    };
+    static volatile status m_status;
+
+    union inten {
+        struct {
+            /* fire an interrupt when the value has changed */
+		    uint8_t DATA_RDY: 1;
+        } bit;
+        uint8_t reg;
+	};
+	static inten m_inten;
+
+protected:
+    static QState InitialPseudoState(AOEncoder * const me, QEvt const * const e);
+    static QState Root(AOEncoder * const me, QEvt const * const e);
+    static QState Stopped(AOEncoder * const me, QEvt const * const e);
+    static QState Started(AOEncoder * const me, QEvt const * const e);
+
+    enum {
+        EVT_QUEUE_COUNT = 8,
+    };
+    QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
+    uint8_t m_id;
+	uint16_t m_nextSequence;
+    char const * m_name;
 };
 
-// Higher value corresponds to higher priority.
-// The maximum priority is defined in qf_port.h as QF_MAX_ACTIVE (32)
-enum
-{
-  	PRIO_SYSTEM     = 10,
-	PRIO_I2C_SLAVE	= 27,
-	PRIO_SPI_SLAVE  = 29,
-	PRIO_USB		= 28,
-	PRIO_ADC		= 24,
-	PRIO_TOUCH      = 19,
-	PRIO_TIMER		= 25,
-	PRIO_DAC		= 23,
-	PRIO_SERCOM		= 26,
-	PRIO_DELEGATE   = 30,
-	PRIO_INTERRUPT  = 31,
-	PRIO_DAP		= 21,
-	PRIO_NEOPIXEL	= 20,
-	PRIO_KEYPAD		= 18,
-	PRIO_ENCODER	= 17,
-};
+
+#endif // AO_ENCODER_H
 
 
-#endif // HSM_ID_H

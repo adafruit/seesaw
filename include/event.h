@@ -157,6 +157,13 @@ enum {
 	KEYPAD_WRITE_REG_REQ,
 	KEYPAD_READ_REG_REQ,
 	
+	ENCODER_START_REQ,
+	ENCODER_START_CFM,
+	ENCODER_STOP_REQ,
+	ENCODER_STOP_CFM,
+	ENCODER_READ_REG_REQ,
+	ENCODER_WRITE_REG_REQ,
+
     MAX_PUB_SIG
 };
 
@@ -751,6 +758,48 @@ class SPISlaveReceive : public Evt {
 	
 	private:
 	uint8_t _highByte, _lowByte, _len;
+};
+
+//* ==========================  ENCODER ======================= *//
+
+class EncoderStartCfm : public ErrorEvt {
+	public:
+	EncoderStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(ENCODER_START_CFM, seq, error, reason) {}
+};
+
+class EncoderStopCfm : public ErrorEvt {
+	public:
+	EncoderStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+	ErrorEvt(ENCODER_STOP_CFM, seq, error, reason) {}
+};
+
+class EncoderReadRegReq : public Evt {
+	public:
+	EncoderReadRegReq(uint8_t requesterId, uint8_t reg, Fifo *dest) : 
+	Evt(ENCODER_READ_REG_REQ), _requesterId(requesterId), _reg(reg), _dest(dest) {}
+		
+	uint8_t getRequesterId() const { return _requesterId; }
+	uint8_t getReg() const { return _reg; }
+	Fifo *getDest() const { return _dest; }
+		
+	private:
+	uint8_t _requesterId, _reg;
+	Fifo *_dest;
+
+};
+
+class EncoderWriteRegReq : public Evt {
+	public:
+	EncoderWriteRegReq(uint8_t reg, int32_t value) :
+	Evt(ENCODER_WRITE_REG_REQ), _reg(reg), _value(value) {}
+	
+	uint8_t getReg() const { return _reg; }
+	int32_t getValue() const { return _value; }
+	
+	private:
+	uint8_t _reg;
+	int32_t _value;
 };
 
 #endif

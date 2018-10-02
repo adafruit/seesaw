@@ -5,7 +5,7 @@
 
 #define CONFIG_NO_EEPROM
 
-#define CONFIG_TEMP_SENSOR 1
+#define CONFIG_TEMP_SENSOR 0
 
 #define CONFIG_USB 0
 
@@ -28,7 +28,7 @@
 #define CONFIG_ADC_INPUT_3 0
 
 //* ============== TOUCH =================== *//
-#define CONFIG_TOUCH 1
+#define CONFIG_TOUCH 0
 
 #define CONFIG_TOUCH0 1
 #define CONFIG_TOUCH1 0
@@ -42,7 +42,8 @@
 #define CONFIG_TIMER 0
 
 //* ============== INTERRUPT =================== *//
-#define CONFIG_INTERRUPT 0
+#define CONFIG_INTERRUPT 1
+#define CONFIG_INTERRUPT_PIN 17
 
 //* ============== I2C SLAVE =================== *//
 #define CONFIG_I2C_SLAVE 1
@@ -67,6 +68,9 @@
 
 //* =========== KEYPAD ================ *//
 #define CONFIG_KEYPAD 0
+
+//* =========== KEYPAD ================ *//
+#define CONFIG_ENCODER 1
 
 
 #endif

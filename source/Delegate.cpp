@@ -391,6 +391,14 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						break;
 					}
 #endif
+
+#if CONFIG_ENCODER
+					case SEESAW_ENCODER_BASE:{
+						Evt *evt = new EncoderReadRegReq(req.getRequesterId(), lowByte, req.getFifo());
+						QF::PUBLISH(evt, me);
+						break;
+					}
+#endif
 					
 					
 					default:
@@ -752,6 +760,21 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 						len-=2;
 						
 						Evt *evt = new KeypadWriteRegReq(lowByte, (dataBytes[0] << 8) | dataBytes[1]);
+						QF::PUBLISH(evt, me);
+						break;
+					}
+#endif
+
+#if CONFIG_ENCODER
+					case SEESAW_ENCODER_BASE:{
+						Fifo *fifo = req.getFifo();
+						uint8_t dataBytes[4];
+						fifo->Read(dataBytes, 4);
+						len-=4;
+
+						int32_t combined = ((int32_t)dataBytes[0] << 24) | ((int32_t)dataBytes[1] << 16) | ((int32_t)dataBytes[2] << 8) | (int32_t)dataBytes[3];
+						
+						Evt *evt = new EncoderWriteRegReq(lowByte, combined);
 						QF::PUBLISH(evt, me);
 						break;
 					}
