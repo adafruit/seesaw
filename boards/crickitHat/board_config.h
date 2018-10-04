@@ -1,7 +1,7 @@
 #ifndef SEESAW_DEVICE_CONFIG_H
 #define SEESAW_DEVICE_CONFIG_H
 
-#define PRODUCT_CODE 9999
+#define PRODUCT_CODE 3957
 
 //override default activity led pin
 #define PIN_ACTIVITY_LED (32 + 22) //PB22
@@ -199,7 +199,7 @@
 #define CONFIG_USB 1
 
 #define USB_VID 0x239A
-#define USB_PID 0x001B
+#define USB_PID 0x002E
 
 #define USB_PRODUCT "Crickit Hat"
 
