@@ -44,15 +44,14 @@
 
 //* ============== I2C SLAVE =================== *//
 #define CONFIG_I2C_SLAVE 1
-#define CONFIG_I2C_SLAVE_SERCOM SERCOM1
-#define CONFIG_I2C_SLAVE_HANDLER SERCOM1_Handler
-#define CONFIG_I2C_SLAVE_IRQn SERCOM1_IRQn
-#define CONFIG_I2C_SLAVE_PIN_SDA 22
-#define CONFIG_I2C_SLAVE_PIN_SCL 23
-#define CONFIG_I2C_SLAVE_MUX 2
-#define CONFIG_I2C_SLAVE_FLOW_CONTROL 0
-#define CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN 0
-#define CONFIG_I2C_SLAVE_ADDR 0x49
+#define PIN_ADDR_0 24
+#define PIN_ADDR_1 3
+#define CONFIG_I2C_SLAVE_ADDR 0x36
+
+//* ============== ENCODER =================== *//
+#define CONFIG_ENCODER 1
+#define CONFIG_ENCODER_A_PIN 9
+#define CONFIG_ENCODER_B_PIN 8
 
 //* ============== SERCOM =================== *//
 #define CONFIG_SERCOM0 0
@@ -69,6 +68,6 @@
 #define CONFIG_DAP 0
 
 //* =========== NEOPIXEL ================ *//
-#define CONFIG_NEOPIXEL 1
- #define CONFIG_NEOPIXEL_BUF_MAX 8
+#define CONFIG_NEOPIXEL 0
+ #define CONFIG_NEOPIXEL_BUF_MAX 0
 #endif
