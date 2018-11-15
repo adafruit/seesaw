@@ -109,6 +109,7 @@ SOURCES = $(COMMON_SRC) \
 	source/Neopixel.cpp \
 	source/System.cpp \
 	source/AOKeypad.cpp \
+	source/AOEncoder.cpp \
 	bsp/bsp_adc.cpp \
 	bsp/bsp_gpio.cpp \
 	bsp/bsp_sercom.cpp \

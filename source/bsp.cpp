@@ -193,6 +193,10 @@ void QF::onStartup(void) {
 #if defined(SERCOM5)
 	NVIC_SetPriority(SERCOM5_IRQn, SERCOM_ISR_PRIO);
 #endif
+
+#if CONFIG_ENCODER
+	NVIC_SetPriority(CONFIG_ENCODER_IRQn, ENCODER_ISR_PRIO);
+#endif
     
     // set priorities of ALL ISRs used in the system, see NOTE00
     //
@@ -231,6 +235,10 @@ void QF::onStartup(void) {
 
 #if CONFIG_USB
 	NVIC_EnableIRQ(USB_IRQn);
+#endif
+
+#if CONFIG_ENCODER
+	NVIC_EnableIRQ(CONFIG_ENCODER_IRQn);
 #endif
 }
 

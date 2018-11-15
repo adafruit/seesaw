@@ -34,6 +34,7 @@
 #include "Neopixel.h"
 #include "AOKeypad.h"
 #include "AOUSB.h"
+#include "AOEncoder.h"
 
 #include "bsp_gpio.h"
 
@@ -105,6 +106,10 @@ static AOKeypad keypad;
 
 #if CONFIG_USB
 static AOUSB usb;
+#endif
+
+#if CONFIG_ENCODER
+static AOEncoder encoder;
 #endif
 
 int main(void)
@@ -183,6 +188,10 @@ int main(void)
 
 #if CONFIG_USB
 	usb.Start(PRIO_USB);
+#endif
+
+#if CONFIG_ENCODER
+	encoder.Start(PRIO_ENCODER);
 #endif
 	
 	//publish a start request

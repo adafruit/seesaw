@@ -52,6 +52,7 @@ enum KernelAwareISRs {
 	SERCOM_ISR_PRIO		= QF_AWARE_ISR_CMSIS_PRI + 1,
 	NVMCTRL_ISR_PRIO		= QF_AWARE_ISR_CMSIS_PRI + 1,
 	USB_ISR_PRIO			= QF_AWARE_ISR_CMSIS_PRI + 1,
+	ENCODER_ISR_PRIO		= QF_AWARE_ISR_CMSIS_PRI + 1,
     MAX_KERNEL_AWARE_CMSIS_PRI // keep always last
 };
 // "kernel-aware" interrupts should not overlap the PendSV priority

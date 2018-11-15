@@ -173,6 +173,11 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
     me->subscribe(KEYPAD_STOP_CFM);
 #endif
 
+#if CONFIG_ENCODER
+    me->subscribe(ENCODER_START_CFM);
+    me->subscribe(ENCODER_STOP_CFM);
+#endif
+
     return Q_TRAN(&System::Root);
 }
 
@@ -326,6 +331,11 @@ QState System::Stopping(System * const me, QEvt const * const e) {
             QF::PUBLISH(evt, me);
 #endif
 
+#if CONFIG_ENCODER
+            evt = new Evt(ENCODER_STOP_REQ);
+            QF::PUBLISH(evt, me);
+#endif
+
 			status = Q_HANDLED();
 			break;
 		}
@@ -347,6 +357,7 @@ QState System::Stopping(System * const me, QEvt const * const e) {
 		case USB_STOP_CFM:
 		case TOUCH_STOP_CFM:
 		case KEYPAD_STOP_CFM:
+		case ENCODER_STOP_CFM:
 		case DELEGATE_STOP_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);
@@ -460,6 +471,11 @@ QState System::Starting(System * const me, QEvt const * const e) {
             QF::PUBLISH(evt, me);
 #endif
 
+#if CONFIG_ENCODER
+            evt = new Evt(ENCODER_START_REQ);
+            QF::PUBLISH(evt, me);
+#endif
+
 #if CONFIG_POWER_SENSE
             gpio_init(PORTA, CONFIG_POWER_SENSE_NEOPIX_PIN, 1);
             uint32_t color = 0;
@@ -496,6 +512,7 @@ QState System::Starting(System * const me, QEvt const * const e) {
 		case USB_START_CFM:
 		case TOUCH_START_CFM:
 		case KEYPAD_START_CFM:
+		case ENCODER_START_CFM:
 		case DELEGATE_START_CFM: {
 			LOG_EVENT(e);
 			me->HandleCfm(ERROR_EVT_CAST(*e), CONFIG_NUM_AO);

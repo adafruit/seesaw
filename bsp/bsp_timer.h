@@ -18,7 +18,7 @@ inline void syncTCC(Tcc* TCCx) {
 }
 #endif
 
-inline void enableTimer( Tc *TCx ){
+static inline void enableTimer( Tc *TCx ){
 	TCx->COUNT16.CTRLA.bit.ENABLE = 1;
 	syncTC_16(TCx);
 }
@@ -49,5 +49,7 @@ void initTimerPWM( Tcc *TCCx );
 
 void PWMWrite( uint8_t pwm, uint16_t value);
 void setFreq( uint8_t pwm, uint16_t freq);
+
+void initTimer(Tc *TCx, uint16_t frequency);
 
 #endif

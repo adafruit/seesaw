@@ -150,6 +150,13 @@ char const * const eventName[] = {
 	"KEYPAD_SYNC",
 	"KEYPAD_WRITE_REG_REQ",
 	"KEYPAD_READ_REG_REQ",
+
+    "ENCODER_START_REQ",
+	"ENCODER_START_CFM",
+	"ENCODER_STOP_REQ",
+	"ENCODER_STOP_CFM",
+	"ENCODER_READ_REG_REQ",
+	"ENCODER_WRITE_REG_REQ"
 };  
   
 char const * GetEvtName(QP::QSignal sig) {

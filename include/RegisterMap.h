@@ -193,7 +193,7 @@
 //* ============== Interrupts =================== *//
 #define SEESAW_INTERRUPT_BASE 0x0B
 
-//TODO: open drain/push-pull, or inversion control register
+//TODO: inversion control register
 
 #define SEESAW_INTERRUPT_GPIO			  ( (uint32_t)(1ul << 0) )
 #define SEESAW_INTERRUPT_SERCOM0_DATA_RDY ( (uint32_t)(1ul << 1) )
@@ -204,6 +204,7 @@
 #define SEESAW_INTERRUPT_SERCOM5_DATA_RDY ( (uint32_t)(1ul << 6) )
 #define SEESAW_INTERRUPT_KEYPAD_DATA_RDY  ( (uint32_t)(1ul << 7) )
 #define SEESAW_INTERRUPT_SPI_SLAVE_DATA_RDY ( (uint32_t)(1ul << 8) )
+#define SEESAW_INTERRUPT_ENCODER_DATA_RDY ( (uint32_t)(1ul << 9) )
 
 //* ============== DAP =================== *//
 #define SEESAW_DAP_BASE 0x0C
@@ -265,3 +266,22 @@
 
 	/****** Reading data from the fifo will clear interrupt and data ready flag *****/
 	#define SEESAW_KEYPAD_FIFO 0x10
+
+//* ============== ENCODER =================== *//
+#define SEESAW_ENCODER_BASE 0x11
+
+	/****** STATUS *****/
+	#define SEESAW_ENCODER_STATUS 0x00
+
+	/****** Writing a 1 to any bit in this register will enable the interrupt *****/
+	#define SEESAW_ENCODER_INTENSET 0x02
+
+	/****** Writing a 1 to any bit in this register will disable the interrupt *****/
+	#define SEESAW_ENCODER_INTENCLR 0x03
+
+	/****** POSITION *****/
+	#define SEESAW_ENCODER_POSITION 0x04
+
+	/****** DELTA *****/
+	#define SEESAW_ENCODER_DELTA 0x05
+
