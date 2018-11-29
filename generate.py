@@ -13,9 +13,8 @@ board_config_path = "boards"
 linker_scripts = {
     'samd09' : 'scripts/samd09d14a_flash.ld'
 }
-pin_addr_0 = "PA16"
-pin_addr_1 = "PA17"
 pin_activity_led = "PA27"
+max_addr_pins = 5
 
 class Tc:
     def __init__(self, index, wo):
@@ -176,8 +175,6 @@ def generate_files():
 
     f.write("\n#define PRODUCT_CODE %i\n" % new_config['pid'])
 
-    if new_config['i2c']['no_addr']:
-        f.write("#define CONFIG_NO_ADDR\n")
     if new_config['i2c']['no_led']:
         f.write("#define CONFIG_NO_ACTIVITY_LED\n")
 
@@ -246,6 +243,15 @@ def generate_files():
         
         f.write("#define CONFIG_I2C_SLAVE_ADDR 0x%s\n" % format(new_config['i2c']['address'], '02X'))
 
+        if len(new_config['i2c']['addr_select']) == 0:
+            f.write("#define CONFIG_NO_ADDR\n")
+        else:
+            for ix, p in enumerate(new_config['i2c']['addr_select']):
+                if ix > 1:
+                    f.write("#define CONFIG_ADDR_%i 1\n" % ix)
+                f.write("#define PIN_ADDR_%i " % ix)
+                f.write("%i\n" % p.number())
+
     f.writelines(["\n//* ============== SERCOM =================== *//\n",
     "#define CONFIG_SERCOM0 0\n",
     "#define CONFIG_SERCOM1 0\n",
@@ -278,8 +284,13 @@ def generate_preview():
         print("\tSDA: %s" % new_config['i2c']['sda'].name)
         print("\tSCL: %s" % new_config['i2c']['scl'].name)
         print("\tFLOW CONTROL: %s" % ("None" if new_config['i2c']['flow'] is None else new_config['i2c']['flow'].name))
-        print("\tADDR PINS: %s" % (not new_config['i2c']['no_addr']))
         print("\tACTIVITY LED: %s" % (not new_config['i2c']['no_led']))
+        if len(new_config['i2c']['addr_select']):
+            print("\nADDR SELECT PINS: %i" % len(new_config['i2c']['addr_select']))
+            for ix, p in enumerate(new_config['i2c']['addr_select']):
+                print("\t%s" % p.name)
+        else:
+            print("\tADDR SELECT PINS: None\n")
 
     if new_config['adc']:
         print("\nADC CHANNELS: %i" % len(new_config['adc']))
@@ -424,16 +435,24 @@ def main(args, loglevel):
         return
 
     #ADDRESS SELECT
-    user_input = get_input("will you use address select pins? [y/n]: ")
-    if user_input == "y":
-      new_config['i2c']['no_addr'] = False
-      used_pins[new_config['chipset']].append(pinouts[new_config['chipset']][get_pin_index(pin_addr_0)])
-      used_pins[new_config['chipset']].append(pinouts[new_config['chipset']][get_pin_index(pin_addr_1)])
-    elif user_input == "n":
-      new_config['i2c']['no_addr'] = True
-    else:
-      logging.error("unrecognized option")
-      return
+    new_config['i2c']['addr_select'] = []
+    while(len(new_config['i2c']['addr_select']) < max_addr_pins):
+        user_input = get_input("add a pin for address select? (ex. enter name as 'PA10' or leave blank for no more address select) :")
+        if user_input == "":
+            break
+        else:
+            if get_pin_index(user_input) > -1:
+                if pin_is_used(user_input):
+                    logging.error("pin is used!")
+                    return
+                else:
+                    selected_pin = pinouts[new_config['chipset']][get_pin_index(user_input)]
+                    new_config['i2c']['addr_select'].append(selected_pin)
+                    used_pins[new_config['chipset']].append(selected_pin)
+                    logging.debug("selected addr pin: %s" % selected_pin.name)
+            else:
+                logging.error("unrecognized option")
+                return
 
     #ACTIVITY LED
     user_input = get_input("will you use the activity LED? [y/n]: ")
