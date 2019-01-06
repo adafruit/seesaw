@@ -52,7 +52,7 @@ NOTE: make sure to add the event name strings to the correct spot in `source/eve
 
 add any configuration definitions for the new modules in `include/SeesawConfig.h` and add any used pins to the `CONFIG_GPIO_MASK` definition.
 
-conditionally subscribe the `System` object to the new START, START_CFM, STOP, and STOP_CFM events in `System::InitialPseudoState` in `souce/System.cpp` and make sure the `System` object starts and stops the new module at the desired time.
+conditionally subscribe the `System` object to the new START, START_CFM, STOP, and STOP_CFM events in `System::InitialPseudoState` in `source/System.cpp` and make sure the `System` object starts and stops the new module at the desired time.
 
 lastly, route any desired read and write host commands to the new module in the switch statement in the `DELEGATE_PROCESS_COMMAND` event in `source/Delegate.cpp`
 
