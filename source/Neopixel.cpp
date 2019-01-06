@@ -81,11 +81,11 @@ QState Neopixel::Root(Neopixel * const me, QEvt const * const e) {
             status = Q_TRAN(&Neopixel::Stopped);
             break;
         }
-		case NEOPIXEL_STOP_REQ: {
-			LOG_EVENT(e);
-			status = Q_TRAN(&Neopixel::Stopped);
-			break;
-		}
+	case NEOPIXEL_STOP_REQ: {
+	    LOG_EVENT(e);
+	    status = Q_TRAN(&Neopixel::Stopped);
+	    break;
+	}
         default: {
             status = Q_SUPER(&QHsm::top);
             break;
@@ -117,13 +117,13 @@ QState Neopixel::Stopped(Neopixel * const me, QEvt const * const e) {
         }
         case NEOPIXEL_START_REQ: {
             LOG_EVENT(e);
-			me->m_speed = SEESAW_NEOPIXEL_800KHZ;
-			memset(PixelData, 0, CONFIG_NEOPIXEL_BUF_MAX);
-			Evt const &req = EVT_CAST(*e);
-			Evt *evt = new NeopixelStartCfm(req.GetSeq(), ERROR_SUCCESS);
-			QF::PUBLISH(evt, me);
-			
-			status = Q_TRAN(&Neopixel::Started);
+	    me->m_speed = SEESAW_NEOPIXEL_800KHZ;
+	    memset(PixelData, 0, CONFIG_NEOPIXEL_BUF_MAX);
+	    Evt const &req = EVT_CAST(*e);
+	    Evt *evt = new NeopixelStartCfm(req.GetSeq(), ERROR_SUCCESS);
+	    QF::PUBLISH(evt, me);
+	    
+	    status = Q_TRAN(&Neopixel::Started);
             break;
         }
         default: {
@@ -147,85 +147,85 @@ QState Neopixel::Started(Neopixel * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
-		case NEOPIXEL_STOP_REQ: {
-			LOG_EVENT(e);
-			Evt const &req = EVT_CAST(*e);
-			Evt *evt = new NeopixelStopCfm(req.GetSeq(), ERROR_SUCCESS);
-			QF::PUBLISH(evt, me);
-			status = Q_TRAN(Neopixel::Stopped);
-			break;
-		}
-		case NEOPIXEL_SET_PIN_REQ: {
-		    LOG_EVENT(e);
-			NeopixelSetPinReq const &req = static_cast<NeopixelSetPinReq const &>(*e);
+	case NEOPIXEL_STOP_REQ: {
+	    LOG_EVENT(e);
+	    Evt const &req = EVT_CAST(*e);
+	    Evt *evt = new NeopixelStopCfm(req.GetSeq(), ERROR_SUCCESS);
+	    QF::PUBLISH(evt, me);
+	    status = Q_TRAN(Neopixel::Stopped);
+	    break;
+	}
+	case NEOPIXEL_SET_PIN_REQ: {
+	    LOG_EVENT(e);
+	    NeopixelSetPinReq const &req = static_cast<NeopixelSetPinReq const &>(*e);
 #ifdef HAS_PORTB
-			uint8_t port = PORTA;
-			uint8_t pin = req.getPin();
-			if(pin >= 32){
+	    uint8_t port = PORTA;
+	    uint8_t pin = req.getPin();
+	    if(pin >= 32){
                 port = PORTB;
                 pin -= 32;
             }
-			gpio_init(port, pin, 1);
+	    gpio_init(port, pin, 1);
 #else
-			gpio_init(PORTA, req.getPin(), 1);
+	    gpio_init(PORTA, req.getPin(), 1);
 #endif
-			me->m_pin = req.getPin();
+	    me->m_pin = req.getPin();
 			
-			status = Q_HANDLED();
-			break;
+	    status = Q_HANDLED();
+	    break;
+	}
+	case NEOPIXEL_SET_SPEED_REQ: {
+	    LOG_EVENT(e);
+	    NeopixelSetSpeedReq const &req = static_cast<NeopixelSetSpeedReq const &>(*e);
+	    
+	    me->m_speed = req.getSpeed();
+	    status = Q_HANDLED();
+	    
+	    break;
+	}
+	case NEOPIXEL_SET_BUFFER_LEN_REQ: {
+	    LOG_EVENT(e);
+	    NeopixelSetBufferLengthReq const &req = static_cast<NeopixelSetBufferLengthReq const &>(*e);
+	    uint16_t len = req.getLen();
+	    
+	    Q_ASSERT(len <= CONFIG_NEOPIXEL_BUF_MAX);
+	    
+	    me->m_pixelDataSize = len;
+	    status = Q_HANDLED();
+	    break;
+	}
+	case NEOPIXEL_SET_BUFFER_REQ: {
+	    LOG_EVENT(e);
+	    NeopixelSetBufferReq const &req = static_cast<NeopixelSetBufferReq const &>(*e);
+	    uint16_t start = req.getAddr();
+	    Fifo *fifo = req.getSource();
+	    uint16_t len = fifo->GetUsedCount();
+	    len = (len > CONFIG_NEOPIXEL_BUF_MAX - start ? CONFIG_NEOPIXEL_BUF_MAX - start : len);
+	    
+	    fifo->Read(PixelData + start, len);
+	    
+	    //discard any extra data
+	    fifo->Reset();
+			
+	    status = Q_HANDLED();
+	    break;
+	}
+	case NEOPIXEL_SHOW_REQ: {
+	    LOG_EVENT(e);
+	    QF_CRIT_STAT_TYPE crit;
+	    QF_CRIT_ENTRY(crit);
+	    switch(me->m_speed){
+		case SEESAW_NEOPIXEL_800KHZ:
+		    neopix_show_800k(me->m_pin, PixelData, me->m_pixelDataSize);
+		    break;
+		case SEESAW_NEOPIXEL_400KHZ:
+		    neopix_show_400k(me->m_pin, PixelData, me->m_pixelDataSize);
+		    break;
+		default:
+		    break;
 		}
-		case NEOPIXEL_SET_SPEED_REQ: {
-		    LOG_EVENT(e);
-			NeopixelSetSpeedReq const &req = static_cast<NeopixelSetSpeedReq const &>(*e);
-			
-			me->m_speed = req.getSpeed();
-			status = Q_HANDLED();
-			
-			break;
-		}
-		case NEOPIXEL_SET_BUFFER_LEN_REQ: {
-		    LOG_EVENT(e);
-			NeopixelSetBufferLengthReq const &req = static_cast<NeopixelSetBufferLengthReq const &>(*e);
-			uint16_t len = req.getLen();
-			
-			Q_ASSERT(len <= CONFIG_NEOPIXEL_BUF_MAX);
-			
-			me->m_pixelDataSize = len;
-			status = Q_HANDLED();
-			break;
-		}
-		case NEOPIXEL_SET_BUFFER_REQ: {
-		    LOG_EVENT(e);
-			NeopixelSetBufferReq const &req = static_cast<NeopixelSetBufferReq const &>(*e);
-			uint16_t start = req.getAddr();
-			Fifo *fifo = req.getSource();
-			uint16_t len = fifo->GetUsedCount();
-			len = (len > CONFIG_NEOPIXEL_BUF_MAX - start ? CONFIG_NEOPIXEL_BUF_MAX - start : len);
-			
-			fifo->Read(PixelData + start, len);
-			
-			//discard any extra data
-			fifo->Reset();
-			
-			status = Q_HANDLED();
-			break;
-		}
-		case NEOPIXEL_SHOW_REQ: {
-		    LOG_EVENT(e);
-			QF_CRIT_STAT_TYPE crit;
-			QF_CRIT_ENTRY(crit);
-			switch(me->m_speed){
-				case SEESAW_NEOPIXEL_800KHZ:
-					neopix_show_800k(me->m_pin, PixelData, me->m_pixelDataSize);
-					break;
-				case SEESAW_NEOPIXEL_400KHZ:
-					neopix_show_400k(me->m_pin, PixelData, me->m_pixelDataSize);
-					break;
-				default:
-					break;
-			}
-			QF_CRIT_EXIT(crit);
-		}
+		QF_CRIT_EXIT(crit);
+	}
         default: {
             status = Q_SUPER(&Neopixel::Root);
             break;
