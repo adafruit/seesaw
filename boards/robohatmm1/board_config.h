@@ -1,7 +1,7 @@
 #ifndef SEESAW_DEVICE_CONFIG_H
 #define SEESAW_DEVICE_CONFIG_H
 
-#define PRODUCT_CODE 9999
+#define PRODUCT_CODE 9998
 
 //override default activity led pin
 #define PIN_ACTIVITY_LED 21 // PA21
