@@ -247,8 +247,8 @@
 //* =========== USB ================ *//
 #define CONFIG_USB 1
 
-#define USB_VID 0x0005
-#define USB_PID 0x0008
+#define USB_VID 0x1209
+#define USB_PID 0x4D42
 
 #define USB_PRODUCT "Robo HAT MM1"
 
