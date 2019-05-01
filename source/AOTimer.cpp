@@ -115,7 +115,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
 #if CONFIG_TIMER_PWM_OUT0
 #ifdef USE_TCC_TIMERS
 #ifdef CONFIG_TIMER_PWM_OUT0_IS_TCC
-            if(CONFIG_TIMER_PWM_OUT0_TCC == TCC2 || CONFIG_TIMER_PWM_OUT0_FUNC == E)
+            if(CONFIG_TIMER_PWM_OUT0_TCC == TCC2 || CONFIG_TIMER_PWM_OUT0_FUNC_E )
                 pinPeripheral(CONFIG_TIMER_PWM_OUT0_PIN, 4);
             else
                 pinPeripheral(CONFIG_TIMER_PWM_OUT0_PIN, 5);
@@ -134,7 +134,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
 #if CONFIG_TIMER_PWM_OUT1
 #ifdef USE_TCC_TIMERS
 #ifdef CONFIG_TIMER_PWM_OUT1_IS_TCC
-            if(CONFIG_TIMER_PWM_OUT1_TCC == TCC2 || CONFIG_TIMER_PWM_OUT1_FUNC == E)
+            if(CONFIG_TIMER_PWM_OUT1_TCC == TCC2 || CONFIG_TIMER_PWM_OUT1_FUNC_E )
                 pinPeripheral(CONFIG_TIMER_PWM_OUT1_PIN, 4);
             else
                 pinPeripheral(CONFIG_TIMER_PWM_OUT1_PIN, 5);
@@ -153,7 +153,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
 #if CONFIG_TIMER_PWM_OUT2
 #ifdef USE_TCC_TIMERS
 #ifdef CONFIG_TIMER_PWM_OUT2_IS_TCC
-            if(CONFIG_TIMER_PWM_OUT2_TCC == TCC2 || CONFIG_TIMER_PWM_OUT2_FUNC == E))
+            if(CONFIG_TIMER_PWM_OUT2_TCC == TCC2 || CONFIG_TIMER_PWM_OUT2_FUNC_E )
                 pinPeripheral(CONFIG_TIMER_PWM_OUT2_PIN, 4);
             else
                 pinPeripheral(CONFIG_TIMER_PWM_OUT2_PIN, 5);
@@ -172,7 +172,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
 #if CONFIG_TIMER_PWM_OUT3
 #ifdef USE_TCC_TIMERS
 #ifdef CONFIG_TIMER_PWM_OUT3_IS_TCC
-            if(CONFIG_TIMER_PWM_OUT3_TCC == TCC2 || CONFIG_TIMER_PWM_OUT3_FUNC == E))
+            if(CONFIG_TIMER_PWM_OUT3_TCC == TCC2 || CONFIG_TIMER_PWM_OUT3_FUNC_E )
                 pinPeripheral(CONFIG_TIMER_PWM_OUT3_PIN, 4);
             else
                 pinPeripheral(CONFIG_TIMER_PWM_OUT3_PIN, 5);
@@ -191,7 +191,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
 #if CONFIG_TIMER_PWM_OUT4
 #ifdef USE_TCC_TIMERS
 #ifdef CONFIG_TIMER_PWM_OUT4_IS_TCC
-            if(CONFIG_TIMER_PWM_OUT4_TCC == TCC2 || CONFIG_TIMER_PWM_OUT4_FUNC == E))
+            if(CONFIG_TIMER_PWM_OUT4_TCC == TCC2 || CONFIG_TIMER_PWM_OUT4_FUNC_E )
                 pinPeripheral(CONFIG_TIMER_PWM_OUT4_PIN, 4);
             else
                 pinPeripheral(CONFIG_TIMER_PWM_OUT4_PIN, 5);
@@ -210,7 +210,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
 #if CONFIG_TIMER_PWM_OUT5
 #ifdef USE_TCC_TIMERS
 #ifdef CONFIG_TIMER_PWM_OUT5_IS_TCC
-            if(CONFIG_TIMER_PWM_OUT5_TCC == TCC2 || CONFIG_TIMER_PWM_OUT5_FUNC == E))
+            if(CONFIG_TIMER_PWM_OUT5_TCC == TCC2 || CONFIG_TIMER_PWM_OUT5_FUNC_E )
                 pinPeripheral(CONFIG_TIMER_PWM_OUT5_PIN, 4);
             else
                 pinPeripheral(CONFIG_TIMER_PWM_OUT5_PIN, 5);
@@ -229,7 +229,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
 #if CONFIG_TIMER_PWM_OUT6
 #ifdef USE_TCC_TIMERS
 #ifdef CONFIG_TIMER_PWM_OUT6_IS_TCC
-            if(CONFIG_TIMER_PWM_OUT6_TCC == TCC2 || CONFIG_TIMER_PWM_OUT6_FUNC == E))
+            if(CONFIG_TIMER_PWM_OUT6_TCC == TCC2 || CONFIG_TIMER_PWM_OUT6_FUNC_E )
                 pinPeripheral(CONFIG_TIMER_PWM_OUT6_PIN, 4);
             else
                 pinPeripheral(CONFIG_TIMER_PWM_OUT6_PIN, 5);
@@ -248,7 +248,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
 #if CONFIG_TIMER_PWM_OUT7
 #ifdef USE_TCC_TIMERS
 #ifdef CONFIG_TIMER_PWM_OUT7_IS_TCC
-            if(CONFIG_TIMER_PWM_OUT7_TCC == TCC2 || CONFIG_TIMER_PWM_OUT7_FUNC == E))
+            if(CONFIG_TIMER_PWM_OUT7_TCC == TCC2 || CONFIG_TIMER_PWM_OUT7_FUNC_E )
                 pinPeripheral(CONFIG_TIMER_PWM_OUT7_PIN, 4);
             else
                 pinPeripheral(CONFIG_TIMER_PWM_OUT7_PIN, 5);
@@ -267,7 +267,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
 #if CONFIG_TIMER_PWM_OUT8
 #ifdef USE_TCC_TIMERS
 #ifdef CONFIG_TIMER_PWM_OUT8_IS_TCC
-            if(CONFIG_TIMER_PWM_OUT8_TCC == TCC2 || CONFIG_TIMER_PWM_OUT8_FUNC == E))
+            if(CONFIG_TIMER_PWM_OUT8_TCC == TCC2 || CONFIG_TIMER_PWM_OUT8_FUNC_E )
                 pinPeripheral(CONFIG_TIMER_PWM_OUT8_PIN, 4);
             else
                 pinPeripheral(CONFIG_TIMER_PWM_OUT8_PIN, 5);
@@ -286,7 +286,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
 #if CONFIG_TIMER_PWM_OUT9
 #ifdef USE_TCC_TIMERS
 #ifdef CONFIG_TIMER_PWM_OUT9_IS_TCC
-            if(CONFIG_TIMER_PWM_OUT9_TCC == TCC2 || CONFIG_TIMER_PWM_OUT9_FUNC == E))
+            if(CONFIG_TIMER_PWM_OUT9_TCC == TCC2 || CONFIG_TIMER_PWM_OUT9_FUNC_E )
                 pinPeripheral(CONFIG_TIMER_PWM_OUT9_PIN, 4);
             else
                 pinPeripheral(CONFIG_TIMER_PWM_OUT9_PIN, 5);
@@ -305,7 +305,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
 #if CONFIG_TIMER_PWM_OUT10
 #ifdef USE_TCC_TIMERS
 #ifdef CONFIG_TIMER_PWM_OUT10_IS_TCC
-            if(CONFIG_TIMER_PWM_OUT10_TCC == TCC2 || CONFIG_TIMER_PWM_OUT10_FUNC == E))
+            if(CONFIG_TIMER_PWM_OUT10_TCC == TCC2 || CONFIG_TIMER_PWM_OUT10_FUNC_E )
                 pinPeripheral(CONFIG_TIMER_PWM_OUT10_PIN, 4);
             else
                 pinPeripheral(CONFIG_TIMER_PWM_OUT10_PIN, 5);
@@ -324,7 +324,7 @@ QState AOTimer::Stopped(AOTimer * const me, QEvt const * const e) {
 #if CONFIG_TIMER_PWM_OUT11
 #ifdef USE_TCC_TIMERS
 #ifdef CONFIG_TIMER_PWM_OUT11_IS_TCC
-            if(CONFIG_TIMER_PWM_OUT11_TCC == TCC2 || CONFIG_TIMER_PWM_OUT11_FUNC == E))
+            if(CONFIG_TIMER_PWM_OUT11_TCC == TCC2 || CONFIG_TIMER_PWM_OUT11_FUNC_E )
                 pinPeripheral(CONFIG_TIMER_PWM_OUT11_PIN, 4);
             else
                 pinPeripheral(CONFIG_TIMER_PWM_OUT11_PIN, 5);
