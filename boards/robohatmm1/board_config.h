@@ -43,10 +43,10 @@
 #define CONFIG_ADC_INPUT_1_PIN (32 + 3)	// PB03 - GPS_RX
 #define CONFIG_ADC_INPUT_1_CHANNEL 11
 
-#define CONFIG_ADC_INPUT_2 0 // not used
-#define CONFIG_ADC_INPUT_3 0 // not used
-#define CONFIG_ADC_INPUT_4 0 // not used
-#define CONFIG_ADC_INPUT_5 0 // not used
+//#define CONFIG_ADC_INPUT_2 0 // not used
+//#define CONFIG_ADC_INPUT_3 0 // not used
+//#define CONFIG_ADC_INPUT_4 0 // not used
+//#define CONFIG_ADC_INPUT_5 0 // not used
 #define CONFIG_ADC_INPUT_6 0 // not used
 #define CONFIG_ADC_INPUT_7 0 // not used
 
