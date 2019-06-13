@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Linker script for running in internal FLASH on the SAMD51G19A
+ * \brief Linker script for running in internal SRAM on the SAMD51G19A
  *
  * Copyright (c) 2019 Microchip Technology Inc.
  *
@@ -35,7 +35,6 @@ SEARCH_DIR(.)
 /* Memory Spaces Definitions */
 MEMORY
 {
-  rom      (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00080000
   ram      (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00030000
   bkupram  (rwx) : ORIGIN = 0x47000000, LENGTH = 0x00002000
   qspi     (rwx) : ORIGIN = 0x04000000, LENGTH = 0x01000000
@@ -94,14 +93,14 @@ SECTIONS
 
         . = ALIGN(4);
         _efixed = .;            /* End of text section */
-    } > rom
+    } > ram
 
     /* .ARM.exidx is sorted, so has to go in its own output section.  */
     PROVIDE_HIDDEN (__exidx_start = .);
     .ARM.exidx :
     {
       *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-    } > rom
+    } > ram
     PROVIDE_HIDDEN (__exidx_end = .);
 
     . = ALIGN(4);
