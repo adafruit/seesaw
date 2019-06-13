@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Linker script for running in internal FLASH on the SAMD21G18A
+ * \brief Linker script for running in internal FLASH on the SAMD51G19A
  *
- * Copyright (c) 2017 Microchip Technology Inc.
+ * Copyright (c) 2019 Microchip Technology Inc.
  *
  * \asf_license_start
  *
@@ -35,12 +35,12 @@ SEARCH_DIR(.)
 /* Memory Spaces Definitions */
 MEMORY
 {
-  rom      (rx)  : ORIGIN = 0x00002000, LENGTH = 512K - 0x2000
-  ram      (rwx) : ORIGIN = 0x20000000, LENGTH = 192K
+  rom      (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00080000 - 0x2000
+  ram      (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00030000
 }
 
 /* The stack size used by the application. NOTE: you need to adjust according to your application. */
-STACK_SIZE = DEFINED(STACK_SIZE) ? STACK_SIZE : DEFINED(__stack_size__) ? __stack_size__ : 0x2000;
+STACK_SIZE = DEFINED(STACK_SIZE) ? STACK_SIZE : DEFINED(__stack_size__) ? __stack_size__ : 0xC000;
 
 /* Section Definitions */
 SECTIONS
@@ -115,6 +115,24 @@ SECTIONS
         _erelocate = .;
     } > ram
 
+    .bkupram (NOLOAD):
+    {
+        . = ALIGN(8);
+        _sbkupram = .;
+        *(.bkupram .bkupram.*);
+        . = ALIGN(8);
+        _ebkupram = .;
+    } > bkupram
+
+    .qspi (NOLOAD):
+    {
+        . = ALIGN(8);
+        _sqspi = .;
+        *(.qspi .qspi.*);
+        . = ALIGN(8);
+        _eqspi = .;
+    } > qspi
+
     /* .bss section which is used for uninitialized data */
     .bss (NOLOAD) :
     {
@@ -140,5 +158,4 @@ SECTIONS
 
     . = ALIGN(4);
     _end = . ;
-    PROVIDE(end = .);
 }

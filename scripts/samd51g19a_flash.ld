@@ -37,8 +37,6 @@ MEMORY
 {
   rom      (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00080000
   ram      (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00030000
-  bkupram  (rwx) : ORIGIN = 0x47000000, LENGTH = 0x00002000
-  qspi     (rwx) : ORIGIN = 0x04000000, LENGTH = 0x01000000
 }
 
 /* The stack size used by the application. NOTE: you need to adjust according to your application. */
