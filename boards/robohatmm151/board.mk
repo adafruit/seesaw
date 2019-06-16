@@ -1,5 +1,5 @@
-CHIP_FAMILY = SAMD21
-CHIP_VARIANT = SAMD21G18A
+CHIP_FAMILY = SAMD51
+CHIP_VARIANT = SAMD51G19A
 BOARD_NAME = ROBOHATMM1
 
-LINKER_SCRIPT=scripts/samd21g18a_flash_with_bootloader.ld
+LINKER_SCRIPT=scripts/samd51g19a_flash_with_bootloader.ld
