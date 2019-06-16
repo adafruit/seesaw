@@ -35,37 +35,39 @@
 //* ============== ADC =================== *//
 #define CONFIG_ADC 1
 
+//we will override some of the default ADC pins for this board
 #define CONFIG_ADC_INPUT_0 1
-#define CONFIG_ADC_INPUT_0_PIN (32 + 2)	// PB02 - GPS_TX
-#define CONFIG_ADC_INPUT_0_CHANNEL 10
+#define CONFIG_ADC_INPUT_0_PIN 7	//PA07 - RCH_1
+#define CONFIG_ADC_INPUT_0_CHANNEL 7
 
 #define CONFIG_ADC_INPUT_1 1
-#define CONFIG_ADC_INPUT_1_PIN (32 + 3)	// PB03 - GPS_RX
-#define CONFIG_ADC_INPUT_1_CHANNEL 11
+#define CONFIG_ADC_INPUT_1_PIN 6 	//PA06 - RCH_2
+#define CONFIG_ADC_INPUT_1_CHANNEL 6
 
-#define CONFIG_ADC_INPUT_2 0 // not used
-#define CONFIG_ADC_INPUT_3 0 // not used
+#define CONFIG_ADC_INPUT_2 1
+#define CONFIG_ADC_INPUT_2_PIN 5	//PA05 - RCH_3
+#define CONFIG_ADC_INPUT_2_CHANNEL 5
+
+#define CONFIG_ADC_INPUT_3 1
+#define CONFIG_ADC_INPUT_3_PIN 4	//PA04 - RCH_4
+
+//#define CONFIG_ADC_INPUT_0 1
+//#define CONFIG_ADC_INPUT_0_PIN (32 + 2)	// PB02 - GPS_TX
+//#define CONFIG_ADC_INPUT_0_CHANNEL 10
+
+//#define CONFIG_ADC_INPUT_1 1
+//#define CONFIG_ADC_INPUT_1_PIN (32 + 3)	// PB03 - GPS_RX
+//#define CONFIG_ADC_INPUT_1_CHANNEL 11
+
+//#define CONFIG_ADC_INPUT_2 0 // not used
+//#define CONFIG_ADC_INPUT_3 0 // not used
 #define CONFIG_ADC_INPUT_4 0 // not used
 #define CONFIG_ADC_INPUT_5 0 // not used
 #define CONFIG_ADC_INPUT_6 0 // not used
 #define CONFIG_ADC_INPUT_7 0 // not used
 
-//we will override some of the default ADC pins for this board
-//#define CONFIG_ADC_INPUT_0 1
-//#define CONFIG_ADC_INPUT_0_PIN 7	//PA07 - RCH_1
-//#define CONFIG_ADC_INPUT_0_CHANNEL 7
 
-//#define CONFIG_ADC_INPUT_1 1
-//#define CONFIG_ADC_INPUT_1_PIN 6 	//PA06 - RCH_2
-//#define CONFIG_ADC_INPUT_1_CHANNEL 6
-
-//#define CONFIG_ADC_INPUT_2 1
-//#define CONFIG_ADC_INPUT_2_PIN 5	//PA05 - RCH_3
-//#define CONFIG_ADC_INPUT_2_CHANNEL 5
-
-//#define CONFIG_ADC_INPUT_3 1
-//#define CONFIG_ADC_INPUT_3_PIN 4	//PA04 - RCH_4
-//#define CONFIG_ADC_INPUT_3_CHANNEL 4
+#define CONFIG_ADC_INPUT_3_CHANNEL 4
 
 
 //* ============== DAC =================== *//
@@ -76,18 +78,18 @@
 
 
 //* ============== TOUCH =================== *//
-#define CONFIG_TOUCH 1
+#define CONFIG_TOUCH 0
 
-#ifndef ENABLE_LOGGING
-#define CONFIG_TOUCH0 1 //this is the UART log pin
-#endif
-#define CONFIG_TOUCH0_PIN 7
-#define CONFIG_TOUCH1 1
-#define CONFIG_TOUCH1_PIN 6
-#define CONFIG_TOUCH2 1
-#define CONFIG_TOUCH2_PIN 5
-#define CONFIG_TOUCH3 1
-#define CONFIG_TOUCH3_PIN 4
+//#ifndef ENABLE_LOGGING
+//#define CONFIG_TOUCH0 1 //this is the UART log pin
+//#endif
+//#define CONFIG_TOUCH0_PIN 7
+//#define CONFIG_TOUCH1 1
+//#define CONFIG_TOUCH1_PIN 6
+//#define CONFIG_TOUCH2 1
+//#define CONFIG_TOUCH2_PIN 5
+//#define CONFIG_TOUCH3 1
+//#define CONFIG_TOUCH3_PIN 4
 
 //* ============== TIMER =================== *//
 #define CONFIG_TIMER 1
