@@ -21,6 +21,7 @@
 
 // Constants for Clock generators
 #define GENERIC_CLOCK_GENERATOR_MAIN      (0u)
+#define CRYSTALLESS
 
 #if defined(SAMD51)
 #define GENERIC_CLOCK_GENERATOR_XOSC32K   (3u)
@@ -48,11 +49,11 @@
 // Constants for Clock multiplexers
 #define GENERIC_CLOCK_MULTIPLEXER_DFLL48M (0u)
 
-void SystemInit( void )
+void board_init(void)
 {
 
 //***************** SAMD51 ************************//
-#if defined(__SAMD51__)
+#if defined(SAMD51)
   NVMCTRL->CTRLA.reg |= NVMCTRL_CTRLA_RWS(0);
   
   #ifndef CRYSTALLESS
@@ -256,25 +257,7 @@ void SystemInit( void )
 #else
 	//********************** SAMD21 *********************//
 	//********************** SAMD09 *********************//
-/* Master clock frequency */
-#define CPU_FREQUENCY                     (48000000ul)
-#define VARIANT_MCK                       CPU_FREQUENCY
 
-/* Frequency of the board main oscillator */
-#define VARIANT_MAINOSC                   (32768ul)
-
-// Constants for Clock generators
-#define GENERIC_CLOCK_GENERATOR_XOSC32K   (1u)
-#define GENERIC_CLOCK_GENERATOR_OSC32K    (1u)
-#define GENERIC_CLOCK_GENERATOR_OSCULP32K (2u) /* Initialized at reset for WDT */
-#define GENERIC_CLOCK_GENERATOR_OSC8M     (3u)
-// Constants for Clock multiplexers
-#define GENERIC_CLOCK_MULTIPLEXER_DFLL48M (0u)
-
-#define CRYSTALLESS
-
-void board_init(void)
-{
   /* Set 1 Flash Wait State for 48MHz, cf tables 20.9 and 35.27 in SAMD21 Datasheet */
   NVMCTRL->CTRLB.bit.RWS = NVMCTRL_CTRLB_RWS_HALF_Val ;
 
