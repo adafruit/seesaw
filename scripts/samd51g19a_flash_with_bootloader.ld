@@ -35,7 +35,7 @@ SEARCH_DIR(.)
 /* Memory Spaces Definitions */
 MEMORY
 {
-  rom      (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00080000 - 0x2000
+  rom      (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00080000 - 0x4000
   ram      (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00030000
 }
 
@@ -114,24 +114,6 @@ SECTIONS
         . = ALIGN(4);
         _erelocate = .;
     } > ram
-
-    .bkupram (NOLOAD):
-    {
-        . = ALIGN(8);
-        _sbkupram = .;
-        *(.bkupram .bkupram.*);
-        . = ALIGN(8);
-        _ebkupram = .;
-    } > bkupram
-
-    .qspi (NOLOAD):
-    {
-        . = ALIGN(8);
-        _sqspi = .;
-        *(.qspi .qspi.*);
-        . = ALIGN(8);
-        _eqspi = .;
-    } > qspi
 
     /* .bss section which is used for uninitialized data */
     .bss (NOLOAD) :
