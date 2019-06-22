@@ -519,4 +519,5 @@ void board_init(void)
    * 9) Disable automatic NVM write operations
    */
   NVMCTRL->CTRLB.bit.MANW = 1;
+  #endif
 }
