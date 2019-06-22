@@ -22,6 +22,11 @@
 #define USE_TCC_TIMERS
 #endif
 
+#if defined(SAMD51)
+#define HAS_PORTB
+#define USE_TCC_TIMERS
+#endif
+
 //* ============== ADC =================== *//
 #ifndef CONFIG_ADC_INPUT_0
 #define CONFIG_ADC_INPUT_0 0
