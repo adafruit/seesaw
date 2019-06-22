@@ -257,6 +257,11 @@ void board_init(void)
 #else
 	//********************** SAMD21 *********************//
 	//********************** SAMD09 *********************//
+	#define CPU_FREQUENCY                     (48000000ul)
+	#define VARIANT_MCK                       CPU_FREQUENCY
+
+	/* Frequency of the board main oscillator */
+	#define VARIANT_MAINOSC                   (32768ul)
 
   /* Set 1 Flash Wait State for 48MHz, cf tables 20.9 and 35.27 in SAMD21 Datasheet */
   NVMCTRL->CTRLB.bit.RWS = NVMCTRL_CTRLB_RWS_HALF_Val ;
