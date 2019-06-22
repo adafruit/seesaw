@@ -41,6 +41,10 @@ INCLUDES = -I. -I./include -I./include/USB -I./bsp -I./lib/qp/extras -I./lib/qp/
 INCLUDES += -I./boards/$(BOARD) -Ilib/cmsis/CMSIS/Include
 INCLUDES += -I$(BUILD_PATH)
 
+ifeq ($(CHIP_FAMILY), SAMD51)
+INCLUDES += -Ilib/samd51/samd51a/include/
+endif
+
 ifeq ($(CHIP_FAMILY), SAMD21)
 INCLUDES += -Ilib/samd21/samd21a/include/
 endif
@@ -55,6 +59,11 @@ endif
 
 SSOURCES = \
 	$(QPPORT)/qxk_port.S \
+
+ifeq ($(CHIP_FAMILY), SAMD51)
+CSOURCES = Device_Startup/startup_samd51.c \
+	Device_Startup/system_samd51.c
+endif
 
 ifeq ($(CHIP_FAMILY), SAMD21)
 CSOURCES = Device_Startup/startup_samd21.c \
@@ -118,6 +127,14 @@ SOURCES = $(COMMON_SRC) \
 	bsp/pinmux.cpp \
 	bsp/bsp_neopix.cpp \
 	bsp/adafruit_ptc.cpp \
+
+
+ifeq ($(CHIP_FAMILY), SAMD51)
+FULL_SOURCES = $(SOURCES) \
+	source/AOUSB.cpp \
+	source/USB/CDC.cpp \
+	source/USB/USBCore.cpp
+endif
 
 ifeq ($(CHIP_FAMILY), SAMD21)
 FULL_SOURCES = $(SOURCES) \
