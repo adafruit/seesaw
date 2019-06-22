@@ -19,6 +19,8 @@
 
 #include <sam.h>
 
+// Constants for Clock generators
+#define GENERIC_CLOCK_GENERATOR_MAIN      (0u)
 
 #if defined(SAMD51)
 #define GENERIC_CLOCK_GENERATOR_XOSC32K   (3u)
@@ -262,7 +264,6 @@ void SystemInit( void )
 #define VARIANT_MAINOSC                   (32768ul)
 
 // Constants for Clock generators
-#define GENERIC_CLOCK_GENERATOR_MAIN      (0u)
 #define GENERIC_CLOCK_GENERATOR_XOSC32K   (1u)
 #define GENERIC_CLOCK_GENERATOR_OSC32K    (1u)
 #define GENERIC_CLOCK_GENERATOR_OSCULP32K (2u) /* Initialized at reset for WDT */
