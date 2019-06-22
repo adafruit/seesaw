@@ -67,6 +67,7 @@ void * operator new(size_t n)
 }
 
 void BspInit() {
+	
 	//initialize some clocks
 #if defined(SAMD21)
 	PM->APBCMASK.reg |= PM_APBCMASK_SERCOM0 | PM_APBCMASK_SERCOM1 | PM_APBCMASK_SERCOM2 | PM_APBCMASK_SERCOM3 | PM_APBCMASK_SERCOM4 | PM_APBCMASK_SERCOM5 ;
