@@ -82,15 +82,27 @@ void BspInit() {
 #endif
 
 #ifdef TCC0
+#if defined(SAMD51)
+	MCLK->APBBMASK.reg |= MCLK_APBBMASK_TCC0 ;
+#else
 	PM->APBCMASK.reg |= PM_APBCMASK_TCC0 ;
+#endif
 #endif
 
 #ifdef SERCOM2
+#if defined(SAMD51)
+	MCLK->APBBMASK.reg |= MCLK_APBBMASK_SERCOM2 ;
+#else
 	PM->APBCMASK.reg |= PM_APBCMASK_SERCOM2 ;
+#endif
 #endif
 
 #ifdef DAC
+#if defined(SAMD51)
+	MCLK->APBDMASK.reg |= MCLK_APBDMASK_ADC1 | MCLK_APBDMASK_ADC0 | MCLK_APBDMASK_DAC
+#else
 	PM->APBCMASK.reg |= PM_APBCMASK_ADC | PM_APBCMASK_DAC ;
+#endif
 #endif
 
 #if CONFIG_EEPROM
