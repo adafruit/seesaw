@@ -20,12 +20,15 @@
 #if defined(USBCON)
 
 #include <sam.h>
-#include "SeesawConfig.h"
 
+#include "SeesawConfig.h"
 #include "SAMD21_USBDevice.h"
 
+#include "USB/USBDesc.h"
+#include "USB/USBCore.h"
+#include "USB/USBAPI.h"
 
-#include "PluggableUSB.h"
+#include "AOUSB.h"
 
 #include <stdlib.h>
 #include <stdio.h>
