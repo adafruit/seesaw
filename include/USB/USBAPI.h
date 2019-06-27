@@ -29,8 +29,7 @@
 
 #if defined __cplusplus
 
-#include "Stream.h"
-#include "RingBuffer.h"
+
 #ifdef __SAMR21G18A__
 #include "SAMR21_USBDevice.h"
 #else
