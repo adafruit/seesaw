@@ -197,19 +197,67 @@ void QF::onStartup(void) {
 	//NVIC_SetPriority(NVMCTRL_IRQn, NVMCTRL_ISR_PRIO);
 
 #if defined(SERCOM0)
+#if defined(SAMD51)
+	NVIC_ClearPendingIRQ(SERCOM0_0_IRQn);
+    NVIC_ClearPendingIRQ(SERCOM0_1_IRQn);
+    NVIC_ClearPendingIRQ(SERCOM0_2_IRQn);
+    NVIC_ClearPendingIRQ(SERCOM0_3_IRQn);
+
+    NVIC_SetPriority (SERCOM0_0_IRQn, (1<<__NVIC_PRIO_BITS) - 1);  /* set Priority */
+    NVIC_SetPriority (SERCOM0_1_IRQn, (1<<__NVIC_PRIO_BITS) - 1); 
+    NVIC_SetPriority (SERCOM0_2_IRQn, (1<<__NVIC_PRIO_BITS) - 1); 
+    NVIC_SetPriority (SERCOM0_3_IRQn, (1<<__NVIC_PRIO_BITS) - 1);
+#else
 	NVIC_SetPriority(SERCOM0_IRQn, SERCOM_ISR_PRIO);
+#endif
 #endif
 
 #if defined(SERCOM1)
+#if defined(SAMD51)
+	NVIC_ClearPendingIRQ(SERCOM1_0_IRQn);
+    NVIC_ClearPendingIRQ(SERCOM1_1_IRQn);
+    NVIC_ClearPendingIRQ(SERCOM1_2_IRQn);
+    NVIC_ClearPendingIRQ(SERCOM1_3_IRQn);
+
+    NVIC_SetPriority (SERCOM1_0_IRQn, (1<<__NVIC_PRIO_BITS) - 1);  /* set Priority */
+    NVIC_SetPriority (SERCOM1_1_IRQn, (1<<__NVIC_PRIO_BITS) - 1); 
+    NVIC_SetPriority (SERCOM1_2_IRQn, (1<<__NVIC_PRIO_BITS) - 1); 
+    NVIC_SetPriority (SERCOM1_3_IRQn, (1<<__NVIC_PRIO_BITS) - 1);
+#else
 	NVIC_SetPriority(SERCOM1_IRQn, SERCOM_ISR_PRIO);
+#endif
 #endif
 
 #if defined(SERCOM2)
+#if defined(SAMD51)
+	NVIC_ClearPendingIRQ(SERCOM2_0_IRQn);
+    NVIC_ClearPendingIRQ(SERCOM2_1_IRQn);
+    NVIC_ClearPendingIRQ(SERCOM2_2_IRQn);
+    NVIC_ClearPendingIRQ(SERCOM2_3_IRQn);
+
+    NVIC_SetPriority (SERCOM2_0_IRQn, (1<<__NVIC_PRIO_BITS) - 1);  /* set Priority */
+    NVIC_SetPriority (SERCOM2_1_IRQn, (1<<__NVIC_PRIO_BITS) - 1); 
+    NVIC_SetPriority (SERCOM2_2_IRQn, (1<<__NVIC_PRIO_BITS) - 1); 
+    NVIC_SetPriority (SERCOM2_3_IRQn, (1<<__NVIC_PRIO_BITS) - 1);
+#else
 	NVIC_SetPriority(SERCOM2_IRQn, SERCOM_ISR_PRIO);
+#endif
 #endif
 
 #if defined(SERCOM5)
+#if defined(SAMD51)
+	NVIC_ClearPendingIRQ(SERCOM5_0_IRQn);
+    NVIC_ClearPendingIRQ(SERCOM5_1_IRQn);
+    NVIC_ClearPendingIRQ(SERCOM5_2_IRQn);
+    NVIC_ClearPendingIRQ(SERCOM5_3_IRQn);
+
+    NVIC_SetPriority (SERCOM5_0_IRQn, (1<<__NVIC_PRIO_BITS) - 1);  /* set Priority */
+    NVIC_SetPriority (SERCOM5_1_IRQn, (1<<__NVIC_PRIO_BITS) - 1); 
+    NVIC_SetPriority (SERCOM5_2_IRQn, (1<<__NVIC_PRIO_BITS) - 1); 
+    NVIC_SetPriority (SERCOM5_3_IRQn, (1<<__NVIC_PRIO_BITS) - 1);
+#else
 	NVIC_SetPriority(SERCOM5_IRQn, SERCOM_ISR_PRIO);
+#endif
 #endif
 
 #if CONFIG_ENCODER
@@ -236,23 +284,58 @@ void QF::onStartup(void) {
 #endif
 
 #if CONFIG_SERCOM0
+#if defined(SAMD51)
+    NVIC_EnableIRQ(SERCOM0_0_IRQn);
+    NVIC_EnableIRQ(SERCOM0_1_IRQn);
+    NVIC_EnableIRQ(SERCOM0_2_IRQn);
+    NVIC_EnableIRQ(SERCOM0_3_IRQn);
+#else
 	NVIC_EnableIRQ(SERCOM0_IRQn);
+#endif
 #endif
 
 #if CONFIG_SERCOM1
+#if defined(SAMD51)
+    NVIC_EnableIRQ(SERCOM1_0_IRQn);
+    NVIC_EnableIRQ(SERCOM1_1_IRQn);
+    NVIC_EnableIRQ(SERCOM1_2_IRQn);
+    NVIC_EnableIRQ(SERCOM1_3_IRQn);
+#else
 	NVIC_EnableIRQ(SERCOM1_IRQn);
+#endif
 #endif
 
 #if CONFIG_SERCOM2
+#if defined(SAMD51)
+    NVIC_EnableIRQ(SERCOM2_0_IRQn);
+    NVIC_EnableIRQ(SERCOM2_1_IRQn);
+    NVIC_EnableIRQ(SERCOM2_2_IRQn);
+    NVIC_EnableIRQ(SERCOM2_3_IRQn);
+#else
 	NVIC_EnableIRQ(SERCOM2_IRQn);
+#endif
 #endif
 
 #if CONFIG_SERCOM5
+#if defined(SAMD51)
+    NVIC_EnableIRQ(SERCOM5_0_IRQn);
+    NVIC_EnableIRQ(SERCOM5_1_IRQn);
+    NVIC_EnableIRQ(SERCOM5_2_IRQn);
+    NVIC_EnableIRQ(SERCOM5_3_IRQn);
+#else
 	NVIC_EnableIRQ(SERCOM5_IRQn);
+#endif
 #endif
 
 #if CONFIG_USB
+#if defined(SAMD51)
+    NVIC_EnableIRQ(USB_0_IRQn);
+	NVIC_EnableIRQ(USB_1_IRQn);
+	NVIC_EnableIRQ(USB_2_IRQn);
+	NVIC_EnableIRQ(USB_3_IRQn);
+#else
 	NVIC_EnableIRQ(USB_IRQn);
+#endif
 #endif
 
 #if CONFIG_ENCODER
