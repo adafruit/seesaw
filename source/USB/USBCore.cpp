@@ -19,14 +19,11 @@
 #ifndef USE_TINYUSB
 #if defined(USBCON)
 
-#include <Arduino.h>
+#include <sam.h>
+#include "SeesawConfig.h"
 
-// there are ~slight~ CMSIS differences :/
-#ifdef __SAMR21G18A__
-  #include "SAMR21_USBDevice.h"
-#else
-  #include "SAMD21_USBDevice.h"
-#endif
+#include "SAMD21_USBDevice.h"
+
 
 #include "PluggableUSB.h"
 
@@ -34,12 +31,9 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <limits.h>
+#include <string.h>
 
-#ifdef __SAMR21G18A__
-USBDevice_SAMR21G18x usbd;
-#else
 USBDevice_SAMD21G18x usbd;
-#endif
 
 
 /** Pulse generation counters to keep track of the number of milliseconds remaining for each pulse type */
