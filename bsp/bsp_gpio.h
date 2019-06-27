@@ -13,8 +13,13 @@ inline void gpio_init(int port, int pin, int dir) {
 }
 
 inline void gpio_reset_eic(){
+	#if defined(SAMD51)
+	EIC->CTRLA.bit.SWRST = 1;
+	while(EIC->CTRLA.bit.SWRST || EIC->SYNCBUSY.bit.SWRST);
+	#else
 	EIC->CTRL.bit.SWRST = 1;
 	while(EIC->CTRL.bit.SWRST || EIC->STATUS.bit.SYNCBUSY);
+	#endif
 }
 
 inline void gpio_write(int port, int pin, int val) {
