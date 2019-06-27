@@ -1,6 +1,5 @@
 /*
   Copyright (c) 2016 Arduino LLC.  All right reserved.
-  SAMD51 support added by Adafruit - Copyright (c) 2018 Dean Miller for Adafruit Industries
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -16,7 +15,6 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-#ifndef USE_TINYUSB
 
 #include <sam.h>
 
@@ -35,8 +33,11 @@
 #include <limits.h>
 #include <string.h>
 
-USBDevice_SAMD21G18x usbd;
+#if CONFIG_USB
 
+#define microsecondsToClockCycles(a) ( (a) * (SystemCoreClock / 1000000L) )
+
+USBDevice_SAMD21G18x usbd;
 
 /** Pulse generation counters to keep track of the number of milliseconds remaining for each pulse type */
 #define TX_RX_LED_PULSE_MS 100
@@ -50,10 +51,13 @@ static char isRemoteWakeUpEnabled = 0;
 static char isEndpointHalt = 0;
 
 extern void (*gpf_isr)(void);
+extern "C" void USB_SetHandler(void (*pf_isr)(void));
 
 // USB_Handler ISR
 extern "C" void UDD_Handler(void) {
+	QXK_ISR_ENTRY();
 	USBDevice.ISRHandler();
+	QXK_ISR_EXIT();
 }
 
 const uint16_t STRING_LANGUAGE[2] = {
@@ -68,11 +72,11 @@ const uint16_t STRING_LANGUAGE[2] = {
 
 const uint8_t STRING_PRODUCT[] = USB_PRODUCT;
 
-#if USB_VID == 0x2341
+#if USB_VID == 0x239A
 #  if defined(USB_MANUFACTURER)
 #    undef USB_MANUFACTURER
 #  endif
-#  define USB_MANUFACTURER "Arduino LLC"
+#  define USB_MANUFACTURER "Adafruit"
 #elif !defined(USB_MANUFACTURER)
 // Fall through to unknown if no manufacturer name was provided in a macro
 #  define USB_MANUFACTURER "Unknown"
@@ -99,7 +103,7 @@ uint8_t udd_ep_in_cache_buffer[7][64];
 // Some EP are handled using EPHanlders.
 // Possibly all the sparse EP handling subroutines will be
 // converted into reusable EPHandlers in the future.
-static EPHandler *epHandlers[7] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+static EPHandler *epHandlers[7];
 
 //==================================================================
 
@@ -147,10 +151,6 @@ uint8_t USBDeviceClass::SendInterfaces(uint32_t* total)
 
 #if defined(CDC_ENABLED)
 	total[0] += CDC_GetInterface(&interfaces);
-#endif
-
-#ifdef PLUGGABLE_USB_ENABLED
-	total[0] += PluggableUSB().getInterface(&interfaces);
 #endif
 
 	return interfaces;
@@ -201,20 +201,12 @@ bool USBDeviceClass::sendDescriptor(USBSetup &setup)
 	uint8_t t = setup.wValueH;
 	uint8_t desc_length = 0;
 	bool _cdcComposite;
-	int ret;
 	const uint8_t *desc_addr = 0;
 
 	if (t == USB_CONFIGURATION_DESCRIPTOR_TYPE)
 	{
 		return USBDevice.sendConfiguration(setup.wLength);
 	}
-
-#ifdef PLUGGABLE_USB_ENABLED
-	ret = PluggableUSB().getDescriptor(setup);
-	if (ret != 0) {
-		return (ret > 0 ? true : false);
-	}
-#endif
 
 	if (t == USB_DEVICE_DESCRIPTOR_TYPE)
 	{
@@ -239,12 +231,6 @@ bool USBDeviceClass::sendDescriptor(USBSetup &setup)
 			return sendStringDescriptor(STRING_MANUFACTURER, setup.wLength);
 		}
 		else if (setup.wValueL == ISERIAL) {
-#ifdef PLUGGABLE_USB_ENABLED
-#if defined(__SAMD51__)
-			char name[ISERIAL_MAX_LEN];
-			PluggableUSB().getShortName(name);
-			return sendStringDescriptor((uint8_t*)name, setup.wLength);
-#else
 			// from section 9.3.3 of the datasheet
 			#define SERIAL_NUMBER_WORD_0	*(volatile uint32_t*)(0x0080A00C)
 			#define SERIAL_NUMBER_WORD_1	*(volatile uint32_t*)(0x0080A040)
@@ -256,11 +242,9 @@ bool USBDeviceClass::sendDescriptor(USBSetup &setup)
 			utox8(SERIAL_NUMBER_WORD_1, &name[8]);
 			utox8(SERIAL_NUMBER_WORD_2, &name[16]);
 			utox8(SERIAL_NUMBER_WORD_3, &name[24]);
+			name[32] = 0;
 
-			PluggableUSB().getShortName(&name[32]);
 			return sendStringDescriptor((uint8_t*)name, setup.wLength);
-#endif
-#endif
 		}
 		else {
 			return false;
@@ -307,44 +291,13 @@ void USBDeviceClass::handleEndpoint(uint8_t ep)
 		usbd.epBank1AckTransferComplete(CDC_ENDPOINT_ACM);
 	}
 #endif
-
-#if defined(PLUGGABLE_USB_ENABLED)
-	// Empty
-#endif
 }
 
 void USBDeviceClass::init()
 {
-#ifdef PIN_LED_TXL
-	txLEDPulse = 0;
-	pinMode(PIN_LED_TXL, OUTPUT);
-	digitalWrite(PIN_LED_TXL, HIGH);
-#endif
-
-#ifdef PIN_LED_RXL
-	rxLEDPulse = 0;
-	pinMode(PIN_LED_RXL, OUTPUT);
-	digitalWrite(PIN_LED_RXL, HIGH);
-#endif
-
-	/* Enable USB clock */
-#if defined(__SAMD51__)
-	MCLK->APBBMASK.reg |= MCLK_APBBMASK_USB;
-	MCLK->AHBMASK.reg |= MCLK_AHBMASK_USB;
-	
-	// Set up the USB DP/DN pins
-	PORT->Group[0].PINCFG[PIN_PA24H_USB_DM].bit.PMUXEN = 1;
-	PORT->Group[0].PMUX[PIN_PA24H_USB_DM/2].reg &= ~(0xF << (4 * (PIN_PA24H_USB_DM & 0x01u)));
-	PORT->Group[0].PMUX[PIN_PA24H_USB_DM/2].reg |= MUX_PA24H_USB_DM << (4 * (PIN_PA24H_USB_DM & 0x01u));
-	PORT->Group[0].PINCFG[PIN_PA25H_USB_DP].bit.PMUXEN = 1;
-	PORT->Group[0].PMUX[PIN_PA25H_USB_DP/2].reg &= ~(0xF << (4 * (PIN_PA25H_USB_DP & 0x01u)));
-	PORT->Group[0].PMUX[PIN_PA25H_USB_DP/2].reg |= MUX_PA25H_USB_DP << (4 * (PIN_PA25H_USB_DP & 0x01u));
-	
-	
-	GCLK->PCHCTRL[USB_GCLK_ID].reg = GCLK_PCHCTRL_GEN_GCLK1_Val | (1 << GCLK_PCHCTRL_CHEN_Pos);
-#else
+	// Enable USB clock
 	PM->APBBMASK.reg |= PM_APBBMASK_USB;
-	
+
 	// Set up the USB DP/DN pins
 	PORT->Group[0].PINCFG[PIN_PA24G_USB_DM].bit.PMUXEN = 1;
 	PORT->Group[0].PMUX[PIN_PA24G_USB_DM/2].reg &= ~(0xF << (4 * (PIN_PA24G_USB_DM & 0x01u)));
@@ -355,11 +308,10 @@ void USBDeviceClass::init()
 
 	// Put Generic Clock Generator 0 as source for Generic Clock Multiplexer 6 (USB reference)
 	GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID(6)     | // Generic Clock Multiplexer 6
-	GCLK_CLKCTRL_GEN_GCLK0 | // Generic Clock Generator 0 is source
-	GCLK_CLKCTRL_CLKEN;
+	                    GCLK_CLKCTRL_GEN_GCLK0 | // Generic Clock Generator 0 is source
+	                    GCLK_CLKCTRL_CLKEN;
 	while (GCLK->STATUS.bit.SYNCBUSY)
-	;
-#endif
+		;
 
 	USB_SetHandler(&UDD_Handler);
 
@@ -370,23 +322,7 @@ void USBDeviceClass::init()
 	usbd.setUSBDeviceMode();
 	usbd.runInStandby();
 	usbd.setFullSpeed();
-
-	// Configure interrupts
-#if defined(__SAMD51__)
-	/* Attach to the USB host */
-	NVIC_SetPriority(USB_0_IRQn, 0UL);
-	NVIC_SetPriority(USB_1_IRQn, 0UL);
-	NVIC_SetPriority(USB_2_IRQn, 0UL);
-	NVIC_SetPriority(USB_3_IRQn, 0UL);
-	NVIC_EnableIRQ(USB_0_IRQn);
-	NVIC_EnableIRQ(USB_1_IRQn);
-	NVIC_EnableIRQ(USB_2_IRQn);
-	NVIC_EnableIRQ(USB_3_IRQn);
-#else
-	NVIC_SetPriority((IRQn_Type) USB_IRQn, 0UL);
-	NVIC_EnableIRQ((IRQn_Type) USB_IRQn);
-#endif
-
+	
 	usbd.enable();
 
 	initialized = true;
@@ -398,7 +334,6 @@ bool USBDeviceClass::attach()
 		return false;
 
 	usbd.attach();
-
 	usbd.enableEndOfResetInterrupt();
 	usbd.enableStartOfFrameInterrupt();
 
@@ -430,13 +365,6 @@ bool USBDeviceClass::detach()
 	return true;
 }
 
-bool USBDeviceClass::end() {
-	if (!initialized)
-		return false;
-	usbd.disable();
-	return true;
-}
-
 bool USBDeviceClass::configured()
 {
 	return _usbConfiguration != 0;
@@ -455,15 +383,7 @@ bool USBDeviceClass::handleClassInterfaceSetup(USBSetup& setup)
 		return true;
 	}
 	#endif
-
-	#if defined(PLUGGABLE_USB_ENABLED)
-	bool ret = PluggableUSB().setup(setup);
-	if ( ret == false) {
-		sendZlp(0);
-	}
-	return ret;
-	#endif
-
+	
 	return false;
 }
 
@@ -477,15 +397,6 @@ uint32_t EndPoints[] =
 	USB_ENDPOINT_TYPE_BULK | USB_ENDPOINT_IN(0),                // CDC_ENDPOINT_IN
 #endif
 
-#ifdef PLUGGABLE_USB_ENABLED
-	//allocate 6 endpoints and remove const so they can be changed by the user
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-#endif
 };
 
 void USBDeviceClass::initEndpoints() {
@@ -504,17 +415,8 @@ void USBDeviceClass::initEP(uint32_t ep, uint32_t config)
 	}
 	else if (config == (USB_ENDPOINT_TYPE_BULK | USB_ENDPOINT_OUT(0)))
 	{
-		if (epHandlers[ep] != NULL) {
-			delete (DoubleBufferedEPOutHandler*)epHandlers[ep];
-		}
 		epHandlers[ep] = new DoubleBufferedEPOutHandler(usbd, ep, 256);
 	}
-	else if (config == (USB_ENDPOINT_TYPE_INTERRUPT | USB_ENDPOINT_OUT(0)))
-    {
-	    if(epHandlers[ep]){
-	        epHandlers[ep]->init();
-	    }
-    }
 	else if (config == (USB_ENDPOINT_TYPE_BULK | USB_ENDPOINT_IN(0)))
 	{
 		usbd.epBank1SetSize(ep, 64);
@@ -544,10 +446,6 @@ void USBDeviceClass::initEP(uint32_t ep, uint32_t config)
 		// NAK on endpoint OUT, the bank is full.
 		usbd.epBank0SetReady(ep);
 	}
-}
-
-void USBDeviceClass::setHandler(uint32_t ep, EPHandler *handler) {
-    epHandlers[ep] = handler;
 }
 
 void USBDeviceClass::flush(uint32_t ep)
@@ -615,13 +513,6 @@ uint32_t USBDeviceClass::recv(uint32_t ep, void *_data, uint32_t len)
 {
 	if (!_usbConfiguration)
 		return -1;
-
-#ifdef PIN_LED_RXL
-	if (rxLEDPulse == 0)
-		digitalWrite(PIN_LED_RXL, LOW);
-
-	rxLEDPulse = TX_RX_LED_PULSE_MS;
-#endif
 
 	if (epHandlers[ep]) {
 		return epHandlers[ep]->recv(_data, len);
@@ -712,13 +603,6 @@ uint32_t USBDeviceClass::send(uint32_t ep, const void *data, uint32_t len)
 	if (len > 16384)
 		return -1;
 
-#ifdef PIN_LED_TXL
-	if (txLEDPulse == 0)
-		digitalWrite(PIN_LED_TXL, LOW);
-
-	txLEDPulse = TX_RX_LED_PULSE_MS;
-#endif
-
 	// Flash area
 	while (len != 0)
 	{
@@ -745,8 +629,8 @@ uint32_t USBDeviceClass::send(uint32_t ep, const void *data, uint32_t len)
 
 		LastTransmitTimedOut[ep] = 0;
 
-		if (len > EPX_SIZE) {
-			length = EPX_SIZE;
+		if (len >= EPX_SIZE) {
+			length = EPX_SIZE - 1;
 		} else {
 			length = len;
 		}
@@ -945,23 +829,6 @@ void USBDeviceClass::ISRHandler()
 	if (usbd.isStartOfFrameInterrupt())
 	{
 		usbd.ackStartOfFrameInterrupt();
-
-		// check whether the one-shot period has elapsed.  if so, turn off the LED
-#ifdef PIN_LED_TXL
-		if (txLEDPulse > 0) {
-			txLEDPulse--;
-			if (txLEDPulse == 0)
-				digitalWrite(PIN_LED_TXL, HIGH);
-		}
-#endif
-
-#ifdef PIN_LED_RXL
-		if (rxLEDPulse > 0) {
-			rxLEDPulse--;
-			if (rxLEDPulse == 0)
-				digitalWrite(PIN_LED_RXL, HIGH);
-		}
-#endif
 	}
 
 	// Endpoint 0 Received Setup interrupt
@@ -1007,13 +874,13 @@ void USBDeviceClass::ISRHandler()
 		// Check if endpoint has a pending interrupt
 		if ((ept_int & (1 << i)) != 0)
 		{
-
 			// Endpoint Transfer Complete (0/1) Interrupt
 			if (usbd.epBank0IsTransferComplete(i) ||
 			    usbd.epBank1IsTransferComplete(i))
 			{
 				if (epHandlers[i]) {
 					epHandlers[i]->handleEndpoint();
+					AOUSB::ReceiveCallback();
 				} else {
 					handleEndpoint(i);
 				}
@@ -1034,4 +901,4 @@ void USBDeviceClass::ISRHandler()
 // USBDevice class instance
 USBDeviceClass USBDevice;
 
-#endif // USE_TINYUSB
+#endif
