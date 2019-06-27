@@ -4,7 +4,7 @@
 #include "sam.h"
 #include "string.h"
 
-#define defined(SAMD51)
+#if defined(SAMD51)
 
 #else
 
