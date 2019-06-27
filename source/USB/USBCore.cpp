@@ -17,7 +17,6 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #ifndef USE_TINYUSB
-#if defined(USBCON)
 
 #include <sam.h>
 
@@ -1035,5 +1034,4 @@ void USBDeviceClass::ISRHandler()
 // USBDevice class instance
 USBDeviceClass USBDevice;
 
-#endif
 #endif // USE_TINYUSB
