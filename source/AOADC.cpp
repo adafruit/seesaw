@@ -259,6 +259,7 @@ seesaw_adc_read:
 			uint8_t reg = req.getReg();
 			
 			switch (reg){
+				#if defined(SAMD51)
 				case SEESAW_ADC_INTEN:{
 					me->m_inten.set(req.getValue());
 					ADC0->INTENSET.bit.WINMON = me->m_inten.WINMON;
@@ -277,6 +278,28 @@ seesaw_adc_read:
 				//TODO: lets handle this error better
 				Q_ASSERT(0);
 				break;
+				
+				#else
+				case SEESAW_ADC_INTEN:{
+					me->m_inten.set(req.getValue());
+					ADC->INTENSET.bit.WINMON = me->m_inten.WINMON;
+					break;
+				}
+				case SEESAW_ADC_INTENCLR:{
+					me->m_inten.clr(req.getValue());
+					ADC->INTENSET.bit.WINMON = me->m_inten.WINMON;
+					break;
+				}
+				case SEESAW_ADC_WINMODE:{
+					ADC->WINCTRL.reg = req.getValue();
+					break;
+				}
+				default:
+				//TODO: lets handle this error better
+				Q_ASSERT(0);
+				break;
+				
+				#endif
 			}
 			
 			status = Q_HANDLED();
@@ -285,8 +308,13 @@ seesaw_adc_read:
 		case ADC_WRITE_WINMON_REQ: {
 			LOG_EVENT(e);
 			ADCWriteWinmonThresh const &req = static_cast<ADCWriteWinmonThresh const &>(*e);
+			#if defined(SAMD51)
 			ADC0->WINLT.reg = req.getLower();
 			ADC0->WINUT.reg = req.getUpper();
+			#else
+			ADC->WINLT.reg = req.getLower();
+			ADC->WINUT.reg = req.getUpper();
+			#endif
 			status = Q_HANDLED();
 			break;
 		}
@@ -347,11 +375,20 @@ QState AOADC::Freeruning(AOADC * const me, QEvt const * const e) {
 			Q_ASSERT(!dest->GetUsedCount());
 
 			if(reg >= SEESAW_ADC_CHANNEL_0){
-				
+				#if defined(SAMD51)
 				ADC0->INTFLAG.reg = ADC_INTFLAG_RESRDY;
+				
 				//read the data
 				while (ADC0->INTFLAG.bit.RESRDY == 0);   // Waiting for conversion to complete
 				uint16_t valueRead = ADC0->RESULT.reg;
+				#else
+				ADC->INTFLAG.reg = ADC_INTFLAG_RESRDY;
+				
+				//read the data
+				while (ADC->INTFLAG.bit.RESRDY == 0);   // Waiting for conversion to complete
+				uint16_t valueRead = ADC->RESULT.reg;
+				#endif
+				
 				uint8_t ret[] = { (uint8_t)(valueRead >> 8), (uint8_t)(valueRead & 0xFF) };
 				dest->Write(ret, 2);
 				
