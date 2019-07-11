@@ -270,10 +270,6 @@ seesaw_adc_read:
 					ADC0->INTENSET.bit.WINMON = me->m_inten.WINMON;
 					break;
 				}
-				case SEESAW_ADC_WINMODE:{
-					ADC0->CTRLB.WINCTRL.reg = req.getValue();
-					break;
-				}
 				default:
 				//TODO: lets handle this error better
 				Q_ASSERT(0);
