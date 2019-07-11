@@ -271,7 +271,7 @@ seesaw_adc_read:
 					break;
 				}
 				case SEESAW_ADC_WINMODE:{
-					ABC0->CTRLB.WINCTRL.reg = req.getValue();
+					ADC0->CTRLB.WINCTRL.reg = req.getValue();
 					break;
 				}
 				default:
