@@ -10,6 +10,6 @@ before_script:
   - (! var_search "${TRAVIS_SDK-}" arm || arm-none-eabi-gcc --version)
   - python3 --version
 
-  script:
+script:
   - make clean
   - make all
