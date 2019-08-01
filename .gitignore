@@ -1,0 +1,64 @@
+# Compiled Sources
+###################
+*.o
+*.a
+!atmel-samd/asf/**/*.a
+*.elf
+*.bin
+*.map
+*.hex
+*.dis
+*.exe
+
+# Logs and Databases
+######################
+*.log
+
+# VIM Swap Files
+######################
+*.swp
+
+# Build artifacts
+######################
+build/
+build_date.h
+
+# Python cache files
+######################
+__pycache__/
+*.pyc
+
+# Customized Makefile/project overrides
+######################
+GNUmakefile
+user.props
+
+# Sphinx output
+###############
+_build
+
+# Generated rst files
+######################
+genrst/
+
+# ctags and similar
+###################
+TAGS
+
+# Merge leftovers
+#################
+*.orig
+
+# Emacs backup files
+####################
+*~
+
+*.DS_Store
+
+# POEdit mo files
+####################
+*.mo
+
+# VS Code files
+####################
+.vscode
