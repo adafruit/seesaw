@@ -38,7 +38,7 @@
 #include "RegisterMap.h"
 #include "bsp_sercom.h"
 #include "bsp_gpio.h"
-#include "bsp_dma.h"
+//#include "bsp_dma.h"
 
 //for direct UART<->USB
 #include "USB/USBCore.h"
