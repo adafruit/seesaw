@@ -36,6 +36,18 @@
 
 #include "adafruit_ptc.h"
 
+#if !defined(TOUCH_OVERSAMPLE)
+#define TOUCH_OVERSAMPLE OVERSAMPLE_4
+#endif
+
+#if !defined(TOUCH_RESISTOR)
+#define TOUCH_RESISTOR RESISTOR_50K 
+#endif
+
+#if !defined(TOUCH_FREQMODE)
+#define TOUCH_FREQMODE FREQ_MODE_NONE
+#endif
+
 Q_DEFINE_THIS_FILE
 
 using namespace FW;
@@ -56,9 +68,9 @@ AOTouch::AOTouch() :
     m_id(AO_TOUCH), m_name("Touch") {
 
 #if CONFIG_TOUCH
-    oversample_t f = OVERSAMPLE_4;
-    series_resistor_t r = RESISTOR_50K;
-    freq_mode_t fh = FREQ_MODE_NONE;
+    oversample_t f = TOUCH_OVERSAMPLE;
+    series_resistor_t r = TOUCH_RESISTOR;
+    freq_mode_t fh = TOUCH_FREQMODE;
 
 #if CONFIG_TOUCH0
     adafruit_ptc_get_config_default(&config0);

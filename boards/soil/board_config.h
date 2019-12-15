@@ -30,6 +30,10 @@
 //* ============== TOUCH =================== *//
 #define CONFIG_TOUCH 1
 
+#define TOUCH_OVERSAMPLE OVERSAMPLE_64 
+#define TOUCH_RESISTOR RESISTOR_100K 
+#define TOUCH_FREQMODE FREQ_MODE_SPREAD
+
 #define CONFIG_TOUCH0 1
 #define CONFIG_TOUCH1 0
 #define CONFIG_TOUCH2 0
