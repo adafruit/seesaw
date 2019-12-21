@@ -5,8 +5,8 @@ variety of capabilities such as UART, ADC, DAC, extra GPIO, etc. to chips that d
 
 # Interfacing
 - [Arduino](https://github.com/adafruit/Adafruit_Seesaw)
-- [CircuitPython](https://github.com/adafruit/Adafruit_CircuitPython_seesaw)
-- [Python](https://github.com/adafruit/Adafruit_Python_seesaw)
+- [CircuitPython and Python](https://github.com/adafruit/Adafruit_CircuitPython_seesaw)
+- [Legacy Python](https://github.com/adafruit/Adafruit_Python_seesaw)
 
 ## Build
 
