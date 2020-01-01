@@ -187,5 +187,9 @@ $(BUILD_PATH)/%.o: %.cpp $(wildcard include/*.h boards/*/*.h) | dirs
 clean:
 	rm -rf build
 
-all-boards:
-	for f in `cd boards; ls` ; do "$(MAKE)" BOARD=$$f ; done
+.PHONY: board-%
+board-%:
+	$(MAKE) BOARD=$* artifact
+
+.PHONY: all-boards
+all-boards: $(patsubst %, board-%, $(shell cd boards; ls))
