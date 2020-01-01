@@ -164,17 +164,17 @@ $(EXECUTABLE): $(SOBJECTS) $(COBJECTS) $(OBJECTS)
 	-@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf
 	@echo
 
-$(BUILD_PATH)/%.o: %.S $(wildcard include/*.h boards/*/*.h)
-	echo "$<"
-	$(CC) $(SFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
+$(BUILD_PATH)/%.o: %.S $(wildcard include/*.h boards/*/*.h) | dirs
+	@echo "$<"
+	@$(CC) $(SFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
-$(BUILD_PATH)/%.o: %.c $(wildcard include/*.h boards/*/*.h)
-	echo "$<"
-	$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
+$(BUILD_PATH)/%.o: %.c $(wildcard include/*.h boards/*/*.h) | dirs
+	@echo "$<"
+	@$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
-$(BUILD_PATH)/%.o: %.cpp $(wildcard include/*.h boards/*/*.h)
-	echo "$<"
-	$(CXX) $(CXXFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
+$(BUILD_PATH)/%.o: %.cpp $(wildcard include/*.h boards/*/*.h) | dirs
+	@echo "$<"
+	@$(CXX) $(CXXFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
 clean:
 	rm -rf build
