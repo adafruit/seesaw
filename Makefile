@@ -140,6 +140,7 @@ OBJECTS = $(patsubst %.cpp,$(BUILD_PATH)/%.o,$(FULL_SOURCES))
 
 NAME=seesaw-$(BOARD)
 EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
+ARTIFACT=fw/$(NAME).bin
 
 all: dirs $(EXECUTABLE)
 
@@ -154,6 +155,13 @@ dirs:
 	-@mkdir -p $(BUILD_PATH)/source/USB
 	-@mkdir -p $(BUILD_PATH)/Device_Startup
 	-@mkdir -p $(BUILD_PATH)/bsp
+	-@mkdir -p fw
+
+.PHONY: artifact
+artifact: $(ARTIFACT)
+$(ARTIFACT): $(EXECUTABLE)
+	@cp $< $@
+
 
 $(EXECUTABLE): $(SOBJECTS) $(COBJECTS) $(OBJECTS)
 	$(CC) -L$(BUILD_PATH) $(LDFLAGS) \
@@ -164,20 +172,24 @@ $(EXECUTABLE): $(SOBJECTS) $(COBJECTS) $(OBJECTS)
 	-@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf
 	@echo
 
-$(BUILD_PATH)/%.o: %.S $(wildcard include/*.h boards/*/*.h)
-	echo "$<"
-	$(CC) $(SFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
+$(BUILD_PATH)/%.o: %.S $(wildcard include/*.h boards/*/*.h) | dirs
+	@echo "$<"
+	@$(CC) $(SFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
-$(BUILD_PATH)/%.o: %.c $(wildcard include/*.h boards/*/*.h)
-	echo "$<"
-	$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
+$(BUILD_PATH)/%.o: %.c $(wildcard include/*.h boards/*/*.h) | dirs
+	@echo "$<"
+	@$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
-$(BUILD_PATH)/%.o: %.cpp $(wildcard include/*.h boards/*/*.h)
-	echo "$<"
-	$(CXX) $(CXXFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
+$(BUILD_PATH)/%.o: %.cpp $(wildcard include/*.h boards/*/*.h) | dirs
+	@echo "$<"
+	@$(CXX) $(CXXFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
 clean:
 	rm -rf build
 
-all-boards:
-	for f in `cd boards; ls` ; do "$(MAKE)" BOARD=$$f ; done
+.PHONY: board-%
+board-%:
+	$(MAKE) BOARD=$* artifact
+
+.PHONY: all-boards
+all-boards: $(patsubst %, board-%, $(shell cd boards; ls))

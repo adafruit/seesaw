@@ -1,0 +1,51 @@
+name: Build CI
+
+env:
+    downloadurl: https://s3.amazonaws.com/adafruit-circuit-python/gcc-arm-embedded_7-2018q2-1~xenial1_amd64.deb
+
+on:
+  push:
+  pull_request:
+  release:
+    types: [published]
+  check_suite:
+    types: [rerequested]
+
+jobs:
+  test:
+    runs-on: ubuntu-16.04
+    steps:
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+    - uses: actions/cache@v1
+      id: cache
+      with:
+        path: ../debs
+        key: ${{ env.downloadurl }}-debs
+    - name: Download gcc-arm-embedded
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir ../debs
+        wget -O ../debs/gcc-arm-embedded.deb $downloadurl
+    - name: Install deps
+      run: |
+        sudo dpkg -i ../debs/*.deb
+    - name: Dump Versions
+      run: |
+        gcc --version
+        arm-none-eabi-gcc --version
+        python3 --version
+        lscpu
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+    - name: Build all
+      run: |
+        make clean
+        make all-boards -j $((1+`getconf _NPROCESSORS_ONLN`))
+    - uses: actions/upload-artifact@v1.0.0
+      with:
+        name: seesaw-firmware
+        path: fw
