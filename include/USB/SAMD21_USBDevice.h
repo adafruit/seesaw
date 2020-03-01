@@ -40,19 +40,8 @@ public:
 	void reset();
 
 	// Enable
-	inline void enable()  { 
-		usb.CTRLA.bit.ENABLE = 1; 
-		#if defined(SAMD51)
-		while( usb.SYNCBUSY.reg & USB_SYNCBUSY_ENABLE ); //wait for sync
-		#endif
-	}
-	inline void disable() { 
-		usb.CTRLA.bit.ENABLE = 0; 
-		#if defined(SAMD51)
-		while( usb.SYNCBUSY.reg & USB_SYNCBUSY_ENABLE ); //wait for sync
-		#endif
-		
-	}
+	inline void enable()  { usb.CTRLA.bit.ENABLE = 1; }
+	inline void disable() { usb.CTRLA.bit.ENABLE = 0; }
 
 	// USB mode (device/host)
 	inline void setUSBDeviceMode() { usb.CTRLA.bit.MODE = USB_CTRLA_MODE_DEVICE_Val; }
@@ -405,3 +394,4 @@ private:
 
 	volatile bool notify;
 };
+

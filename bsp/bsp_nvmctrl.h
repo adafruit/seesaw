@@ -4,10 +4,6 @@
 #include "sam.h"
 #include "string.h"
 
-#if defined(SAMD51)
-
-#else
-
 #define EEPROM_SIZE 256
 
 #define EEPROM_ADDR (FLASH_SIZE - EEPROM_SIZE)
@@ -135,4 +131,3 @@ static inline void eeprom_write_byte(uint8_t addr, uint8_t val)
 }
 
 #endif
-#endif // SAMD51

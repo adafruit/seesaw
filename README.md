@@ -5,8 +5,7 @@ variety of capabilities such as UART, ADC, DAC, extra GPIO, etc. to chips that d
 
 # Interfacing
 - [Arduino](https://github.com/adafruit/Adafruit_Seesaw)
-- [CircuitPython](https://github.com/adafruit/Adafruit_CircuitPython_seesaw)
-- [Python](https://github.com/adafruit/Adafruit_Python_seesaw)
+- [CircuitPython and Python](https://github.com/adafruit/Adafruit_CircuitPython_seesaw)
 
 ## Build
 
@@ -15,7 +14,7 @@ variety of capabilities such as UART, ADC, DAC, extra GPIO, etc. to chips that d
 * `make` and a Unix environment
 * `python` in path
 * `arm-none-eabi-gcc` and `arm-none-eabi-g++` in the path
-
+    - For Ubuntu 18.04, follow these [setup instructions](https://learn.adafruit.com/building-circuitpython/linux#install-build-tools-on-ubuntu-2-2)
 ### Build commands
 
 The default board is `debug`. You can build a different one using:

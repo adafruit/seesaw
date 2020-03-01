@@ -41,10 +41,6 @@ INCLUDES = -I. -I./include -I./include/USB -I./bsp -I./lib/qp/extras -I./lib/qp/
 INCLUDES += -I./boards/$(BOARD) -Ilib/cmsis/CMSIS/Include
 INCLUDES += -I$(BUILD_PATH)
 
-ifeq ($(CHIP_FAMILY), SAMD51)
-INCLUDES += -Ilib/samd51/samd51a/include/
-endif
-
 ifeq ($(CHIP_FAMILY), SAMD21)
 INCLUDES += -Ilib/samd21/samd21a/include/
 endif
@@ -59,11 +55,6 @@ endif
 
 SSOURCES = \
 	$(QPPORT)/qxk_port.S \
-
-ifeq ($(CHIP_FAMILY), SAMD51)
-CSOURCES = Device_Startup/startup_samd51.c \
-	Device_Startup/system_samd51.c
-endif
 
 ifeq ($(CHIP_FAMILY), SAMD21)
 CSOURCES = Device_Startup/startup_samd21.c \
@@ -128,14 +119,6 @@ SOURCES = $(COMMON_SRC) \
 	bsp/bsp_neopix.cpp \
 	bsp/adafruit_ptc.cpp \
 
-
-ifeq ($(CHIP_FAMILY), SAMD51)
-FULL_SOURCES = $(SOURCES) \
-	source/AOUSB.cpp \
-	source/USB/CDC.cpp \
-	source/USB/USBCore.cpp
-endif
-
 ifeq ($(CHIP_FAMILY), SAMD21)
 FULL_SOURCES = $(SOURCES) \
 	source/AOUSB.cpp \
@@ -157,6 +140,7 @@ OBJECTS = $(patsubst %.cpp,$(BUILD_PATH)/%.o,$(FULL_SOURCES))
 
 NAME=seesaw-$(BOARD)
 EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
+ARTIFACT=fw/$(NAME).bin
 
 all: dirs $(EXECUTABLE)
 
@@ -171,6 +155,13 @@ dirs:
 	-@mkdir -p $(BUILD_PATH)/source/USB
 	-@mkdir -p $(BUILD_PATH)/Device_Startup
 	-@mkdir -p $(BUILD_PATH)/bsp
+	-@mkdir -p fw
+
+.PHONY: artifact
+artifact: $(ARTIFACT)
+$(ARTIFACT): $(EXECUTABLE)
+	@cp $< $@
+
 
 $(EXECUTABLE): $(SOBJECTS) $(COBJECTS) $(OBJECTS)
 	$(CC) -L$(BUILD_PATH) $(LDFLAGS) \
@@ -181,20 +172,24 @@ $(EXECUTABLE): $(SOBJECTS) $(COBJECTS) $(OBJECTS)
 	-@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf
 	@echo
 
-$(BUILD_PATH)/%.o: %.S $(wildcard include/*.h boards/*/*.h)
-	echo "$<"
-	$(CC) $(SFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
+$(BUILD_PATH)/%.o: %.S $(wildcard include/*.h boards/*/*.h) | dirs
+	@echo "$<"
+	@$(CC) $(SFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
-$(BUILD_PATH)/%.o: %.c $(wildcard include/*.h boards/*/*.h)
-	echo "$<"
-	$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
+$(BUILD_PATH)/%.o: %.c $(wildcard include/*.h boards/*/*.h) | dirs
+	@echo "$<"
+	@$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
-$(BUILD_PATH)/%.o: %.cpp $(wildcard include/*.h boards/*/*.h)
-	echo "$<"
-	$(CXX) $(CXXFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
+$(BUILD_PATH)/%.o: %.cpp $(wildcard include/*.h boards/*/*.h) | dirs
+	@echo "$<"
+	@$(CXX) $(CXXFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
 clean:
 	rm -rf build
 
-all-boards:
-	for f in `cd boards; ls` ; do "$(MAKE)" BOARD=$$f ; done
+.PHONY: board-%
+board-%:
+	$(MAKE) BOARD=$* artifact
+
+.PHONY: all-boards
+all-boards: $(patsubst %, board-%, $(shell cd boards; ls))
