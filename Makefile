@@ -38,7 +38,7 @@ BUILD_PATH=build/$(BOARD)
 QPPORT = lib/qp/ports/arm-cm/qxk/gnu
 
 INCLUDES = -I. -I./include -I./include/USB -I./bsp -I./lib/qp/extras -I./lib/qp/include -I./lib/qp/source -I$(QPPORT)
-INCLUDES += -I./boards/$(BOARD) -Ilib/cmsis/CMSIS/Include
+INCLUDES += -I./boards/$(BOARD) -Ilib/cmsis/CMSIS/Core/Include
 INCLUDES += -I$(BUILD_PATH)
 
 ifeq ($(CHIP_FAMILY), SAMD21)
