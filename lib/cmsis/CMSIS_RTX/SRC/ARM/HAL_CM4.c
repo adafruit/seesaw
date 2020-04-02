@@ -3,33 +3,24 @@
  *----------------------------------------------------------------------------
  *      Name:    HAL_CM4.C
  *      Purpose: Hardware Abstraction Layer for Cortex-M4
- *      Rev.:    V4.70
+ *      Rev.:    V4.79
  *----------------------------------------------------------------------------
  *
- * Copyright (c) 1999-2009 KEIL, 2009-2013 ARM Germany GmbH
- * All rights reserved.
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *  - Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *  - Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *  - Neither the name of ARM  nor the names of its contributors may be used 
- *    to endorse or promote products derived from this software without 
- *    specific prior written permission.
+ * Copyright (c) 1999-2009 KEIL, 2009-2017 ARM Germany GmbH. All rights reserved.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *---------------------------------------------------------------------------*/
 
 #include "rt_TypeDef.h"
@@ -99,7 +90,7 @@ __asm void *_alloc_box (void *box_mem) {
 
 /*--------------------------- _free_box -------------------------------------*/
 
-__asm int _free_box (void *box_mem, void *box) {
+__asm U32 _free_box (void *box_mem, void *box) {
    /* Function wrapper for Unprivileged/Privileged mode. */
         LDR     R12,=__cpp(rt_free_box)
         MRS     R3,IPSR
@@ -143,7 +134,7 @@ SVC_Handler_Veneer
         STM     R12,{R0-R2}             ; Store return values
 
         LDR     R3,=__cpp(&os_tsk)
-        LDM     R3,{R1,R2}              ; os_tsk.run, os_tsk.new
+        LDM     R3,{R1,R2}              ; os_tsk.run, os_tsk.next
         CMP     R1,R2
 #ifdef  IFX_XMC4XXX
         PUSHEQ  {LR}
@@ -152,7 +143,17 @@ SVC_Handler_Veneer
         BXEQ    LR                      ; RETI, no task switch
 #endif
 
-        CBZ     R1,SVC_Next             ; Runtask deleted?
+        CBNZ    R1,SVC_ContextSave      ; Runtask not deleted?
+
+        TST     LR,#0x10                ; is it extended frame?
+        BNE     SVC_ContextRestore
+        LDR     R1,=0xE000EF34
+        LDR     R0,[R1]                 ; Load FPCCR
+        BIC     R0,#1                   ; Clear LSPACT (Lazy state)
+        STR     R0,[R1]                 ; Store FPCCR
+        B       SVC_ContextRestore
+
+SVC_ContextSave
         TST     LR,#0x10                ; is it extended frame?
         VSTMDBEQ R12!,{S16-S31}         ; yes, stack also VFP hi-regs
         MOVEQ   R0,#0x01                ; os_tsk->stack_frame val
@@ -165,16 +166,16 @@ SVC_Handler_Veneer
         BL      rt_stk_check            ; Check for Stack overflow
         POP     {R2,R3}
 
-SVC_Next
-        STR     R2,[R3]                 ; os_tsk.run = os_tsk.new
+SVC_ContextRestore
+        STR     R2,[R3]                 ; os_tsk.run = os_tsk.next
 
-        LDR     R12,[R2,#TCB_TSTACK]    ; os_tsk.new->tsk_stack
+        LDR     R12,[R2,#TCB_TSTACK]    ; os_tsk.next->tsk_stack
         LDMIA   R12!,{R4-R11}           ; Restore New Context
         LDRB    R0,[R2,#TCB_STACKF]     ; Stack Frame
         CMP     R0,#0                   ; Basic/Extended Stack Frame
+        MVNEQ   LR,#:NOT:0xFFFFFFFD     ; set EXC_RETURN value
+        MVNNE   LR,#:NOT:0xFFFFFFED
         VLDMIANE R12!,{S16-S31}         ; restore VFP hi-registers
-        MVNNE   LR,#:NOT:0xFFFFFFED     ; set EXC_RETURN value
-        MVNEQ   LR,#:NOT:0xFFFFFFFD
         MSR     PSP,R12                 ; Write PSP
 
 SVC_Exit
@@ -226,7 +227,7 @@ Sys_Switch
         POP     {R4,LR}                 ; Restore EXC_RETURN
 
         LDR     R3,=__cpp(&os_tsk)
-        LDM     R3,{R1,R2}              ; os_tsk.run, os_tsk.new
+        LDM     R3,{R1,R2}              ; os_tsk.run, os_tsk.next
         CMP     R1,R2
 #ifdef  IFX_XMC4XXX
         PUSHEQ  {LR}
@@ -248,15 +249,15 @@ Sys_Switch
         BL      rt_stk_check            ; Check for Stack overflow
         POP     {R2,R3}
 
-        STR     R2,[R3]                 ; os_tsk.run = os_tsk.new
+        STR     R2,[R3]                 ; os_tsk.run = os_tsk.next
 
-        LDR     R12,[R2,#TCB_TSTACK]    ; os_tsk.new->tsk_stack
+        LDR     R12,[R2,#TCB_TSTACK]    ; os_tsk.next->tsk_stack
         LDMIA   R12!,{R4-R11}           ; Restore New Context
         LDRB    R0,[R2,#TCB_STACKF]     ; Stack Frame
         CMP     R0,#0                   ; Basic/Extended Stack Frame
+        MVNEQ   LR,#:NOT:0xFFFFFFFD     ; set EXC_RETURN value
+        MVNNE   LR,#:NOT:0xFFFFFFED
         VLDMIANE R12!,{S16-S31}         ; restore VFP hi-regs
-        MVNNE   LR,#:NOT:0xFFFFFFED     ; set EXC_RETURN value
-        MVNEQ   LR,#:NOT:0xFFFFFFFD
         MSR     PSP,R12                 ; Write PSP
 
 Sys_Exit
@@ -306,4 +307,3 @@ __asm void OS_Tick_Handler (void) {
 /*----------------------------------------------------------------------------
  * end of file
  *---------------------------------------------------------------------------*/
-

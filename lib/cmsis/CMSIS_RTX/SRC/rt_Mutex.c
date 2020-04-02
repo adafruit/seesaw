@@ -3,33 +3,24 @@
  *----------------------------------------------------------------------------
  *      Name:    RT_MUTEX.C
  *      Purpose: Implements mutex synchronization objects
- *      Rev.:    V4.73
+ *      Rev.:    V4.82
  *----------------------------------------------------------------------------
  *
- * Copyright (c) 1999-2009 KEIL, 2009-2013 ARM Germany GmbH
- * All rights reserved.
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *  - Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *  - Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *  - Neither the name of ARM  nor the names of its contributors may be used 
- *    to endorse or promote products derived from this software without 
- *    specific prior written permission.
+ * Copyright (c) 1999-2009 KEIL, 2009-2017 ARM Germany GmbH. All rights reserved.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *---------------------------------------------------------------------------*/
 
 #include "rt_TypeDef.h"
@@ -52,7 +43,7 @@ void rt_mut_init (OS_ID mutex) {
   P_MUCB p_MCB = mutex;
 
   p_MCB->cb_type = MUCB;
-  p_MCB->level   = 0;
+  p_MCB->level   = 0U;
   p_MCB->p_lnk   = NULL;
   p_MCB->owner   = NULL;
   p_MCB->p_mlnk  = NULL;
@@ -69,7 +60,7 @@ OS_RESULT rt_mut_delete (OS_ID mutex) {
   P_MUCB p_mlnk;
   U8     prio;
 
-  if (p_MCB->level != 0) {
+  if (p_MCB->level != 0U) {
 
     p_TCB = p_MCB->owner;
 
@@ -92,7 +83,7 @@ OS_RESULT rt_mut_delete (OS_ID mutex) {
     prio = p_TCB->prio_base;
     p_mlnk = p_TCB->p_mlnk;
     while (p_mlnk) {
-      if (p_mlnk->p_lnk && (p_mlnk->p_lnk->prio > prio)) {
+      if ((p_mlnk->p_lnk != NULL) && (p_mlnk->p_lnk->prio > prio)) {
         /* A task with higher priority is waiting for mutex. */
         prio = p_mlnk->p_lnk->prio;
       }
@@ -110,20 +101,20 @@ OS_RESULT rt_mut_delete (OS_ID mutex) {
   while (p_MCB->p_lnk != NULL) {
     /* A task is waiting for mutex. */
     p_TCB = rt_get_first ((P_XCB)p_MCB);
-    rt_ret_val(p_TCB, 0/*osOK*/);
+    rt_ret_val(p_TCB, 0U/*osOK*/);
     rt_rmv_dly(p_TCB);
     p_TCB->state = READY;
     rt_put_prio (&os_rdy, p_TCB);
   }
 
-  if (os_rdy.p_lnk && (os_rdy.p_lnk->prio > os_tsk.run->prio)) {
+  if ((os_rdy.p_lnk != NULL) && (os_rdy.p_lnk->prio > os_tsk.run->prio)) {
     /* preempt running task */
     rt_put_prio (&os_rdy, os_tsk.run);
     os_tsk.run->state = READY;
     rt_dispatch (NULL);
   }
 
-  p_MCB->cb_type = 0;
+  p_MCB->cb_type = 0U;
 
   return (OS_R_OK);
 }
@@ -139,11 +130,11 @@ OS_RESULT rt_mut_release (OS_ID mutex) {
   P_MUCB p_mlnk;
   U8     prio;
 
-  if (p_MCB->level == 0 || p_MCB->owner != os_tsk.run) {
+  if ((p_MCB->level == 0U) || (p_MCB->owner != os_tsk.run)) {
     /* Unbalanced mutex release or task is not the owner */
     return (OS_R_NOK);
   }
-  if (--p_MCB->level != 0) {
+  if (--p_MCB->level != 0U) {
     return (OS_R_OK);
   }
 
@@ -166,7 +157,7 @@ OS_RESULT rt_mut_release (OS_ID mutex) {
   prio = os_tsk.run->prio_base;
   p_mlnk = os_tsk.run->p_mlnk;
   while (p_mlnk) {
-    if (p_mlnk->p_lnk && (p_mlnk->p_lnk->prio > prio)) {
+    if ((p_mlnk->p_lnk != NULL) && (p_mlnk->p_lnk->prio > prio)) {
       /* A task with higher priority is waiting for mutex. */
       prio = p_mlnk->p_lnk->prio;
     }
@@ -178,13 +169,13 @@ OS_RESULT rt_mut_release (OS_ID mutex) {
     /* A task is waiting for mutex. */
     p_TCB = rt_get_first ((P_XCB)p_MCB);
 #ifdef __CMSIS_RTOS
-    rt_ret_val(p_TCB, 0/*osOK*/);
+    rt_ret_val(p_TCB, 0U/*osOK*/);
 #else
     rt_ret_val(p_TCB, OS_R_MUT); 
 #endif
     rt_rmv_dly (p_TCB);
     /* A waiting task becomes the owner of this mutex. */
-    p_MCB->level  = 1;
+    p_MCB->level  = 1U;
     p_MCB->owner  = p_TCB;
     p_MCB->p_mlnk = p_TCB->p_mlnk;
     p_TCB->p_mlnk = p_MCB; 
@@ -219,19 +210,23 @@ OS_RESULT rt_mut_wait (OS_ID mutex, U16 timeout) {
   /* Wait for a mutex, continue when mutex is free. */
   P_MUCB p_MCB = mutex;
 
-  if (p_MCB->level == 0) {
+  if (p_MCB->level == 0U) {
     p_MCB->owner  = os_tsk.run;
     p_MCB->p_mlnk = os_tsk.run->p_mlnk;
     os_tsk.run->p_mlnk = p_MCB; 
-    goto inc;
+    p_MCB->level = 1U;
+    return (OS_R_OK);
   }
   if (p_MCB->owner == os_tsk.run) {
     /* OK, running task is the owner of this mutex. */
-inc:p_MCB->level++;
+    if (p_MCB->level == 0xFFFFU) {
+      return (OS_R_NOK);
+    }
+    p_MCB->level++;
     return (OS_R_OK);
   }
   /* Mutex owned by another task, wait until released. */
-  if (timeout == 0) {
+  if (timeout == 0U) {
     return (OS_R_TMO);
   }
   /* Raise the owner task priority if lower than current priority. */
@@ -252,8 +247,6 @@ inc:p_MCB->level++;
   return (OS_R_TMO);
 }
 
-
 /*----------------------------------------------------------------------------
  * end of file
  *---------------------------------------------------------------------------*/
-

@@ -3,33 +3,24 @@
  *----------------------------------------------------------------------------
  *      Name:    RT_MAILBOX.C
  *      Purpose: Implements waits and wake-ups for mailbox messages
- *      Rev.:    V4.70
+ *      Rev.:    V4.81
  *----------------------------------------------------------------------------
  *
- * Copyright (c) 1999-2009 KEIL, 2009-2013 ARM Germany GmbH
- * All rights reserved.
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *  - Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *  - Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *  - Neither the name of ARM  nor the names of its contributors may be used 
- *    to endorse or promote products derived from this software without 
- *    specific prior written permission.
+ * Copyright (c) 1999-2009 KEIL, 2009-2017 ARM Germany GmbH. All rights reserved.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *---------------------------------------------------------------------------*/
 
 #include "rt_TypeDef.h"
@@ -54,14 +45,14 @@ void rt_mbx_init (OS_ID mailbox, U16 mbx_size) {
   P_MCB p_MCB = mailbox;
 
   p_MCB->cb_type = MCB;
-  p_MCB->state   = 0;
-  p_MCB->isr_st  = 0;
+  p_MCB->state   = 0U;
+  p_MCB->isr_st  = 0U;
   p_MCB->p_lnk   = NULL;
-  p_MCB->first   = 0;
-  p_MCB->last    = 0;
-  p_MCB->count   = 0;
-  p_MCB->size    = (mbx_size + sizeof(void *) - sizeof(struct OS_MCB)) /
-                                                     (U32)sizeof (void *);
+  p_MCB->first   = 0U;
+  p_MCB->last    = 0U;
+  p_MCB->count   = 0U;
+  p_MCB->size    = (U16)((mbx_size - (sizeof(struct OS_MCB) - (sizeof(void *))))
+                         / sizeof(void *));
 }
 
 
@@ -72,11 +63,11 @@ OS_RESULT rt_mbx_send (OS_ID mailbox, void *p_msg, U16 timeout) {
   P_MCB p_MCB = mailbox;
   P_TCB p_TCB;
 
-  if ((p_MCB->p_lnk != NULL) && (p_MCB->state == 1)) {
+  if ((p_MCB->p_lnk != NULL) && (p_MCB->state == 1U)) {
     /* A task is waiting for message */
     p_TCB = rt_get_first ((P_XCB)p_MCB);
 #ifdef __CMSIS_RTOS
-    rt_ret_val2(p_TCB, 0x10/*osEventMessage*/, (U32)p_msg);
+    rt_ret_val2(p_TCB, 0x10U/*osEventMessage*/, (U32)p_msg);
 #else
     *p_TCB->msg = p_msg;
     rt_ret_val (p_TCB, OS_R_MBX);
@@ -90,7 +81,7 @@ OS_RESULT rt_mbx_send (OS_ID mailbox, void *p_msg, U16 timeout) {
       /* No free message entry, wait for one. If message queue is full, */
       /* then no task is waiting for message. The 'p_MCB->p_lnk' list   */
       /* pointer can now be reused for send message waits task list.    */
-      if (timeout == 0) {
+      if (timeout == 0U) {
         return (OS_R_TMO);
       }
       if (p_MCB->p_lnk != NULL) {
@@ -101,7 +92,7 @@ OS_RESULT rt_mbx_send (OS_ID mailbox, void *p_msg, U16 timeout) {
         os_tsk.run->p_lnk  = NULL;
         os_tsk.run->p_rlnk = (P_TCB)p_MCB;
         /* Task is waiting to send a message */      
-        p_MCB->state = 2;
+        p_MCB->state = 2U;
       }
       os_tsk.run->msg = p_msg;
       rt_block (timeout, WAIT_MBX);
@@ -111,7 +102,7 @@ OS_RESULT rt_mbx_send (OS_ID mailbox, void *p_msg, U16 timeout) {
     p_MCB->msg[p_MCB->first] = p_msg;
     rt_inc (&p_MCB->count);
     if (++p_MCB->first == p_MCB->size) {
-      p_MCB->first = 0;
+      p_MCB->first = 0U;
     }
   }
   return (OS_R_OK);
@@ -130,19 +121,19 @@ OS_RESULT rt_mbx_wait (OS_ID mailbox, void **message, U16 timeout) {
   if (p_MCB->count) {
     *message = p_MCB->msg[p_MCB->last];
     if (++p_MCB->last == p_MCB->size) {
-      p_MCB->last = 0;
+      p_MCB->last = 0U;
     }
-    if ((p_MCB->p_lnk != NULL) && (p_MCB->state == 2)) {
+    if ((p_MCB->p_lnk != NULL) && (p_MCB->state == 2U)) {
       /* A task is waiting to send message */
       p_TCB = rt_get_first ((P_XCB)p_MCB);
 #ifdef __CMSIS_RTOS
-      rt_ret_val(p_TCB, 0/*osOK*/);
+      rt_ret_val(p_TCB, 0U/*osOK*/);
 #else
       rt_ret_val(p_TCB, OS_R_OK);
 #endif
       p_MCB->msg[p_MCB->first] = p_TCB->msg;
       if (++p_MCB->first == p_MCB->size) {
-        p_MCB->first = 0;
+        p_MCB->first = 0U;
       }
       rt_rmv_dly (p_TCB);
       rt_dispatch (p_TCB);
@@ -153,7 +144,7 @@ OS_RESULT rt_mbx_wait (OS_ID mailbox, void **message, U16 timeout) {
     return (OS_R_OK);
   }
   /* No message available: wait for one */
-  if (timeout == 0) {
+  if (timeout == 0U) {
     return (OS_R_TMO);
   }
   if (p_MCB->p_lnk != NULL) {
@@ -164,7 +155,7 @@ OS_RESULT rt_mbx_wait (OS_ID mailbox, void **message, U16 timeout) {
     os_tsk.run->p_lnk = NULL;
     os_tsk.run->p_rlnk = (P_TCB)p_MCB;
     /* Task is waiting to receive a message */      
-    p_MCB->state = 1;
+    p_MCB->state = 1U;
   }
   rt_block(timeout, WAIT_MBX);
 #ifndef __CMSIS_RTOS
@@ -181,7 +172,7 @@ OS_RESULT rt_mbx_check (OS_ID mailbox) {
   /* that can be stored to a mailbox. It returns 0 when mailbox is full.   */
   P_MCB p_MCB = mailbox;
 
-  return (p_MCB->size - p_MCB->count);
+  return ((U32)(p_MCB->size - p_MCB->count));
 }
 
 
@@ -206,14 +197,14 @@ OS_RESULT isr_mbx_receive (OS_ID mailbox, void **message) {
   if (p_MCB->count) {
     /* A message is available in the fifo buffer. */
     *message = p_MCB->msg[p_MCB->last];
-    if (p_MCB->state == 2) {
+    if ((p_MCB->p_lnk != NULL) && (p_MCB->state == 2U)) {
       /* A task is locked waiting to send message */
-      rt_psq_enq (p_MCB, 0);
+      rt_psq_enq (p_MCB, 0U);
       rt_psh_req ();
     }
     rt_dec (&p_MCB->count);
     if (++p_MCB->last == p_MCB->size) {
-      p_MCB->last = 0;
+      p_MCB->last = 0U;
     }
     return (OS_R_MBX);
   }
@@ -233,7 +224,7 @@ void rt_mbx_psh (P_MCB p_CB, void *p_msg) {
     case 3:
       /* Task is waiting to allocate memory, remove it from the waiting list */
       mem = rt_alloc_box(p_msg);
-      if (mem == NULL) break;
+      if (mem == NULL) { break; }
       p_TCB = rt_get_first ((P_XCB)p_CB);
       rt_ret_val(p_TCB, (U32)mem);
       p_TCB->state = READY;
@@ -245,14 +236,14 @@ void rt_mbx_psh (P_MCB p_CB, void *p_msg) {
       /* Task is waiting to send a message, remove it from the waiting list */
       p_TCB = rt_get_first ((P_XCB)p_CB);
 #ifdef __CMSIS_RTOS
-      rt_ret_val(p_TCB, 0/*osOK*/);
+      rt_ret_val(p_TCB, 0U/*osOK*/);
 #else
       rt_ret_val(p_TCB, OS_R_OK);
 #endif
       p_CB->msg[p_CB->first] = p_TCB->msg;
       rt_inc (&p_CB->count);
       if (++p_CB->first == p_CB->size) {
-        p_CB->first = 0;
+        p_CB->first = 0U;
       }
       p_TCB->state = READY;
       rt_rmv_dly (p_TCB);
@@ -262,7 +253,7 @@ void rt_mbx_psh (P_MCB p_CB, void *p_msg) {
       /* Task is waiting for a message, pass the message to the task directly */
       p_TCB = rt_get_first ((P_XCB)p_CB);
 #ifdef __CMSIS_RTOS
-      rt_ret_val2(p_TCB, 0x10/*osEventMessage*/, (U32)p_msg);
+      rt_ret_val2(p_TCB, 0x10U/*osEventMessage*/, (U32)p_msg);
 #else
       *p_TCB->msg = p_msg;
       rt_ret_val (p_TCB, OS_R_MBX);
@@ -271,13 +262,15 @@ void rt_mbx_psh (P_MCB p_CB, void *p_msg) {
       rt_rmv_dly (p_TCB);
       rt_put_prio (&os_rdy, p_TCB);
       break;
+    default:
+      break;
   } else {
     /* No task is waiting for a message, store it to the mailbox queue */
     if (p_CB->count < p_CB->size) {
       p_CB->msg[p_CB->first] = p_msg;
       rt_inc (&p_CB->count);
       if (++p_CB->first == p_CB->size) {
-        p_CB->first = 0;
+        p_CB->first = 0U;
       }
     }
     else {
@@ -289,4 +282,3 @@ void rt_mbx_psh (P_MCB p_CB, void *p_msg) {
 /*----------------------------------------------------------------------------
  * end of file
  *---------------------------------------------------------------------------*/
-

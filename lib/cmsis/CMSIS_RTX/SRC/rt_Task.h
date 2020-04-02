@@ -3,65 +3,56 @@
  *----------------------------------------------------------------------------
  *      Name:    RT_TASK.H
  *      Purpose: Task functions and system start up.
- *      Rev.:    V4.70
+ *      Rev.:    V4.79
  *----------------------------------------------------------------------------
  *
- * Copyright (c) 1999-2009 KEIL, 2009-2013 ARM Germany GmbH
- * All rights reserved.
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *  - Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *  - Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *  - Neither the name of ARM  nor the names of its contributors may be used 
- *    to endorse or promote products derived from this software without 
- *    specific prior written permission.
+ * Copyright (c) 1999-2009 KEIL, 2009-2017 ARM Germany GmbH. All rights reserved.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *---------------------------------------------------------------------------*/
 
 /* Definitions */
 
 /* Values for 'state'   */
-#define INACTIVE        0
-#define READY           1
-#define RUNNING         2
-#define WAIT_DLY        3
-#define WAIT_ITV        4
-#define WAIT_OR         5
-#define WAIT_AND        6
-#define WAIT_SEM        7
-#define WAIT_MBX        8
-#define WAIT_MUT        9
+#define INACTIVE        0U
+#define READY           1U
+#define RUNNING         2U
+#define WAIT_DLY        3U
+#define WAIT_ITV        4U
+#define WAIT_OR         5U
+#define WAIT_AND        6U
+#define WAIT_SEM        7U
+#define WAIT_MBX        8U
+#define WAIT_MUT        9U
 
 /* Return codes */
-#define OS_R_TMO        0x01
-#define OS_R_EVT        0x02
-#define OS_R_SEM        0x03
-#define OS_R_MBX        0x04
-#define OS_R_MUT        0x05
+#define OS_R_TMO        0x01U
+#define OS_R_EVT        0x02U
+#define OS_R_SEM        0x03U
+#define OS_R_MBX        0x04U
+#define OS_R_MUT        0x05U
 
-#define OS_R_OK         0x00
-#define OS_R_NOK        0xff
+#define OS_R_OK         0x00U
+#define OS_R_NOK        0xFFU
 
 /* Variables */
 extern struct OS_TSK os_tsk;
 extern struct OS_TCB os_idle_TCB;
 
 /* Functions */
-extern void      rt_switch_req (P_TCB p_new);
+extern void      rt_switch_req (P_TCB p_next);
 extern void      rt_dispatch   (P_TCB next_TCB);
 extern void      rt_block      (U16 timeout, U8 block_state);
 extern void      rt_tsk_pass   (void);
@@ -79,9 +70,3 @@ extern void      rt_sys_init   (FUNCP first_task, U32 prio_stksz, void *stk);
 /*----------------------------------------------------------------------------
  * end of file
  *---------------------------------------------------------------------------*/
-
-
-
-
-
-
