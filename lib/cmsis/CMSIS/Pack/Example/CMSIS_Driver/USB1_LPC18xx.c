@@ -1,32 +1,31 @@
-/* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2014 ARM Ltd.
+/* -------------------------------------------------------------------------- 
+ * Copyright (c) 2013-2016 ARM Limited. All rights reserved.
  *
- * This software is provided 'as-is', without any express or implied warranty.
- * In no event will the authors be held liable for any damages arising from
- * the use of this software. Permission is granted to anyone to use this
- * software for any purpose, including commercial applications, and to alter
- * it and redistribute it freely, subject to the following restrictions:
+ * SPDX-License-Identifier: Apache-2.0
  *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software. If you use this software in
- *    a product, an acknowledgment in the product documentation would be
- *    appreciated but is not required.
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
+ * www.apache.org/licenses/LICENSE-2.0
  *
- * 3. This notice may not be removed or altered from any source distribution.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
- *
- * $Date:        26. May 2014
- * $Revision:    V1.00
+ * $Date:        02. March 2016
+ * $Revision:    V1.1
  *
  * Project:      USB common (Device and Host) module for NXP LPC18xx
  * -------------------------------------------------------------------------- */
 
 /* History:
- *  Version 1.00
- *    - Initial release
+ *  Version 1.1
+ *    Improved support for Host and Device
+ *  Version 1.0
+ *    Initial release
  */
 
 #include "LPC18xx.h"
@@ -37,27 +36,51 @@
 #include "RTE_Device.h"
 #include "RTE_Components.h"
 
-volatile uint32_t USB1_role = ARM_USB_ROLE_NONE;
+volatile uint8_t USB1_role  = ARM_USB_ROLE_NONE;
+volatile uint8_t USB1_state = 0U;
 
-__weak void USBH1_IRQ (void) {};
-__weak void USBD1_IRQ (void) {};
+#ifdef RTE_Drivers_USBH1
+extern void USBH1_IRQ (void);
+#endif
+#ifdef RTE_Drivers_USBD1
+extern void USBD1_IRQ (void);
+#endif
+
+
+// Common IRQ Routine **********************************************************
 
 /**
   \fn          void USB1_IRQHandler (void)
   \brief       USB Interrupt Routine (IRQ).
 */
 void USB1_IRQHandler (void) {
+#if (defined(RTE_Drivers_USBH1) && defined(RTE_Drivers_USBD1))
   switch (USB1_role) {
+#ifdef RTE_Drivers_USBH1
     case ARM_USB_ROLE_HOST:
       USBH1_IRQ ();
       break;
+#endif
+#ifdef RTE_Drivers_USBD1
     case ARM_USB_ROLE_DEVICE:
       USBD1_IRQ ();
       break;
-    case ARM_USB_ROLE_NONE:
+#endif
+    default:
       break;
   }
+#else
+#ifdef RTE_Drivers_USBH1
+  USBH1_IRQ ();
+#else
+  USBD1_IRQ ();
+#endif
+#endif
+
 }
+
+
+// Public Functions ************************************************************
 
 /**
   \fn          void USB1_PinsConfigure (void)
@@ -85,10 +108,10 @@ void USB1_PinsConfigure (void) {
   // Host Pins
   if (USB1_role == ARM_USB_ROLE_HOST) {
 #if (RTE_USB1_PPWR_PIN_EN)
-    SCU_PinConfigure(RTE_USB1_PPWR_PORT, RTE_USB1_PPWR_BIT, RTE_USB1_PPWR_FUNC);
+    SCU_PinConfigure(RTE_USB1_PPWR_PORT,      RTE_USB1_PPWR_BIT,      RTE_USB1_PPWR_FUNC);
 #endif
 #if (RTE_USB1_PWR_FAULT_PIN_EN)
-    SCU_PinConfigure(RTE_USB1_PWR_FAULT_PORT,RTE_USB1_PWR_FAULT_BIT, RTE_USB1_PWR_FAULT_FUNC);
+    SCU_PinConfigure(RTE_USB1_PWR_FAULT_PORT, RTE_USB1_PWR_FAULT_BIT, RTE_USB1_PWR_FAULT_FUNC);
 #endif
   }
 
@@ -111,7 +134,7 @@ void USB1_PinsConfigure (void) {
 
 /**
   \fn          void USB1_PinsUnconfigure (void)
-  \brief       Unconfigure USB pins
+  \brief       De-configure USB pins
 */
 void USB1_PinsUnconfigure (void) {
 
@@ -135,10 +158,10 @@ void USB1_PinsUnconfigure (void) {
   // Host Pins
   if (USB1_role == ARM_USB_ROLE_HOST) {
 #if (RTE_USB1_PPWR_PIN_EN)
-    SCU_PinConfigure(RTE_USB1_PPWR_PORT, RTE_USB1_PPWR_BIT, 0);
+    SCU_PinConfigure(RTE_USB1_PPWR_PORT,      RTE_USB1_PPWR_BIT,      0);
 #endif
 #if (RTE_USB1_PWR_FAULT_PIN_EN)
-    SCU_PinConfigure(RTE_USB1_PWR_FAULT_PORT,RTE_USB1_PWR_FAULT_BIT, 0);
+    SCU_PinConfigure(RTE_USB1_PWR_FAULT_PORT, RTE_USB1_PWR_FAULT_BIT, 0);
 #endif
   }
 
