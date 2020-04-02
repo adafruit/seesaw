@@ -1,178 +1,149 @@
-/* ----------------------------------------------------------------------    
-* Copyright (C) 2010-2014 ARM Limited. All rights reserved.    
-*    
-* $Date:        12. March 2014
-* $Revision: 	V1.4.4  
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:		arm_min_q7.c    
-*    
-* Description:	Minimum value of a Q7 vector.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Redistribution and use in source and binary forms, with or without 
-* modification, are permitted provided that the following conditions
-* are met:
-*   - Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
-*   - Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the 
-*     distribution.
-*   - Neither the name of ARM LIMITED nor the names of its contributors
-*     may be used to endorse or promote products derived from this
-*     software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
-* COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-* LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-* ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.     
-* ---------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_min_q7.c
+ * Description:  Minimum value of a Q7 vector
+ *
+ * $Date:        18. March 2019
+ * $Revision:    V1.6.0
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2019 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupStats    
- */
-
-/**    
- * @addtogroup Min    
- * @{    
+/**
+  @ingroup groupStats
  */
 
 
-/**    
- * @brief Minimum value of a Q7 vector.    
- * @param[in]       *pSrc points to the input vector    
- * @param[in]       blockSize length of the input vector    
- * @param[out]      *pResult minimum value returned here    
- * @param[out]      *pIndex index of minimum value returned here    
- * @return none.    
- *    
+/**
+  @addtogroup Min
+  @{
+ */
+
+/**
+  @brief         Minimum value of a Q7 vector.
+  @param[in]     pSrc       points to the input vector
+  @param[in]     blockSize  number of samples in input vector
+  @param[out]    pResult    minimum value returned here
+  @param[out]    pIndex     index of minimum value returned here
+  @return        none
  */
 
 void arm_min_q7(
-  q7_t * pSrc,
-  uint32_t blockSize,
-  q7_t * pResult,
-  uint32_t * pIndex)
+  const q7_t * pSrc,
+        uint32_t blockSize,
+        q7_t * pResult,
+        uint32_t * pIndex)
 {
-#ifndef ARM_MATH_CM0_FAMILY
+        q7_t minVal, out;                              /* Temporary variables to store the output value. */
+        uint32_t blkCnt, outIndex;                     /* Loop counter */
 
-  /* Run the below code for Cortex-M4 and Cortex-M3 */
+#if defined (ARM_MATH_LOOPUNROLL)
+        uint32_t index;                                /* index of maximum value */
+#endif
 
-  q7_t minVal1, minVal2, out;                    /* Temporary variables to store the output value. */
-  uint32_t blkCnt, outIndex, count;              /* loop counter */
-
-  /* Initialise the count value. */
-  count = 0u;
-  /* Initialise the index value to zero. */
-  outIndex = 0u;
+  /* Initialise index value to zero. */
+  outIndex = 0U;
   /* Load first input value that act as reference value for comparision */
   out = *pSrc++;
 
-  /* Loop unrolling */
-  blkCnt = (blockSize - 1u) >> 2u;
+#if defined (ARM_MATH_LOOPUNROLL)
+  /* Initialise index of maximum value. */
+  index = 0U;
 
-  while(blkCnt > 0)
+  /* Loop unrolling: Compute 4 outputs at a time */
+  blkCnt = (blockSize - 1U) >> 2U;
+
+  while (blkCnt > 0U)
   {
-    /* Initialize minVal to the next consecutive values one by one */
-    minVal1 = *pSrc++;
-    minVal2 = *pSrc++;
+    /* Initialize minVal to next consecutive values one by one */
+    minVal = *pSrc++;
 
     /* compare for the minimum value */
-    if(out > minVal1)
+    if (out > minVal)
     {
-      /* Update the minimum value and its index */
-      out = minVal1;
-      outIndex = count + 1u;
+      /* Update the minimum value and it's index */
+      out = minVal;
+      outIndex = index + 1U;
     }
 
-    minVal1 = *pSrc++;
-
-    /* compare for the minimum value */
-    if(out > minVal2)
+    minVal = *pSrc++;
+    if (out > minVal)
     {
-      /* Update the minimum value and its index */
-      out = minVal2;
-      outIndex = count + 2u;
+      out = minVal;
+      outIndex = index + 2U;
     }
 
-    minVal2 = *pSrc++;
-
-    /* compare for the minimum value */
-    if(out > minVal1)
+    minVal = *pSrc++;
+    if (out > minVal)
     {
-      /* Update the minimum value and its index */
-      out = minVal1;
-      outIndex = count + 3u;
+      out = minVal;
+      outIndex = index + 3U;
     }
 
-    /* compare for the minimum value */
-    if(out > minVal2)
+    minVal = *pSrc++;
+    if (out > minVal)
     {
-      /* Update the minimum value and its index */
-      out = minVal2;
-      outIndex = count + 4u;
+      out = minVal;
+      outIndex = index + 4U;
     }
 
-    count += 4u;
+    index += 4U;
 
+    /* Decrement loop counter */
     blkCnt--;
   }
 
-  /* if (blockSize - 1u ) is not multiple of 4 */
-  blkCnt = (blockSize - 1u) % 4u;
+  /* Loop unrolling: Compute remaining outputs */
+  blkCnt = (blockSize - 1U) % 4U;
 
 #else
 
-  /* Run the below code for Cortex-M0 */
+  /* Initialize blkCnt with number of samples */
+  blkCnt = (blockSize - 1U);
 
-  q7_t minVal1, out;                             /* Temporary variables to store the output value. */
-  uint32_t blkCnt, outIndex;                     /* loop counter */
+#endif /* #if defined (ARM_MATH_LOOPUNROLL) */
 
-  /* Initialise the index value to zero. */
-  outIndex = 0u;
-  /* Load first input value that act as reference value for comparision */
-  out = *pSrc++;
-
-  blkCnt = (blockSize - 1u);
-
-#endif //      #ifndef ARM_MATH_CM0_FAMILY
-
-  while(blkCnt > 0)
+  while (blkCnt > 0U)
   {
     /* Initialize minVal to the next consecutive values one by one */
-    minVal1 = *pSrc++;
+    minVal = *pSrc++;
 
     /* compare for the minimum value */
-    if(out > minVal1)
+    if (out > minVal)
     {
       /* Update the minimum value and it's index */
-      out = minVal1;
+      out = minVal;
       outIndex = blockSize - blkCnt;
     }
 
+    /* Decrement loop counter */
     blkCnt--;
-
   }
 
-  /* Store the minimum value and its index into destination pointers */
+  /* Store the minimum value and it's index into destination pointers */
   *pResult = out;
   *pIndex = outIndex;
-
-
 }
 
-/**    
- * @} end of Min group    
+/**
+  @} end of Min group
  */

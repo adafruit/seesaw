@@ -1,160 +1,119 @@
-/* ----------------------------------------------------------------------    
-* Copyright (C) 2010-2014 ARM Limited. All rights reserved.    
-*    
-* $Date:        12. March 2014
-* $Revision: 	V1.4.4
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:	    arm_mult_q31.c    
-*    
-* Description:	Q31 vector multiplication.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Redistribution and use in source and binary forms, with or without 
-* modification, are permitted provided that the following conditions
-* are met:
-*   - Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
-*   - Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the 
-*     distribution.
-*   - Neither the name of ARM LIMITED nor the names of its contributors
-*     may be used to endorse or promote products derived from this
-*     software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
-* COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-* LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-* ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE. 
-* -------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_mult_q31.c
+ * Description:  Q31 vector multiplication
+ *
+ * $Date:        18. March 2019
+ * $Revision:    V1.6.0
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2019 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupMath    
+/**
+  @ingroup groupMath
  */
 
-/**    
- * @addtogroup BasicMult    
- * @{    
+/**
+  @addtogroup BasicMult
+  @{
  */
 
-/**    
- * @brief Q31 vector multiplication.    
- * @param[in]       *pSrcA points to the first input vector    
- * @param[in]       *pSrcB points to the second input vector    
- * @param[out]      *pDst points to the output vector    
- * @param[in]       blockSize number of samples in each vector    
- * @return none.    
- *    
- * <b>Scaling and Overflow Behavior:</b>    
- * \par    
- * The function uses saturating arithmetic.    
- * Results outside of the allowable Q31 range[0x80000000 0x7FFFFFFF] will be saturated.    
+/**
+  @brief         Q31 vector multiplication.
+  @param[in]     pSrcA      points to the first input vector.
+  @param[in]     pSrcB      points to the second input vector.
+  @param[out]    pDst       points to the output vector.
+  @param[in]     blockSize  number of samples in each vector.
+  @return        none
+
+  @par           Scaling and Overflow Behavior
+                   The function uses saturating arithmetic.
+                   Results outside of the allowable Q31 range[0x80000000 0x7FFFFFFF] are saturated.
  */
 
 void arm_mult_q31(
-  q31_t * pSrcA,
-  q31_t * pSrcB,
-  q31_t * pDst,
-  uint32_t blockSize)
+  const q31_t * pSrcA,
+  const q31_t * pSrcB,
+        q31_t * pDst,
+        uint32_t blockSize)
 {
-  uint32_t blkCnt;                               /* loop counters */
+        uint32_t blkCnt;                               /* Loop counter */
+        q31_t out;                                     /* Temporary output variable */
 
-#ifndef ARM_MATH_CM0_FAMILY
+#if defined (ARM_MATH_LOOPUNROLL)
 
-/* Run the below code for Cortex-M4 and Cortex-M3 */
-  q31_t inA1, inA2, inA3, inA4;                  /* temporary input variables */
-  q31_t inB1, inB2, inB3, inB4;                  /* temporary input variables */
-  q31_t out1, out2, out3, out4;                  /* temporary output variables */
+  /* Loop unrolling: Compute 4 outputs at a time */
+  blkCnt = blockSize >> 2U;
 
-  /* loop Unrolling */
-  blkCnt = blockSize >> 2u;
-
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.    
-   ** a second loop below computes the remaining 1 to 3 samples. */
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* C = A * B */
-    /* Multiply the inputs and then store the results in the destination buffer. */
-    inA1 = *pSrcA++;
-    inA2 = *pSrcA++;
-    inA3 = *pSrcA++;
-    inA4 = *pSrcA++;
-    inB1 = *pSrcB++;
-    inB2 = *pSrcB++;
-    inB3 = *pSrcB++;
-    inB4 = *pSrcB++;
 
-    out1 = ((q63_t) inA1 * inB1) >> 32;
-    out2 = ((q63_t) inA2 * inB2) >> 32;
-    out3 = ((q63_t) inA3 * inB3) >> 32;
-    out4 = ((q63_t) inA4 * inB4) >> 32;
+    /* Multiply inputs and store result in destination buffer. */
+    out = ((q63_t) *pSrcA++ * *pSrcB++) >> 32;
+    out = __SSAT(out, 31);
+    *pDst++ = out << 1U;
 
-    out1 = __SSAT(out1, 31);
-    out2 = __SSAT(out2, 31);
-    out3 = __SSAT(out3, 31);
-    out4 = __SSAT(out4, 31);
+    out = ((q63_t) *pSrcA++ * *pSrcB++) >> 32;
+    out = __SSAT(out, 31);
+    *pDst++ = out << 1U;
 
-    *pDst++ = out1 << 1u;
-    *pDst++ = out2 << 1u;
-    *pDst++ = out3 << 1u;
-    *pDst++ = out4 << 1u;
+    out = ((q63_t) *pSrcA++ * *pSrcB++) >> 32;
+    out = __SSAT(out, 31);
+    *pDst++ = out << 1U;
 
-    /* Decrement the blockSize loop counter */
+    out = ((q63_t) *pSrcA++ * *pSrcB++) >> 32;
+    out = __SSAT(out, 31);
+    *pDst++ = out << 1U;
+
+    /* Decrement loop counter */
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.    
-   ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x4u;
-  
-  while(blkCnt > 0u)
-  {
-    /* C = A * B */
-    /* Multiply the inputs and then store the results in the destination buffer. */
-    inA1 = *pSrcA++;
-    inB1 = *pSrcB++;
-    out1 = ((q63_t) inA1 * inB1) >> 32;
-    out1 = __SSAT(out1, 31);
-    *pDst++ = out1 << 1u;
-
-    /* Decrement the blockSize loop counter */
-    blkCnt--;
-  }
+  /* Loop unrolling: Compute remaining outputs */
+  blkCnt = blockSize % 0x4U;
 
 #else
-
-  /* Run the below code for Cortex-M0 */
 
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
 
+#endif /* #if defined (ARM_MATH_LOOPUNROLL) */
 
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* C = A * B */
-    /* Multiply the inputs and then store the results in the destination buffer. */
-    *pDst++ =
-      (q31_t) clip_q63_to_q31(((q63_t) (*pSrcA++) * (*pSrcB++)) >> 31);
 
-    /* Decrement the blockSize loop counter */
+    /* Multiply inputs and store result in destination buffer. */
+    out = ((q63_t) *pSrcA++ * *pSrcB++) >> 32;
+    out = __SSAT(out, 31);
+    *pDst++ = out << 1U;
+
+    /* Decrement loop counter */
     blkCnt--;
   }
-  
-#endif /* #ifndef ARM_MATH_CM0_FAMILY */
+
 }
 
-/**    
- * @} end of BasicMult group    
+/**
+  @} end of BasicMult group
  */

@@ -1,161 +1,157 @@
-/* ----------------------------------------------------------------------    
-* Copyright (C) 2010-2014 ARM Limited. All rights reserved.    
-*    
-* $Date:        12. March 2014
-* $Revision: 	V1.4.4
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:		arm_cmplx_conj_q15.c    
-*    
-* Description:	Q15 complex conjugate.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Redistribution and use in source and binary forms, with or without 
-* modification, are permitted provided that the following conditions
-* are met:
-*   - Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
-*   - Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the 
-*     distribution.
-*   - Neither the name of ARM LIMITED nor the names of its contributors
-*     may be used to endorse or promote products derived from this
-*     software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
-* COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-* LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-* ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.   
-* ---------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_cmplx_conj_q15.c
+ * Description:  Q15 complex conjugate
+ *
+ * $Date:        18. March 2019
+ * $Revision:    V1.6.0
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2019 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupCmplxMath    
+/**
+  @ingroup groupCmplxMath
  */
 
-/**    
- * @addtogroup cmplx_conj    
- * @{    
+/**
+  @addtogroup cmplx_conj
+  @{
  */
 
-/**    
- * @brief  Q15 complex conjugate.    
- * @param  *pSrc points to the input vector    
- * @param  *pDst points to the output vector    
- * @param  numSamples number of complex samples in each vector    
- * @return none.    
- *    
- * <b>Scaling and Overflow Behavior:</b>    
- * \par    
- * The function uses saturating arithmetic.    
- * The Q15 value -1 (0x8000) will be saturated to the maximum allowable positive value 0x7FFF.    
+/**
+  @brief         Q15 complex conjugate.
+  @param[in]     pSrc        points to the input vector
+  @param[out]    pDst        points to the output vector
+  @param[in]     numSamples  number of samples in each vector
+  @return        none
+
+  @par           Scaling and Overflow Behavior
+                   The function uses saturating arithmetic.
+                   The Q15 value -1 (0x8000) is saturated to the maximum allowable positive value 0x7FFF.
  */
 
 void arm_cmplx_conj_q15(
-  q15_t * pSrc,
-  q15_t * pDst,
-  uint32_t numSamples)
+  const q15_t * pSrc,
+        q15_t * pDst,
+        uint32_t numSamples)
 {
+        uint32_t blkCnt;                               /* Loop counter */
+        q31_t in1;                                     /* Temporary input variable */
 
-#ifndef ARM_MATH_CM0_FAMILY
+#if defined (ARM_MATH_LOOPUNROLL) && defined (ARM_MATH_DSP)
+        q31_t in2, in3, in4;                           /* Temporary input variables */
+#endif
 
-  /* Run the below code for Cortex-M4 and Cortex-M3 */
-  uint32_t blkCnt;                               /* loop counter */
-  q31_t in1, in2, in3, in4;
-  q31_t zero = 0;
 
-  /*loop Unrolling */
-  blkCnt = numSamples >> 2u;
+#if defined (ARM_MATH_LOOPUNROLL)
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.    
-   ** a second loop below computes the remaining 1 to 3 samples. */
-  while(blkCnt > 0u)
+  /* Loop unrolling: Compute 4 outputs at a time */
+  blkCnt = numSamples >> 2U;
+
+  while (blkCnt > 0U)
   {
-    /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
-    /* Calculate Complex Conjugate and then store the results in the destination buffer. */
-    in1 = *__SIMD32(pSrc)++;
-    in2 = *__SIMD32(pSrc)++;
-    in3 = *__SIMD32(pSrc)++;
-    in4 = *__SIMD32(pSrc)++;
+    /* C[0] + jC[1] = A[0]+ j(-1)A[1] */
+
+    /* Calculate Complex Conjugate and store result in destination buffer. */
+
+    #if defined (ARM_MATH_DSP)
+    in1 = read_q15x2_ia ((q15_t **) &pSrc);
+    in2 = read_q15x2_ia ((q15_t **) &pSrc);
+    in3 = read_q15x2_ia ((q15_t **) &pSrc);
+    in4 = read_q15x2_ia ((q15_t **) &pSrc);
 
 #ifndef ARM_MATH_BIG_ENDIAN
-
-    in1 = __QASX(zero, in1);
-    in2 = __QASX(zero, in2);
-    in3 = __QASX(zero, in3);
-    in4 = __QASX(zero, in4);
-
+    in1 = __QASX(0, in1);
+    in2 = __QASX(0, in2);
+    in3 = __QASX(0, in3);
+    in4 = __QASX(0, in4);
 #else
-
-    in1 = __QSAX(zero, in1);
-    in2 = __QSAX(zero, in2);
-    in3 = __QSAX(zero, in3);
-    in4 = __QSAX(zero, in4);
-
-#endif //       #ifndef ARM_MATH_BIG_ENDIAN
+    in1 = __QSAX(0, in1);
+    in2 = __QSAX(0, in2);
+    in3 = __QSAX(0, in3);
+    in4 = __QSAX(0, in4);
+#endif /* #ifndef ARM_MATH_BIG_ENDIAN */
 
     in1 = ((uint32_t) in1 >> 16) | ((uint32_t) in1 << 16);
     in2 = ((uint32_t) in2 >> 16) | ((uint32_t) in2 << 16);
     in3 = ((uint32_t) in3 >> 16) | ((uint32_t) in3 << 16);
     in4 = ((uint32_t) in4 >> 16) | ((uint32_t) in4 << 16);
 
-    *__SIMD32(pDst)++ = in1;
-    *__SIMD32(pDst)++ = in2;
-    *__SIMD32(pDst)++ = in3;
-    *__SIMD32(pDst)++ = in4;
+    write_q15x2_ia (&pDst, in1);
+    write_q15x2_ia (&pDst, in2);
+    write_q15x2_ia (&pDst, in3);
+    write_q15x2_ia (&pDst, in4);
+#else
+    *pDst++ =  *pSrc++;
+    in1 = *pSrc++;
+    *pDst++ = (in1 == (q15_t) 0x8000) ? (q15_t) 0x7fff : -in1;
 
-    /* Decrement the loop counter */
+    *pDst++ =  *pSrc++;
+    in1 = *pSrc++;
+    *pDst++ = (in1 == (q15_t) 0x8000) ? (q15_t) 0x7fff : -in1;
+
+    *pDst++ =  *pSrc++;
+    in1 = *pSrc++;
+    *pDst++ = (in1 == (q15_t) 0x8000) ? (q15_t) 0x7fff : -in1;
+
+    *pDst++ =  *pSrc++;
+    in1 = *pSrc++;
+    *pDst++ = (in1 == (q15_t) 0x8000) ? (q15_t) 0x7fff : -in1;
+
+#endif /* #if defined (ARM_MATH_DSP) */
+
+    /* Decrement loop counter */
     blkCnt--;
   }
 
-  /* If the numSamples is not a multiple of 4, compute any remaining output samples here.    
-   ** No loop unrolling is used. */
-  blkCnt = numSamples % 0x4u;
-
-  while(blkCnt > 0u)
-  {
-    /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
-    /* Calculate Complex Conjugate and then store the results in the destination buffer. */
-    *pDst++ = *pSrc++;
-    *pDst++ = __SSAT(-*pSrc++, 16);
-
-    /* Decrement the loop counter */
-    blkCnt--;
-  }
+  /* Loop unrolling: Compute remaining outputs */
+  blkCnt = numSamples % 0x4U;
 
 #else
 
-  q15_t in;
+  /* Initialize blkCnt with number of samples */
+  blkCnt = numSamples;
 
-  /* Run the below code for Cortex-M0 */
+#endif /* #if defined (ARM_MATH_LOOPUNROLL) */
 
-  while(numSamples > 0u)
+  while (blkCnt > 0U)
   {
-    /* realOut + j (imagOut) = realIn+ j (-1) imagIn */
-    /* Calculate Complex Conjugate and then store the results in the destination buffer. */
-    *pDst++ = *pSrc++;
-    in = *pSrc++;
-    *pDst++ = (in == (q15_t) 0x8000) ? 0x7fff : -in;
+    /* C[0] + jC[1] = A[0]+ j(-1)A[1] */
 
-    /* Decrement the loop counter */
-    numSamples--;
+    /* Calculate Complex Conjugate and store result in destination buffer. */
+    *pDst++ =  *pSrc++;
+    in1 = *pSrc++;
+#if defined (ARM_MATH_DSP)
+    *pDst++ = __SSAT(-in1, 16);
+#else
+    *pDst++ = (in1 == (q15_t) 0x8000) ? (q15_t) 0x7fff : -in1;
+#endif
+
+    /* Decrement loop counter */
+    blkCnt--;
   }
-
-#endif /* #ifndef ARM_MATH_CM0_FAMILY */
 
 }
 
-/**    
- * @} end of cmplx_conj group    
+/**
+  @} end of cmplx_conj group
  */

@@ -1,239 +1,191 @@
-/* ----------------------------------------------------------------------    
-* Copyright (C) 2010-2014 ARM Limited. All rights reserved.    
-*    
-* $Date:        12. March 2014
-* $Revision: 	V1.4.4
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:		arm_scale_q31.c    
-*    
-* Description:	Multiplies a Q31 vector by a scalar.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Redistribution and use in source and binary forms, with or without 
-* modification, are permitted provided that the following conditions
-* are met:
-*   - Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
-*   - Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the 
-*     distribution.
-*   - Neither the name of ARM LIMITED nor the names of its contributors
-*     may be used to endorse or promote products derived from this
-*     software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
-* COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-* LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-* ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.   
-* -------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_scale_q31.c
+ * Description:  Multiplies a Q31 vector by a scalar
+ *
+ * $Date:        18. March 2019
+ * $Revision:    V1.6.0
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2019 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**       
- * @ingroup groupMath       
+/**
+  @ingroup groupMath
  */
 
-/**       
- * @addtogroup scale       
- * @{       
+/**
+  @addtogroup BasicScale
+  @{
  */
 
-/**       
- * @brief Multiplies a Q31 vector by a scalar.       
- * @param[in]       *pSrc points to the input vector       
- * @param[in]       scaleFract fractional portion of the scale value       
- * @param[in]       shift number of bits to shift the result by       
- * @param[out]      *pDst points to the output vector       
- * @param[in]       blockSize number of samples in the vector       
- * @return none.       
- *       
- * <b>Scaling and Overflow Behavior:</b>       
- * \par       
- * The input data <code>*pSrc</code> and <code>scaleFract</code> are in 1.31 format.       
- * These are multiplied to yield a 2.62 intermediate result and this is shifted with saturation to 1.31 format.       
+/**
+  @brief         Multiplies a Q31 vector by a scalar.
+  @param[in]     pSrc       points to the input vector
+  @param[in]     scaleFract fractional portion of the scale value
+  @param[in]     shift      number of bits to shift the result by
+  @param[out]    pDst       points to the output vector
+  @param[in]     blockSize  number of samples in each vector
+  @return        none
+
+  @par           Scaling and Overflow Behavior
+                   The input data <code>*pSrc</code> and <code>scaleFract</code> are in 1.31 format.
+                   These are multiplied to yield a 2.62 intermediate result and this is shifted with saturation to 1.31 format.
  */
 
 void arm_scale_q31(
-  q31_t * pSrc,
-  q31_t scaleFract,
-  int8_t shift,
-  q31_t * pDst,
-  uint32_t blockSize)
+  const q31_t *pSrc,
+        q31_t scaleFract,
+        int8_t shift,
+        q31_t *pDst,
+        uint32_t blockSize)
 {
-  int8_t kShift = shift + 1;                     /* Shift to apply after scaling */
-  int8_t sign = (kShift & 0x80);
-  uint32_t blkCnt;                               /* loop counter */
-  q31_t in, out;
+        uint32_t blkCnt;                               /* Loop counter */
+        q31_t in, out;                                 /* Temporary variables */
+        int8_t kShift = shift + 1;                     /* Shift to apply after scaling */
+        int8_t sign = (kShift & 0x80);
 
-#ifndef ARM_MATH_CM0_FAMILY
+#if defined (ARM_MATH_LOOPUNROLL)
 
-/* Run the below code for Cortex-M4 and Cortex-M3 */
+  /* Loop unrolling: Compute 4 outputs at a time */
+  blkCnt = blockSize >> 2U;
 
-  q31_t in1, in2, in3, in4;                      /* temporary input variables */
-  q31_t out1, out2, out3, out4;                  /* temporary output variabels */
-
-
-  /*loop Unrolling */
-  blkCnt = blockSize >> 2u;
-
-  if(sign == 0u)
+  if (sign == 0U)
   {
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.       
-     ** a second loop below computes the remaining 1 to 3 samples. */
-    while(blkCnt > 0u)
+    while (blkCnt > 0U)
     {
-      /* read four inputs from source */
-      in1 = *pSrc;
-      in2 = *(pSrc + 1);
-      in3 = *(pSrc + 2);
-      in4 = *(pSrc + 3);
+      /* C = A * scale */
 
-      /* multiply input with scaler value */
-      in1 = ((q63_t) in1 * scaleFract) >> 32;
-      in2 = ((q63_t) in2 * scaleFract) >> 32;
-      in3 = ((q63_t) in3 * scaleFract) >> 32;
-      in4 = ((q63_t) in4 * scaleFract) >> 32;
+      /* Scale input and store result in destination buffer. */
+      in = *pSrc++;                                /* read input from source */
+      in = ((q63_t) in * scaleFract) >> 32;        /* multiply input with scaler value */
+      out = in << kShift;                          /* apply shifting */
+      if (in != (out >> kShift))                   /* saturate the result */
+        out = 0x7FFFFFFF ^ (in >> 31);
+      *pDst++ = out;                               /* Store result destination */
 
-      /* apply shifting */
-      out1 = in1 << kShift;
-      out2 = in2 << kShift;
+      in = *pSrc++;
+      in = ((q63_t) in * scaleFract) >> 32;
+      out = in << kShift;
+      if (in != (out >> kShift))
+        out = 0x7FFFFFFF ^ (in >> 31);
+      *pDst++ = out;
 
-      /* saturate the results. */
-      if(in1 != (out1 >> kShift))
-        out1 = 0x7FFFFFFF ^ (in1 >> 31);
+      in = *pSrc++;
+      in = ((q63_t) in * scaleFract) >> 32;
+      out = in << kShift;
+      if (in != (out >> kShift))
+        out = 0x7FFFFFFF ^ (in >> 31);
+      *pDst++ = out;
 
-      if(in2 != (out2 >> kShift))
-        out2 = 0x7FFFFFFF ^ (in2 >> 31);
+      in = *pSrc++;
+      in = ((q63_t) in * scaleFract) >> 32;
+      out = in << kShift;
+      if (in != (out >> kShift))
+        out = 0x7FFFFFFF ^ (in >> 31);
+      *pDst++ = out;
 
-      out3 = in3 << kShift;
-      out4 = in4 << kShift;
-
-      *pDst = out1;
-      *(pDst + 1) = out2;
-
-      if(in3 != (out3 >> kShift))
-        out3 = 0x7FFFFFFF ^ (in3 >> 31);
-
-      if(in4 != (out4 >> kShift))
-        out4 = 0x7FFFFFFF ^ (in4 >> 31);
-
-      /* Store result destination */
-      *(pDst + 2) = out3;
-      *(pDst + 3) = out4;
-
-      /* Update pointers to process next sampels */
-      pSrc += 4u;
-      pDst += 4u;
-
-      /* Decrement the loop counter */
+      /* Decrement loop counter */
       blkCnt--;
     }
-
   }
   else
   {
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.       
-     ** a second loop below computes the remaining 1 to 3 samples. */
-    while(blkCnt > 0u)
+    while (blkCnt > 0U)
     {
-      /* read four inputs from source */
-      in1 = *pSrc;
-      in2 = *(pSrc + 1);
-      in3 = *(pSrc + 2);
-      in4 = *(pSrc + 3);
+      /* C = A * scale */
 
-      /* multiply input with scaler value */
-      in1 = ((q63_t) in1 * scaleFract) >> 32;
-      in2 = ((q63_t) in2 * scaleFract) >> 32;
-      in3 = ((q63_t) in3 * scaleFract) >> 32;
-      in4 = ((q63_t) in4 * scaleFract) >> 32;
+      /* Scale input and store result in destination buffer. */
+      in = *pSrc++;                                /* read four inputs from source */
+      in = ((q63_t) in * scaleFract) >> 32;        /* multiply input with scaler value */
+      out = in >> -kShift;                         /* apply shifting */
+      *pDst++ = out;                               /* Store result destination */
 
-      /* apply shifting */
-      out1 = in1 >> -kShift;
-      out2 = in2 >> -kShift;
+      in = *pSrc++;
+      in = ((q63_t) in * scaleFract) >> 32;
+      out = in >> -kShift;
+      *pDst++ = out;
 
-      out3 = in3 >> -kShift;
-      out4 = in4 >> -kShift;
+      in = *pSrc++;
+      in = ((q63_t) in * scaleFract) >> 32;
+      out = in >> -kShift;
+      *pDst++ = out;
 
-      /* Store result destination */
-      *pDst = out1;
-      *(pDst + 1) = out2;
+      in = *pSrc++;
+      in = ((q63_t) in * scaleFract) >> 32;
+      out = in >> -kShift;
+      *pDst++ = out;
 
-      *(pDst + 2) = out3;
-      *(pDst + 3) = out4;
-
-      /* Update pointers to process next sampels */
-      pSrc += 4u;
-      pDst += 4u;
-
-      /* Decrement the loop counter */
+      /* Decrement loop counter */
       blkCnt--;
     }
   }
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.       
-   ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x4u;
+
+  /* Loop unrolling: Compute remaining outputs */
+  blkCnt = blockSize % 0x4U;
 
 #else
-
-  /* Run the below code for Cortex-M0 */
 
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
 
-#endif /* #ifndef ARM_MATH_CM0_FAMILY */
+#endif /* #if defined (ARM_MATH_LOOPUNROLL) */
 
-  if(sign == 0)
+  if (sign == 0U)
   {
-	  while(blkCnt > 0u)
-	  {
-		/* C = A * scale */
-		/* Scale the input and then store the result in the destination buffer. */
-		in = *pSrc++;
-		in = ((q63_t) in * scaleFract) >> 32;
+    while (blkCnt > 0U)
+    {
+      /* C = A * scale */
 
-		out = in << kShift;
-		
-		if(in != (out >> kShift))
-			out = 0x7FFFFFFF ^ (in >> 31);
+      /* Scale input and store result in destination buffer. */
+      in = *pSrc++;
+      in = ((q63_t) in * scaleFract) >> 32;
+      out = in << kShift;
+      if (in != (out >> kShift))
+          out = 0x7FFFFFFF ^ (in >> 31);
+      *pDst++ = out;
 
-		*pDst++ = out;
-
-		/* Decrement the loop counter */
-		blkCnt--;
-	  }
+      /* Decrement loop counter */
+      blkCnt--;
+    }
   }
   else
   {
-	  while(blkCnt > 0u)
-	  {
-		/* C = A * scale */
-		/* Scale the input and then store the result in the destination buffer. */
-		in = *pSrc++;
-		in = ((q63_t) in * scaleFract) >> 32;
+    while (blkCnt > 0U)
+    {
+      /* C = A * scale */
 
-		out = in >> -kShift;
+      /* Scale input and store result in destination buffer. */
+      in = *pSrc++;
+      in = ((q63_t) in * scaleFract) >> 32;
+      out = in >> -kShift;
+      *pDst++ = out;
 
-		*pDst++ = out;
-
-		/* Decrement the loop counter */
-		blkCnt--;
-	  }
-  
+      /* Decrement loop counter */
+      blkCnt--;
+    }
   }
+
 }
 
-/**       
- * @} end of scale group       
+/**
+  @} end of BasicScale group
  */
