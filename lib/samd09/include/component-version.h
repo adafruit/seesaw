@@ -3,7 +3,7 @@
  *
  * \brief Component version header file
  *
- * Copyright (c) 2017 Atmel Corporation, a wholly owned subsidiary of Microchip Technology Inc.
+ * Copyright (c) 2018 Atmel Corporation, a wholly owned subsidiary of Microchip Technology Inc.
  *
  * \license_start
  *
@@ -35,16 +35,15 @@
 // The COMPONENT_VERSION define is composed of the major and the minor version number.
 //
 // The last four digits of the COMPONENT_VERSION is the minor version with leading zeros.
-// The rest of the COMPONENT_VERSION is the major version, with leading zeros. The COMPONENT_VERSION
-// is at least 8 digits long.
+// The rest of the COMPONENT_VERSION is the major version.
 //
-#define COMPONENT_VERSION 00010001
+#define COMPONENT_VERSION 10001
 
 //
 // The build number does not refer to the component, but to the build number
 // of the device pack that provides the component.
 //
-#define BUILD_NUMBER 69
+#define BUILD_NUMBER 76
 
 //
 // The COMPONENT_VERSION_STRING is a string (enclosed in ") that can be used for logging or embedding.
@@ -59,7 +58,7 @@
 //     "%Y-%m-%d %H:%M:%S"
 //
 //
-#define COMPONENT_DATE_STRING "2017-02-07 15:44:53"
+#define COMPONENT_DATE_STRING "2018-09-28 15:20:30"
 
 #endif/* #ifndef _COMPONENT_VERSION_H_INCLUDED */
 

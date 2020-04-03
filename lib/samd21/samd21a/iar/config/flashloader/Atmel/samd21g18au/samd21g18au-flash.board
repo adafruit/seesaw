@@ -3,7 +3,7 @@
 <flash_board>
   <pass>
     <loader>$TOOLKIT_DIR$\config\flashloader\Atmel\samd21g18au\samd21g18au-flash.flash</loader>
-    <range>CODE 0x00000000 0x3FFFF</range>
+    <range>CODE 0x00000000 0x0003FFFF</range>
     <rel_offset>0x0</rel_offset>
   </pass>
 </flash_board>

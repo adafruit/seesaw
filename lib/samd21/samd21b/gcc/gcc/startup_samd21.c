@@ -3,22 +3,23 @@
  *
  * \brief gcc starttup file for SAMD21
  *
- * Copyright (c) 2016 Atmel Corporation,
- *                    a wholly owned subsidiary of Microchip Technology Inc.
+ * Copyright (c) 2018 Microchip Technology Inc.
  *
  * \asf_license_start
  *
  * \page License
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License.
  * You may obtain a copy of the Licence at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
@@ -49,9 +50,9 @@ void __libc_init_array(void);
 void Dummy_Handler(void);
 
 /* Cortex-M0+ core handlers */
-void NMI_Handler             ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
+void NonMaskableInt_Handler  ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
 void HardFault_Handler       ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
-void SVC_Handler             ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
+void SVCall_Handler          ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
 void PendSV_Handler          ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
 void SysTick_Handler         ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
 
@@ -116,7 +117,7 @@ const DeviceVectors exception_table = {
         .pvStack                = (void*) (&_estack),
 
         .pfnReset_Handler       = (void*) Reset_Handler,
-        .pfnNMI_Handler         = (void*) NMI_Handler,
+        .pfnNonMaskableInt_Handler = (void*) NonMaskableInt_Handler,
         .pfnHardFault_Handler   = (void*) HardFault_Handler,
         .pvReservedM12          = (void*) (0UL), /* Reserved */
         .pvReservedM11          = (void*) (0UL), /* Reserved */
@@ -125,7 +126,7 @@ const DeviceVectors exception_table = {
         .pvReservedM8           = (void*) (0UL), /* Reserved */
         .pvReservedM7           = (void*) (0UL), /* Reserved */
         .pvReservedM6           = (void*) (0UL), /* Reserved */
-        .pfnSVC_Handler         = (void*) SVC_Handler,
+        .pfnSVCall_Handler      = (void*) SVCall_Handler,
         .pvReservedM4           = (void*) (0UL), /* Reserved */
         .pvReservedM3           = (void*) (0UL), /* Reserved */
         .pfnPendSV_Handler      = (void*) PendSV_Handler,

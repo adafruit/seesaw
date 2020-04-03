@@ -3,22 +3,23 @@
  *
  * \brief Header file for SAMD21E16L
  *
- * Copyright (c) 2017 Atmel Corporation,
- *                    a wholly owned subsidiary of Microchip Technology Inc.
+ * Copyright (c) 2018 Microchip Technology Inc.
  *
  * \asf_license_start
  *
  * \page License
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License.
  * You may obtain a copy of the Licence at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
@@ -57,22 +58,28 @@ typedef volatile       uint8_t  RoReg8;  /**< Read only  8-bit register (volatil
 #endif
 typedef volatile       uint32_t WoReg;   /**< Write only 32-bit register (volatile unsigned int) */
 typedef volatile       uint16_t WoReg16; /**< Write only 16-bit register (volatile unsigned int) */
-typedef volatile       uint32_t WoReg8;  /**< Write only  8-bit register (volatile unsigned int) */
+typedef volatile       uint8_t  WoReg8;  /**< Write only  8-bit register (volatile unsigned int) */
 typedef volatile       uint32_t RwReg;   /**< Read-Write 32-bit register (volatile unsigned int) */
 typedef volatile       uint16_t RwReg16; /**< Read-Write 16-bit register (volatile unsigned int) */
 typedef volatile       uint8_t  RwReg8;  /**< Read-Write  8-bit register (volatile unsigned int) */
-#if !defined(_UL)
-#define _U(x)          x ## U            /**< C code: Unsigned integer literal constant value */
-#define _L(x)          x ## L            /**< C code: Long integer literal constant value */
-#define _UL(x)         x ## UL           /**< C code: Unsigned Long integer literal constant value */
 #endif
-#else
-#if !defined(_UL)
-#define _U(x)          x                 /**< Assembler: Unsigned integer literal constant value */
-#define _L(x)          x                 /**< Assembler: Long integer literal constant value */
-#define _UL(x)         x                 /**< Assembler: Unsigned Long integer literal constant value */
+
+#if !defined(SKIP_INTEGER_LITERALS)
+#if defined(_U_) || defined(_L_) || defined(_UL_)
+  #error "Integer Literals macros already defined elsewhere"
 #endif
-#endif
+
+#if !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))
+/* Macros that deal with adding suffixes to integer literal constants for C/C++ */
+#define _U_(x)         x ## U            /**< C code: Unsigned integer literal constant value */
+#define _L_(x)         x ## L            /**< C code: Long integer literal constant value */
+#define _UL_(x)        x ## UL           /**< C code: Unsigned Long integer literal constant value */
+#else /* Assembler */
+#define _U_(x)         x                 /**< Assembler: Unsigned integer literal constant value */
+#define _L_(x)         x                 /**< Assembler: Long integer literal constant value */
+#define _UL_(x)        x                 /**< Assembler: Unsigned Long integer literal constant value */
+#endif /* !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__)) */
+#endif /* SKIP_INTEGER_LITERALS */
 
 /* ************************************************************************** */
 /**  CMSIS DEFINITIONS FOR SAMD21E16L */
@@ -83,13 +90,13 @@ typedef volatile       uint8_t  RwReg8;  /**< Read-Write  8-bit register (volati
 /** Interrupt Number Definition */
 typedef enum IRQn
 {
-  /******  Cortex-M0+ Processor Exceptions Numbers ******************************/
-  NonMaskableInt_IRQn      = -14,/**<  2 Non Maskable Interrupt                 */
-  HardFault_IRQn           = -13,/**<  3 Cortex-M0+ Hard Fault Interrupt        */
-  SVCall_IRQn              = -5, /**< 11 Cortex-M0+ SV Call Interrupt           */
-  PendSV_IRQn              = -2, /**< 14 Cortex-M0+ Pend SV Interrupt           */
-  SysTick_IRQn             = -1, /**< 15 Cortex-M0+ System Tick Interrupt       */
-  /******  SAMD21E16L-specific Interrupt Numbers ***********************/
+  /******  Cortex-M0+ Processor Exceptions Numbers *******************/
+  NonMaskableInt_IRQn      = -14,/**<  2 Non Maskable Interrupt      */
+  HardFault_IRQn           = -13,/**<  3 Hard Fault Interrupt        */
+  SVCall_IRQn              = -5, /**< 11 SV Call Interrupt           */
+  PendSV_IRQn              = -2, /**< 14 Pend SV Interrupt           */
+  SysTick_IRQn             = -1, /**< 15 System Tick Interrupt       */
+  /******  SAMD21E16L-specific Interrupt Numbers *********************/
   PM_IRQn                  =  0, /**<  0 SAMD21E16L Power Manager (PM) */
   SYSCTRL_IRQn             =  1, /**<  1 SAMD21E16L System Control (SYSCTRL) */
   WDT_IRQn                 =  2, /**<  2 SAMD21E16L Watchdog Timer (WDT) */
@@ -123,7 +130,7 @@ typedef struct _DeviceVectors
 
   /* Cortex-M handlers */
   void* pfnReset_Handler;
-  void* pfnNMI_Handler;
+  void* pfnNonMaskableInt_Handler;
   void* pfnHardFault_Handler;
   void* pvReservedM12;
   void* pvReservedM11;
@@ -132,7 +139,7 @@ typedef struct _DeviceVectors
   void* pvReservedM8;
   void* pvReservedM7;
   void* pvReservedM6;
-  void* pfnSVC_Handler;
+  void* pfnSVCall_Handler;
   void* pvReservedM4;
   void* pvReservedM3;
   void* pfnPendSV_Handler;
@@ -172,9 +179,9 @@ typedef struct _DeviceVectors
 
 /* Cortex-M0+ processor handlers */
 void Reset_Handler               ( void );
-void NMI_Handler                 ( void );
+void NonMaskableInt_Handler      ( void );
 void HardFault_Handler           ( void );
-void SVC_Handler                 ( void );
+void SVCall_Handler              ( void );
 void PendSV_Handler              ( void );
 void SysTick_Handler             ( void );
 
@@ -206,7 +213,6 @@ void AC1_Handler                 ( void );
  * \brief Configuration of the Cortex-M0+ Processor and Core Peripherals
  */
 
-#define LITTLE_ENDIAN          1        
 #define __CM0PLUS_REV          1         /*!< Core revision r0p1 */
 #define __MPU_PRESENT          0         /*!< MPU present or not */
 #define __NVIC_PRIO_BITS       2         /*!< Number of bits used for Priority Levels */
@@ -353,10 +359,10 @@ void AC1_Handler                 ( void );
 #define GCLK                          (0x40000C00) /**< \brief (GCLK) APB Base Address */
 #define SBMATRIX                      (0x41007000) /**< \brief (SBMATRIX) APB Base Address */
 #define MTB                           (0x41006000) /**< \brief (MTB) APB Base Address */
+#define NVMCTRL_AUX0                  (0x00804000) /**< \brief (NVMCTRL) AUX0 Base Address */
+#define NVMCTRL_AUX1                  (0x00806000) /**< \brief (NVMCTRL) AUX1 Base Address */
 #define NVMCTRL_AUX3                  (0x0080A000) /**< \brief (NVMCTRL) AUX3 Base Address */
 #define NVMCTRL                       (0x41004000) /**< \brief (NVMCTRL) APB Base Address */
-#define NVMCTRL_CAL                   (0x00800000) /**< \brief (NVMCTRL) CAL Base Address */
-#define NVMCTRL_LOCKBIT               (0x00802000) /**< \brief (NVMCTRL) LOCKBIT Base Address */
 #define NVMCTRL_OTP1                  (0x00806000) /**< \brief (NVMCTRL) OTP1 Base Address */
 #define NVMCTRL_OTP2                  (0x00806008) /**< \brief (NVMCTRL) OTP2 Base Address */
 #define NVMCTRL_OTP4                  (0x00806020) /**< \brief (NVMCTRL) OTP4 Base Address */
@@ -423,10 +429,10 @@ void AC1_Handler                 ( void );
 #define MTB_INST_NUM      1                          /**< \brief (MTB) Number of instances */
 #define MTB_INSTS         { MTB }                    /**< \brief (MTB) Instances List */
 
+#define NVMCTRL_AUX0                  (0x00804000UL) /**< \brief (NVMCTRL) AUX0 Base Address */
+#define NVMCTRL_AUX1                  (0x00806000UL) /**< \brief (NVMCTRL) AUX1 Base Address */
 #define NVMCTRL_AUX3                  (0x0080A000UL) /**< \brief (NVMCTRL) AUX3 Base Address */
 #define NVMCTRL           ((Nvmctrl  *)0x41004000UL) /**< \brief (NVMCTRL) APB Base Address */
-#define NVMCTRL_CAL                   (0x00800000UL) /**< \brief (NVMCTRL) CAL Base Address */
-#define NVMCTRL_LOCKBIT               (0x00802000UL) /**< \brief (NVMCTRL) LOCKBIT Base Address */
 #define NVMCTRL_OTP1                  (0x00806000UL) /**< \brief (NVMCTRL) OTP1 Base Address */
 #define NVMCTRL_OTP2                  (0x00806008UL) /**< \brief (NVMCTRL) OTP2 Base Address */
 #define NVMCTRL_OTP4                  (0x00806020UL) /**< \brief (NVMCTRL) OTP4 Base Address */
@@ -499,23 +505,23 @@ void AC1_Handler                 ( void );
 /**  MEMORY MAPPING DEFINITIONS FOR SAMD21E16L */
 /* ************************************************************************** */
 
-#define FLASH_SIZE            _UL(0x00010000) /* 64 kB */
+#define FLASH_SIZE            _UL_(0x00010000) /* 64 kB */
 #define FLASH_PAGE_SIZE       64
 #define FLASH_NB_OF_PAGES     1024
 #define FLASH_USER_PAGE_SIZE  64
-#define HMCRAMC0_SIZE         _UL(0x00002000) /* 8 kB */
+#define HMCRAMC0_SIZE         _UL_(0x00002000) /* 8 kB */
 
-#define FLASH_ADDR            _UL(0x00000000) /**< FLASH base address */
-#define FLASH_USER_PAGE_ADDR  _UL(0x00800000) /**< FLASH_USER_PAGE base address */
-#define HMCRAMC0_ADDR         _UL(0x20000000) /**< HMCRAMC0 base address */
-#define HPB0_ADDR             _UL(0x40000000) /**< HPB0 base address */
-#define HPB1_ADDR             _UL(0x41000000) /**< HPB1 base address */
-#define HPB2_ADDR             _UL(0x42000000) /**< HPB2 base address */
-#define PPB_ADDR              _UL(0xE0000000) /**< PPB base address */
+#define FLASH_ADDR            _UL_(0x00000000) /**< FLASH base address */
+#define FLASH_USER_PAGE_ADDR  _UL_(0x00800000) /**< FLASH_USER_PAGE base address */
+#define HMCRAMC0_ADDR         _UL_(0x20000000) /**< HMCRAMC0 base address */
+#define HPB0_ADDR             _UL_(0x40000000) /**< HPB0 base address */
+#define HPB1_ADDR             _UL_(0x41000000) /**< HPB1 base address */
+#define HPB2_ADDR             _UL_(0x42000000) /**< HPB2 base address */
+#define PPB_ADDR              _UL_(0xE0000000) /**< PPB base address */
 
-#define DSU_DID_RESETVALUE    _UL(0x1001153E)
+#define DSU_DID_RESETVALUE    _UL_(0x1001153E)
 #define EIC_EXTINT_NUM        16
-#define NVMCTRL_RWW_EEPROM_SIZE _UL(0x00000800) /* 2 kB */
+#define NVMCTRL_RWW_EEPROM_SIZE _UL_(0x00000800) /* 2 kB */
 #define PORT_GROUPS           2
 #define USB_HOST              0
 

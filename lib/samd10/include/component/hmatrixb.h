@@ -3,22 +3,23 @@
  *
  * \brief Component description for HMATRIXB
  *
- * Copyright (c) 2016 Atmel Corporation,
- *                    a wholly owned subsidiary of Microchip Technology Inc.
+ * Copyright (c) 2018 Microchip Technology Inc.
  *
  * \asf_license_start
  *
  * \page License
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License.
  * You may obtain a copy of the Licence at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
@@ -56,33 +57,33 @@ typedef union {
 #endif /* !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__)) */
 
 #define HMATRIXB_PRAS_OFFSET        0x080        /**< \brief (HMATRIXB_PRAS offset) Priority A for Slave */
-#define HMATRIXB_PRAS_RESETVALUE    _U(0x00000000) /**< \brief (HMATRIXB_PRAS reset_value) Priority A for Slave */
+#define HMATRIXB_PRAS_RESETVALUE    _U_(0x00000000) /**< \brief (HMATRIXB_PRAS reset_value) Priority A for Slave */
 
 #define HMATRIXB_PRAS_M0PR_Pos      0            /**< \brief (HMATRIXB_PRAS) Master 0 Priority */
-#define HMATRIXB_PRAS_M0PR_Msk      (_U(0xF) << HMATRIXB_PRAS_M0PR_Pos)
+#define HMATRIXB_PRAS_M0PR_Msk      (_U_(0xF) << HMATRIXB_PRAS_M0PR_Pos)
 #define HMATRIXB_PRAS_M0PR(value)   (HMATRIXB_PRAS_M0PR_Msk & ((value) << HMATRIXB_PRAS_M0PR_Pos))
 #define HMATRIXB_PRAS_M1PR_Pos      4            /**< \brief (HMATRIXB_PRAS) Master 1 Priority */
-#define HMATRIXB_PRAS_M1PR_Msk      (_U(0xF) << HMATRIXB_PRAS_M1PR_Pos)
+#define HMATRIXB_PRAS_M1PR_Msk      (_U_(0xF) << HMATRIXB_PRAS_M1PR_Pos)
 #define HMATRIXB_PRAS_M1PR(value)   (HMATRIXB_PRAS_M1PR_Msk & ((value) << HMATRIXB_PRAS_M1PR_Pos))
 #define HMATRIXB_PRAS_M2PR_Pos      8            /**< \brief (HMATRIXB_PRAS) Master 2 Priority */
-#define HMATRIXB_PRAS_M2PR_Msk      (_U(0xF) << HMATRIXB_PRAS_M2PR_Pos)
+#define HMATRIXB_PRAS_M2PR_Msk      (_U_(0xF) << HMATRIXB_PRAS_M2PR_Pos)
 #define HMATRIXB_PRAS_M2PR(value)   (HMATRIXB_PRAS_M2PR_Msk & ((value) << HMATRIXB_PRAS_M2PR_Pos))
 #define HMATRIXB_PRAS_M3PR_Pos      12           /**< \brief (HMATRIXB_PRAS) Master 3 Priority */
-#define HMATRIXB_PRAS_M3PR_Msk      (_U(0xF) << HMATRIXB_PRAS_M3PR_Pos)
+#define HMATRIXB_PRAS_M3PR_Msk      (_U_(0xF) << HMATRIXB_PRAS_M3PR_Pos)
 #define HMATRIXB_PRAS_M3PR(value)   (HMATRIXB_PRAS_M3PR_Msk & ((value) << HMATRIXB_PRAS_M3PR_Pos))
 #define HMATRIXB_PRAS_M4PR_Pos      16           /**< \brief (HMATRIXB_PRAS) Master 4 Priority */
-#define HMATRIXB_PRAS_M4PR_Msk      (_U(0xF) << HMATRIXB_PRAS_M4PR_Pos)
+#define HMATRIXB_PRAS_M4PR_Msk      (_U_(0xF) << HMATRIXB_PRAS_M4PR_Pos)
 #define HMATRIXB_PRAS_M4PR(value)   (HMATRIXB_PRAS_M4PR_Msk & ((value) << HMATRIXB_PRAS_M4PR_Pos))
 #define HMATRIXB_PRAS_M5PR_Pos      20           /**< \brief (HMATRIXB_PRAS) Master 5 Priority */
-#define HMATRIXB_PRAS_M5PR_Msk      (_U(0xF) << HMATRIXB_PRAS_M5PR_Pos)
+#define HMATRIXB_PRAS_M5PR_Msk      (_U_(0xF) << HMATRIXB_PRAS_M5PR_Pos)
 #define HMATRIXB_PRAS_M5PR(value)   (HMATRIXB_PRAS_M5PR_Msk & ((value) << HMATRIXB_PRAS_M5PR_Pos))
 #define HMATRIXB_PRAS_M6PR_Pos      24           /**< \brief (HMATRIXB_PRAS) Master 6 Priority */
-#define HMATRIXB_PRAS_M6PR_Msk      (_U(0xF) << HMATRIXB_PRAS_M6PR_Pos)
+#define HMATRIXB_PRAS_M6PR_Msk      (_U_(0xF) << HMATRIXB_PRAS_M6PR_Pos)
 #define HMATRIXB_PRAS_M6PR(value)   (HMATRIXB_PRAS_M6PR_Msk & ((value) << HMATRIXB_PRAS_M6PR_Pos))
 #define HMATRIXB_PRAS_M7PR_Pos      28           /**< \brief (HMATRIXB_PRAS) Master 7 Priority */
-#define HMATRIXB_PRAS_M7PR_Msk      (_U(0xF) << HMATRIXB_PRAS_M7PR_Pos)
+#define HMATRIXB_PRAS_M7PR_Msk      (_U_(0xF) << HMATRIXB_PRAS_M7PR_Pos)
 #define HMATRIXB_PRAS_M7PR(value)   (HMATRIXB_PRAS_M7PR_Msk & ((value) << HMATRIXB_PRAS_M7PR_Pos))
-#define HMATRIXB_PRAS_MASK          _U(0xFFFFFFFF) /**< \brief (HMATRIXB_PRAS) MASK Register */
+#define HMATRIXB_PRAS_MASK          _U_(0xFFFFFFFF) /**< \brief (HMATRIXB_PRAS) MASK Register */
 
 /* -------- HMATRIXB_PRBS : (HMATRIXB Offset: 0x084) (R/W 32) PRS Priority B for Slave -------- */
 #if !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))
@@ -102,33 +103,33 @@ typedef union {
 #endif /* !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__)) */
 
 #define HMATRIXB_PRBS_OFFSET        0x084        /**< \brief (HMATRIXB_PRBS offset) Priority B for Slave */
-#define HMATRIXB_PRBS_RESETVALUE    _U(0x00000000) /**< \brief (HMATRIXB_PRBS reset_value) Priority B for Slave */
+#define HMATRIXB_PRBS_RESETVALUE    _U_(0x00000000) /**< \brief (HMATRIXB_PRBS reset_value) Priority B for Slave */
 
 #define HMATRIXB_PRBS_M8PR_Pos      0            /**< \brief (HMATRIXB_PRBS) Master 8 Priority */
-#define HMATRIXB_PRBS_M8PR_Msk      (_U(0xF) << HMATRIXB_PRBS_M8PR_Pos)
+#define HMATRIXB_PRBS_M8PR_Msk      (_U_(0xF) << HMATRIXB_PRBS_M8PR_Pos)
 #define HMATRIXB_PRBS_M8PR(value)   (HMATRIXB_PRBS_M8PR_Msk & ((value) << HMATRIXB_PRBS_M8PR_Pos))
 #define HMATRIXB_PRBS_M9PR_Pos      4            /**< \brief (HMATRIXB_PRBS) Master 9 Priority */
-#define HMATRIXB_PRBS_M9PR_Msk      (_U(0xF) << HMATRIXB_PRBS_M9PR_Pos)
+#define HMATRIXB_PRBS_M9PR_Msk      (_U_(0xF) << HMATRIXB_PRBS_M9PR_Pos)
 #define HMATRIXB_PRBS_M9PR(value)   (HMATRIXB_PRBS_M9PR_Msk & ((value) << HMATRIXB_PRBS_M9PR_Pos))
 #define HMATRIXB_PRBS_M10PR_Pos     8            /**< \brief (HMATRIXB_PRBS) Master 10 Priority */
-#define HMATRIXB_PRBS_M10PR_Msk     (_U(0xF) << HMATRIXB_PRBS_M10PR_Pos)
+#define HMATRIXB_PRBS_M10PR_Msk     (_U_(0xF) << HMATRIXB_PRBS_M10PR_Pos)
 #define HMATRIXB_PRBS_M10PR(value)  (HMATRIXB_PRBS_M10PR_Msk & ((value) << HMATRIXB_PRBS_M10PR_Pos))
 #define HMATRIXB_PRBS_M11PR_Pos     12           /**< \brief (HMATRIXB_PRBS) Master 11 Priority */
-#define HMATRIXB_PRBS_M11PR_Msk     (_U(0xF) << HMATRIXB_PRBS_M11PR_Pos)
+#define HMATRIXB_PRBS_M11PR_Msk     (_U_(0xF) << HMATRIXB_PRBS_M11PR_Pos)
 #define HMATRIXB_PRBS_M11PR(value)  (HMATRIXB_PRBS_M11PR_Msk & ((value) << HMATRIXB_PRBS_M11PR_Pos))
 #define HMATRIXB_PRBS_M12PR_Pos     16           /**< \brief (HMATRIXB_PRBS) Master 12 Priority */
-#define HMATRIXB_PRBS_M12PR_Msk     (_U(0xF) << HMATRIXB_PRBS_M12PR_Pos)
+#define HMATRIXB_PRBS_M12PR_Msk     (_U_(0xF) << HMATRIXB_PRBS_M12PR_Pos)
 #define HMATRIXB_PRBS_M12PR(value)  (HMATRIXB_PRBS_M12PR_Msk & ((value) << HMATRIXB_PRBS_M12PR_Pos))
 #define HMATRIXB_PRBS_M13PR_Pos     20           /**< \brief (HMATRIXB_PRBS) Master 13 Priority */
-#define HMATRIXB_PRBS_M13PR_Msk     (_U(0xF) << HMATRIXB_PRBS_M13PR_Pos)
+#define HMATRIXB_PRBS_M13PR_Msk     (_U_(0xF) << HMATRIXB_PRBS_M13PR_Pos)
 #define HMATRIXB_PRBS_M13PR(value)  (HMATRIXB_PRBS_M13PR_Msk & ((value) << HMATRIXB_PRBS_M13PR_Pos))
 #define HMATRIXB_PRBS_M14PR_Pos     24           /**< \brief (HMATRIXB_PRBS) Master 14 Priority */
-#define HMATRIXB_PRBS_M14PR_Msk     (_U(0xF) << HMATRIXB_PRBS_M14PR_Pos)
+#define HMATRIXB_PRBS_M14PR_Msk     (_U_(0xF) << HMATRIXB_PRBS_M14PR_Pos)
 #define HMATRIXB_PRBS_M14PR(value)  (HMATRIXB_PRBS_M14PR_Msk & ((value) << HMATRIXB_PRBS_M14PR_Pos))
 #define HMATRIXB_PRBS_M15PR_Pos     28           /**< \brief (HMATRIXB_PRBS) Master 15 Priority */
-#define HMATRIXB_PRBS_M15PR_Msk     (_U(0xF) << HMATRIXB_PRBS_M15PR_Pos)
+#define HMATRIXB_PRBS_M15PR_Msk     (_U_(0xF) << HMATRIXB_PRBS_M15PR_Pos)
 #define HMATRIXB_PRBS_M15PR(value)  (HMATRIXB_PRBS_M15PR_Msk & ((value) << HMATRIXB_PRBS_M15PR_Pos))
-#define HMATRIXB_PRBS_MASK          _U(0xFFFFFFFF) /**< \brief (HMATRIXB_PRBS) MASK Register */
+#define HMATRIXB_PRBS_MASK          _U_(0xFFFFFFFF) /**< \brief (HMATRIXB_PRBS) MASK Register */
 
 /* -------- HMATRIXB_SFR : (HMATRIXB Offset: 0x110) (R/W 32) Special Function -------- */
 #if !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))
@@ -141,12 +142,12 @@ typedef union {
 #endif /* !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__)) */
 
 #define HMATRIXB_SFR_OFFSET         0x110        /**< \brief (HMATRIXB_SFR offset) Special Function */
-#define HMATRIXB_SFR_RESETVALUE     _U(0x00000000) /**< \brief (HMATRIXB_SFR reset_value) Special Function */
+#define HMATRIXB_SFR_RESETVALUE     _U_(0x00000000) /**< \brief (HMATRIXB_SFR reset_value) Special Function */
 
 #define HMATRIXB_SFR_SFR_Pos        0            /**< \brief (HMATRIXB_SFR) Special Function Register */
-#define HMATRIXB_SFR_SFR_Msk        (_U(0xFFFFFFFF) << HMATRIXB_SFR_SFR_Pos)
+#define HMATRIXB_SFR_SFR_Msk        (_U_(0xFFFFFFFF) << HMATRIXB_SFR_SFR_Pos)
 #define HMATRIXB_SFR_SFR(value)     (HMATRIXB_SFR_SFR_Msk & ((value) << HMATRIXB_SFR_SFR_Pos))
-#define HMATRIXB_SFR_MASK           _U(0xFFFFFFFF) /**< \brief (HMATRIXB_SFR) MASK Register */
+#define HMATRIXB_SFR_MASK           _U_(0xFFFFFFFF) /**< \brief (HMATRIXB_SFR) MASK Register */
 
 /** \brief HmatrixbPrs hardware registers */
 #if !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))

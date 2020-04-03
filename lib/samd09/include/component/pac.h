@@ -3,22 +3,23 @@
  *
  * \brief Component description for PAC
  *
- * Copyright (c) 2016 Atmel Corporation,
- *                    a wholly owned subsidiary of Microchip Technology Inc.
+ * Copyright (c) 2018 Microchip Technology Inc.
  *
  * \asf_license_start
  *
  * \page License
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License.
  * You may obtain a copy of the Licence at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
@@ -50,12 +51,12 @@ typedef union {
 #endif /* !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__)) */
 
 #define PAC_WPCLR_OFFSET            0x0          /**< \brief (PAC_WPCLR offset) Write Protection Clear */
-#define PAC_WPCLR_RESETVALUE        _U(0x00000000) /**< \brief (PAC_WPCLR reset_value) Write Protection Clear */
+#define PAC_WPCLR_RESETVALUE        _U_(0x00000000) /**< \brief (PAC_WPCLR reset_value) Write Protection Clear */
 
 #define PAC_WPCLR_WP_Pos            1            /**< \brief (PAC_WPCLR) Write Protection Clear */
-#define PAC_WPCLR_WP_Msk            (_U(0x7FFFFFFF) << PAC_WPCLR_WP_Pos)
+#define PAC_WPCLR_WP_Msk            (_U_(0x7FFFFFFF) << PAC_WPCLR_WP_Pos)
 #define PAC_WPCLR_WP(value)         (PAC_WPCLR_WP_Msk & ((value) << PAC_WPCLR_WP_Pos))
-#define PAC_WPCLR_MASK              _U(0xFFFFFFFE) /**< \brief (PAC_WPCLR) MASK Register */
+#define PAC_WPCLR_MASK              _U_(0xFFFFFFFE) /**< \brief (PAC_WPCLR) MASK Register */
 
 /* -------- PAC_WPSET : (PAC Offset: 0x4) (R/W 32) Write Protection Set -------- */
 #if !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))
@@ -69,12 +70,12 @@ typedef union {
 #endif /* !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__)) */
 
 #define PAC_WPSET_OFFSET            0x4          /**< \brief (PAC_WPSET offset) Write Protection Set */
-#define PAC_WPSET_RESETVALUE        _U(0x00000000) /**< \brief (PAC_WPSET reset_value) Write Protection Set */
+#define PAC_WPSET_RESETVALUE        _U_(0x00000000) /**< \brief (PAC_WPSET reset_value) Write Protection Set */
 
 #define PAC_WPSET_WP_Pos            1            /**< \brief (PAC_WPSET) Write Protection Set */
-#define PAC_WPSET_WP_Msk            (_U(0x7FFFFFFF) << PAC_WPSET_WP_Pos)
+#define PAC_WPSET_WP_Msk            (_U_(0x7FFFFFFF) << PAC_WPSET_WP_Pos)
 #define PAC_WPSET_WP(value)         (PAC_WPSET_WP_Msk & ((value) << PAC_WPSET_WP_Pos))
-#define PAC_WPSET_MASK              _U(0xFFFFFFFE) /**< \brief (PAC_WPSET) MASK Register */
+#define PAC_WPSET_MASK              _U_(0xFFFFFFFE) /**< \brief (PAC_WPSET) MASK Register */
 
 /** \brief PAC hardware registers */
 #if !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))
