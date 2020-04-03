@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Top header file for SAMD09
+ * \brief Instance description for PTC
  *
  * Copyright (c) 2018 Microchip Technology Inc.
  *
@@ -27,20 +27,10 @@
  *
  */
 
-#ifndef _SAMD09_
-#define _SAMD09_
+#ifndef _SAMD09_PTC_INSTANCE_
+#define _SAMD09_PTC_INSTANCE_
 
-/**
- * \defgroup SAMD09_definitions SAMD09 Device Definitions
- * \brief SAMD09 CMSIS Definitions.
- */
+/* ========== Instance parameters for PTC peripheral ========== */
+#define PTC_GCLK_ID                 23       // Index of Generic Clock
 
-#if   defined(__SAMD09C13A__) || defined(__ATSAMD09C13A__)
-  #include "samd09c13a.h"
-#elif defined(__SAMD09D14A__) || defined(__ATSAMD09D14A__)
-  #include "samd09d14a.h"
-#else
-  #error Library does not support the specified device.
-#endif
-
-#endif /* _SAMD09_ */
+#endif /* _SAMD09_PTC_INSTANCE_ */

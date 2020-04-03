@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns:saxon="http://saxon.sf.net//"
          schemaVersion="1.3"
          xs:schemaLocation="http://www.atmel.com/schemas/pack-device-atmel-extension PACK.DEVICE.ATMEL.EXTENSION.xsd"
          xs:noNamespaceSchemaLocation="PACK.xsd">
@@ -9,15 +8,15 @@
    <name>SAMD09_DFP</name>
    <description>Atmel SAMD09 Series Device Support</description>
    <releases>
-      <release version="1.1.69" date="2017-02-07">Removed warnings for some component headers.</release>
+      <release version="1.1.76" date="2018-09-28">Removed warnings for some component headers.</release>
       <release version="1.1.59">Fixed GNU/IAR assembler issues. Files now under Apache license.</release>
       <release version="1.0.25">Updated documentation links.</release>
       <release version="1.0.21">Initial release.</release>
    </releases>
    <keywords>
       <keyword>Atmel</keyword>
-      <keyword>Device Support</keyword>
       <keyword>Device Family Package Atmel</keyword>
+      <keyword>Device Support</keyword>
       <keyword>SAMD09</keyword>
    </keywords>
    <devices>
@@ -56,26 +55,49 @@
                              rw="RW"
                              exec="true"
                              address-space="base"/>
+                  <at:memory name="CAL"
+                             start="0x00800000"
+                             size="0x8"
+                             type="fuses"
+                             rw="R"
+                             address-space="base"/>
+                  <at:memory name="LOCKBIT"
+                             start="0x00802000"
+                             size="0x4"
+                             type="fuses"
+                             rw="R"
+                             address-space="base"/>
+                  <at:memory name="OTP1"
+                             start="0x00806000"
+                             size="0x8"
+                             type="fuses"
+                             rw="R"
+                             address-space="base"/>
+                  <at:memory name="OTP2"
+                             start="0x00806008"
+                             size="0x8"
+                             type="fuses"
+                             rw="R"
+                             address-space="base"/>
+                  <at:memory name="OTP4"
+                             start="0x00806020"
+                             size="0xE0"
+                             type="fuses"
+                             pagesize="64"
+                             rw="RW"
+                             address-space="base"/>
+                  <at:memory name="TEMP_LOG"
+                             start="0x00806030"
+                             size="0x8"
+                             type="fuses"
+                             rw="R"
+                             address-space="base"/>
                   <at:memory name="USER_PAGE"
                              start="0x00804000"
                              size="0x100"
                              type="user_page"
                              pagesize="64"
                              rw="RW"
-                             address-space="base"/>
-                  <at:memory name="AUX0"
-                             start="0x00804000"
-                             size="0x100"
-                             type="user_page"
-                             pagesize="64"
-                             rw="RW"
-                             address-space="base"/>
-                  <at:memory name="AUX1"
-                             start="0x00806000"
-                             size="0x100"
-                             type="fuses"
-                             pagesize="64"
-                             rw="R"
                              address-space="base"/>
                   <at:memory name="HMCRAMC0"
                              start="0x20000000"
@@ -128,6 +150,8 @@
                   <at:tool id="com.atmel.avrdbg.tool.jtagicemk3"/>
                   <at:tool id="com.atmel.avrdbg.tool.jtagice3plus"/>
                   <at:tool id="com.atmel.avrdbg.tool.medbg"/>
+                  <at:tool id="com.atmel.avrdbg.tool.nedbg"/>
+                  <at:tool id="com.atmel.avrdbg.tool.pickit4"/>
                   <at:tool id="com.atmel.avrdbg.tool.powerdebugger"/>
                   <at:tool id="com.atmel.avrdbg.tool.samice"/>
                   <at:project name="Barebone C Project">
@@ -147,11 +171,10 @@
                   <at:prerequisite context="compiling" Tcompiler="ARMCC" component="ARMCC"/>
                </at:extension>
             </environment>
-            <description>ARM Cortex-M0+ based microcontroller with 8KB Flash, 4KB SRAM, two  16-bit timer/counters, DMA, two SERCOMs, 5-channel 12-bit ADC, and 14 pins</description>
-            <book name="http://www.atmel.com/Images/Atmel-42414-SAM-D09_Summary.pdf"
-                  title="Datasheet (Summary)"/>
-            <book name="http://www.atmel.com/devices/ATSAMD09C13.aspx"
-                  title="Device Page"/>
+            <book name="https://www.microchip.com/wwwproducts/Devices.aspx?product=ATSAMD09C13A"
+                  title="Device page for ATSAMD09C13A"/>
+            <book name="https://www.microchip.com/wwwproducts/productds/ATSAMD09C13A"
+                  title="Datasheet"/>
          </device>
          <device Dname="ATSAMD09D14A">
             <processor Dcore="Cortex-M0+"
@@ -187,26 +210,49 @@
                              rw="RW"
                              exec="true"
                              address-space="base"/>
+                  <at:memory name="CAL"
+                             start="0x00800000"
+                             size="0x8"
+                             type="fuses"
+                             rw="R"
+                             address-space="base"/>
+                  <at:memory name="LOCKBIT"
+                             start="0x00802000"
+                             size="0x4"
+                             type="fuses"
+                             rw="R"
+                             address-space="base"/>
+                  <at:memory name="OTP1"
+                             start="0x00806000"
+                             size="0x8"
+                             type="fuses"
+                             rw="R"
+                             address-space="base"/>
+                  <at:memory name="OTP2"
+                             start="0x00806008"
+                             size="0x8"
+                             type="fuses"
+                             rw="R"
+                             address-space="base"/>
+                  <at:memory name="OTP4"
+                             start="0x00806020"
+                             size="0xE0"
+                             type="fuses"
+                             pagesize="64"
+                             rw="RW"
+                             address-space="base"/>
+                  <at:memory name="TEMP_LOG"
+                             start="0x00806030"
+                             size="0x8"
+                             type="fuses"
+                             rw="R"
+                             address-space="base"/>
                   <at:memory name="USER_PAGE"
                              start="0x00804000"
                              size="0x100"
                              type="user_page"
                              pagesize="64"
                              rw="RW"
-                             address-space="base"/>
-                  <at:memory name="AUX0"
-                             start="0x00804000"
-                             size="0x100"
-                             type="user_page"
-                             pagesize="64"
-                             rw="RW"
-                             address-space="base"/>
-                  <at:memory name="AUX1"
-                             start="0x00806000"
-                             size="0x100"
-                             type="fuses"
-                             pagesize="64"
-                             rw="R"
                              address-space="base"/>
                   <at:memory name="HMCRAMC0"
                              start="0x20000000"
@@ -259,6 +305,8 @@
                   <at:tool id="com.atmel.avrdbg.tool.jtagicemk3"/>
                   <at:tool id="com.atmel.avrdbg.tool.jtagice3plus"/>
                   <at:tool id="com.atmel.avrdbg.tool.medbg"/>
+                  <at:tool id="com.atmel.avrdbg.tool.nedbg"/>
+                  <at:tool id="com.atmel.avrdbg.tool.pickit4"/>
                   <at:tool id="com.atmel.avrdbg.tool.powerdebugger"/>
                   <at:tool id="com.atmel.avrdbg.tool.samice"/>
                   <at:project name="Barebone C Project">
@@ -278,11 +326,10 @@
                   <at:prerequisite context="compiling" Tcompiler="ARMCC" component="ARMCC"/>
                </at:extension>
             </environment>
-            <description>ARM Cortex-M0+ based microcontroller with 16KB Flash, 4KB SRAM, two  16-bit timer/counters, DMA, two SERCOMs, 10-channel 12-bit ADC, and 24 pins</description>
-            <book name="http://www.atmel.com/Images/Atmel-42414-SAM-D09_Summary.pdf"
-                  title="Datasheet (Summary)"/>
-            <book name="http://www.atmel.com/devices/ATSAMD09D14.aspx"
-                  title="Device Page"/>
+            <book name="https://www.microchip.com/wwwproducts/Devices.aspx?product=ATSAMD09D14A"
+                  title="Device page for ATSAMD09D14A"/>
+            <book name="https://www.microchip.com/wwwproducts/productds/ATSAMD09D14A"
+                  title="Datasheet"/>
          </device>
       </family>
    </devices>

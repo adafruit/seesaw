@@ -63,6 +63,8 @@
         <includes pattern="config/debugger/Atmel/ATSAMD09C13A.ddf"/>
         <includes pattern="config/devices/Atmel/**/ATSAMD09C13A.i79"/>
         <includes pattern="config/devices/Atmel/**/ATSAMD09C13A.menu"/>
+      </resource>
+      <resource type="iar.flashloader" subdir="iar">
         <includes pattern="config/flashloader/Atmel/samd09c13a/samd09c13a-flash.board"/>
         <includes pattern="config/flashloader/Atmel/samd09c13a/samd09c13a-flash.flash"/>
         <includes pattern="config/flashloader/Atmel/samd09c13a/samd09c13a-flash.out"/>
@@ -126,6 +128,8 @@
         <includes pattern="config/debugger/Atmel/ATSAMD09D14A.ddf"/>
         <includes pattern="config/devices/Atmel/**/ATSAMD09D14A.i79"/>
         <includes pattern="config/devices/Atmel/**/ATSAMD09D14A.menu"/>
+      </resource>
+      <resource type="iar.flashloader" subdir="iar">
         <includes pattern="config/flashloader/Atmel/samd09d14a/samd09d14a-flash.board"/>
         <includes pattern="config/flashloader/Atmel/samd09d14a/samd09d14a-flash.flash"/>
         <includes pattern="config/flashloader/Atmel/samd09d14a/samd09d14a-flash.out"/>

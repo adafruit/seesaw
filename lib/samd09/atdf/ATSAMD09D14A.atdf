@@ -1,33 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ============================================================================ -->
-<!--                  Atmel Microcontroller Software Support                      -->
-<!-- ============================================================================ -->
-<!-- Copyright (c) 2016 Atmel Corporation,                                        -->
-<!--                    a wholly owned subsidiary of Microchip Technology Inc.    -->
-<!-- Licensed under the Apache License, Version 2.0 (the "License");              -->
-<!-- you may not use this file except in compliance with the License.             -->
-<!-- You may obtain a copy of the Licence at                                      -->
-<!--                                                                              -->
-<!--     http://www.apache.org/licenses/LICENSE-2.0                               -->
-<!--                                                                              -->
-<!-- Unless required by applicable law or agreed to in writing, software          -->
-<!-- distributed under the License is distributed on an "AS IS" BASIS,            -->
-<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.     -->
-<!-- See the License for the specific language governing permissions and          -->
-<!-- limitations under the License.                                               -->
-<!-- ============================================================================ -->
-<avr-tools-device-file xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schema-version="0.3" xsi:noNamespaceSchemaLocation="../../schema/avr_tools_device_file.xsd">
-  <variants>
-    <variant ordercode="SAMD09D14A-MU" package="QFN24" pinout="SAMD1xE" speedmax="48000000" tempmin="-40" tempmax="85" vccmin="2.4" vccmax="3.63"/>
+<!--
+ Copyright (c) 2018 Microchip Technology Inc.
+
+ SPDX-License-Identifier: Apache-2.0
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<avr-tools-device-file xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schema-version="4.4" xsi:noNamespaceSchemaLocation="../../schema/avr_tools_device_file.xsd">
+  <file timestamp="2018-08-29T10:27:46Z"/>
+  <variants xmlns:mhc="http://www.atmel.com/schemas/avr-tools-device-file/mhc">
+    <variant ordercode="SAMD09D14A-MU" mhc:ordercode="ATSAMD09D14A-MU" package="QFN24" pinout="SAMD1xE" speedmax="48000000" tempmin="-40" tempmax="85" vccmin="2.4" vccmax="3.63"/>
   </variants>
   <devices>
     <device name="ATSAMD09D14A" architecture="CORTEX-M0PLUS" family="SAMD" series="SAMD09">
       <address-spaces>
         <address-space id="base" name="base" start="0" size="0x100000000" endianness="little">
           <memory-segment name="FLASH" start="0x00000000" size="0x4000" type="flash" pagesize="64" rw="RW" exec="true"/>
+          <memory-segment name="CAL" start="0x00800000" size="0x8" type="fuses" rw="R"/>
+          <memory-segment name="LOCKBIT" start="0x00802000" size="0x4" type="fuses" rw="R"/>
+          <memory-segment name="OTP1" start="0x00806000" size="0x8" type="fuses" rw="R"/>
+          <memory-segment name="OTP2" start="0x00806008" size="0x8" type="fuses" rw="R"/>
+          <memory-segment name="OTP4" start="0x00806020" size="0xE0" type="fuses" pagesize="64" rw="RW"/>
+          <memory-segment name="TEMP_LOG" start="0x00806030" size="0x8" type="fuses" rw="R"/>
           <memory-segment name="USER_PAGE" start="0x00804000" size="0x100" type="user_page" pagesize="64" rw="RW"/>
-          <memory-segment name="AUX0" start="0x00804000" size="0x100" type="user_page" pagesize="64" rw="RW"/>
-          <memory-segment name="AUX1" start="0x00806000" size="0x100" type="fuses" pagesize="64" rw="R"/>
           <memory-segment name="HMCRAMC0" start="0x20000000" size="0x1000" type="ram" rw="RW" exec="true"/>
           <memory-segment name="HPB0" start="0x40000000" size="0x10000" type="io" rw="RW"/>
           <memory-segment name="HPB1" start="0x41000000" size="0x10000" type="io" rw="RW"/>
@@ -36,38 +41,41 @@
           <memory-segment name="SCS" start="0xE000E000" size="0x00001000" type="io" rw="RW"/>
           <memory-segment name="PERIPHERALS" start="0x40000000" size="0x20000000" type="io" rw="RW"/>
         </address-space>
-        <address-space id="fuses" name="fuses" start="0x00000000" size="0x10000" endianness="little"/>
+        <address-space id="fuses" name="fuses" start="0x00000000" size="0x20000000" endianness="little"/>
       </address-spaces>
       <parameters>
-        <param name="LITTLE_ENDIAN" value="1"/>
-        <param name="__CM0PLUS_REV" value="0x0001"/>
-        <param name="__MPU_PRESENT" value="0"/>
-        <param name="__NVIC_PRIO_BITS" value="2"/>
-        <param name="__VTOR_PRESENT" value="1"/>
-        <param name="__Vendor_SysTickConfig" value="0"/>
+        <param name="NUM_IRQ" value="19" caption="Number of Interrupt Requests"/>
+        <param name="__CM0PLUS_REV" value="0x0001" caption="Cortex-M0+ Core Revision"/>
+        <param name="__MPU_PRESENT" value="0" caption="MPU present or not"/>
+        <param name="__NVIC_PRIO_BITS" value="2" caption="Number of Bits used for Priority Levels"/>
+        <param name="__VTOR_PRESENT" value="1" caption="Vector Table Offset Register present or not"/>
+        <param name="__Vendor_SysTickConfig" value="0" caption="Set to 1 if different SysTick Config is used"/>
+        <param name="__ARCH_ARM" value="1"/>
+        <param name="__ARCH_ARM_CORTEX_M" value="1"/>
+        <param name="__DEVICE_IS_SAM" value="1"/>
       </parameters>
       <peripherals>
         <module name="ADC" id="U2204" version="1.2.0">
           <instance name="ADC">
             <register-group name="ADC" name-in-module="ADC" address-space="base" offset="0x42002000"/>
             <signals>
-              <signal group="AIN" index="0" function="B_ADC" pad="PA02"/>
-              <signal group="AIN" index="1" function="B_ADC" pad="PA03"/>
-              <signal group="AIN" index="2" function="B_ADC" pad="PA04"/>
-              <signal group="AIN" index="3" function="B_ADC" pad="PA05"/>
-              <signal group="AIN" index="4" function="B_ADC" pad="PA06"/>
-              <signal group="AIN" index="5" function="B_ADC" pad="PA07"/>
-              <signal group="AIN" index="6" function="B_ADC" pad="PA14"/>
-              <signal group="AIN" index="7" function="B_ADC" pad="PA15"/>
-              <signal group="AIN" index="8" function="B_ADC" pad="PA10"/>
-              <signal group="AIN" index="9" function="B_ADC" pad="PA11"/>
-              <signal group="VREFP" function="B_ANAREF" pad="PA04"/>
+              <signal group="AIN" index="0" function="B" pad="PA02"/>
+              <signal group="AIN" index="1" function="B" pad="PA03"/>
+              <signal group="AIN" index="2" function="B" pad="PA04"/>
+              <signal group="AIN" index="3" function="B" pad="PA05"/>
+              <signal group="AIN" index="4" function="B" pad="PA06"/>
+              <signal group="AIN" index="5" function="B" pad="PA07"/>
+              <signal group="AIN" index="6" function="B" pad="PA14"/>
+              <signal group="AIN" index="7" function="B" pad="PA15"/>
+              <signal group="AIN" index="8" function="B" pad="PA10"/>
+              <signal group="AIN" index="9" function="B" pad="PA11"/>
+              <signal group="VREFP" function="B" pad="PA04"/>
             </signals>
             <parameters>
-              <param name="EXTCHANNEL_MSB" value="9"/>
-              <param name="GCLK_ID" value="19"/>
-              <param name="RESULT_BITS" value="16"/>
-              <param name="RESULT_MSB" value="15"/>
+              <param name="EXTCHANNEL_MSB" value="9" caption="Number of external channels"/>
+              <param name="GCLK_ID" value="19" caption="Index of Generic Clock"/>
+              <param name="RESULT_BITS" value="16" caption="Size of RESULT.RESULT bitfield"/>
+              <param name="RESULT_MSB" value="15" caption="Size of Result"/>
               <param name="INSTANCE_ID" value="72"/>
             </parameters>
           </instance>
@@ -76,14 +84,14 @@
           <instance name="DMAC">
             <register-group name="DMAC" name-in-module="DMAC" address-space="base" offset="0x41004800"/>
             <parameters>
-              <param name="CH_BITS" value="3"/>
-              <param name="CH_NUM" value="6"/>
-              <param name="EVIN_NUM" value="4"/>
-              <param name="EVOUT_NUM" value="4"/>
-              <param name="LVL_BITS" value="2"/>
-              <param name="LVL_NUM" value="4"/>
-              <param name="TRIG_BITS" value="5"/>
-              <param name="TRIG_NUM" value="20"/>
+              <param name="CH_BITS" value="3" caption="Number of bits to select channel"/>
+              <param name="CH_NUM" value="6" caption="Number of channels"/>
+              <param name="EVIN_NUM" value="4" caption="Number of input events"/>
+              <param name="EVOUT_NUM" value="4" caption="Number of output events"/>
+              <param name="LVL_BITS" value="2" caption="Number of bit to select level priority"/>
+              <param name="LVL_NUM" value="4" caption="Enable priority level number"/>
+              <param name="TRIG_BITS" value="5" caption="Number of bits to select trigger source"/>
+              <param name="TRIG_NUM" value="20" caption="Number of peripheral triggers"/>
               <param name="INSTANCE_ID" value="36"/>
             </parameters>
           </instance>
@@ -123,9 +131,9 @@
               <signal group="NMI" function="A" pad="PA14"/>
             </signals>
             <parameters>
-              <param name="CONFIG_NUM" value="1"/>
-              <param name="EXTINT_NUM" value="8"/>
-              <param name="GCLK_ID" value="5"/>
+              <param name="CONFIG_NUM" value="1" caption="Number of CONFIG registers"/>
+              <param name="EXTINT_NUM" value="8" caption="Number of External Interrupts"/>
+              <param name="GCLK_ID" value="5" caption="Index of Generic Clock"/>
               <param name="INSTANCE_ID" value="6"/>
             </parameters>
           </instance>
@@ -134,14 +142,20 @@
           <instance name="EVSYS">
             <register-group name="EVSYS" name-in-module="EVSYS" address-space="base" offset="0x42000400"/>
             <parameters>
-              <param name="CHANNELS" value="6"/>
-              <param name="CHANNELS_BITS" value="3"/>
-              <param name="CHANNELS_MSB" value="5"/>
-              <param name="EXTEVT_NUM" value="0"/>
-              <param name="GENERATORS" value="44"/>
-              <param name="GENERATORS_BITS" value="6"/>
-              <param name="USERS" value="18"/>
-              <param name="USERS_BITS" value="5"/>
+              <param name="CHANNELS" value="6" caption="Number of Channels"/>
+              <param name="CHANNELS_BITS" value="3" caption="Number of bits to select Channel"/>
+              <param name="CHANNELS_MSB" value="5" caption="Number of Channels - 1"/>
+              <param name="EXTEVT_NUM" value="0" caption="Number of External Event Generators"/>
+              <param name="GCLK_ID_0" value="7" caption="Index of Generic Clock 0"/>
+              <param name="GCLK_ID_1" value="8" caption="Index of Generic Clock 1"/>
+              <param name="GCLK_ID_2" value="9" caption="Index of Generic Clock 2"/>
+              <param name="GCLK_ID_3" value="10" caption="Index of Generic Clock 3"/>
+              <param name="GCLK_ID_4" value="11" caption="Index of Generic Clock 4"/>
+              <param name="GCLK_ID_5" value="12" caption="Index of Generic Clock 5"/>
+              <param name="GENERATORS" value="44" caption="Total Number of Event Generators"/>
+              <param name="GENERATORS_BITS" value="6" caption="Number of bits to select Event Generator"/>
+              <param name="USERS" value="18" caption="Total Number of Event Users"/>
+              <param name="USERS_BITS" value="5" caption="Number of bits to select Event User"/>
               <param name="INSTANCE_ID" value="65"/>
             </parameters>
           </instance>
@@ -168,15 +182,15 @@
             </signals>
             <parameters>
               <param name="GENDIV_BITS" value="16"/>
-              <param name="GEN_NUM" value="6"/>
-              <param name="GEN_NUM_MSB" value="5"/>
-              <param name="GEN_SOURCE_NUM_MSB" value="8"/>
-              <param name="NUM" value="24"/>
+              <param name="GEN_NUM" value="6" caption="Number of Generic Clock Generators"/>
+              <param name="GEN_NUM_MSB" value="5" caption="Number of Generic Clock Generators - 1"/>
+              <param name="GEN_SOURCE_NUM_MSB" value="8" caption="Number of Generic Clock Sources - 1"/>
+              <param name="NUM" value="24" caption="Number of Generic Clock Users"/>
               <param name="SOURCE_DFLL48M" value="7"/>
-              <param name="SOURCE_FDPLL" value="8"/>
+              <param name="SOURCE_DPLL96M" value="8"/>
               <param name="SOURCE_GCLKGEN1" value="2"/>
               <param name="SOURCE_GCLKIN" value="1"/>
-              <param name="SOURCE_NUM" value="9"/>
+              <param name="SOURCE_NUM" value="9" caption="Number of Generic Clock Sources"/>
               <param name="SOURCE_OSCULP32K" value="3"/>
               <param name="SOURCE_OSC8M" value="6"/>
               <param name="SOURCE_OSC32K" value="4"/>
@@ -230,15 +244,15 @@
               <param name="PAGE_SIZE" value="64"/>
               <param name="PAGES" value="256"/>
               <param name="PAGES_PR_REGION" value="16"/>
-                  <!--  From Datasheet section "Electrical Characteristics","Flash Characteristics" table "Maximum operating Frequency" -->
-                  <param name="PSM_0_FRMFW_FWS_1_MAX_FREQ" value="12000000"/>
-                  <param name="PSM_0_FRMLP_FWS_0_MAX_FREQ" value="18000000"/>
-                  <param name="PSM_0_FRMLP_FWS_1_MAX_FREQ" value="36000000"/>
-                  <param name="PSM_0_FRMHS_FWS_0_MAX_FREQ" value="25000000"/>
-                  <param name="PSM_0_FRMHS_FWS_1_MAX_FREQ" value="50000000"/>
-                  <param name="PSM_1_FRMFW_FWS_1_MAX_FREQ" value="12000000"/>
-                  <param name="PSM_1_FRMLP_FWS_0_MAX_FREQ" value="8000000"/>
-                  <param name="PSM_1_FRMLP_FWS_1_MAX_FREQ" value="12000000"/>
+              <!--  From Datasheet section "Electrical Characteristics","Flash Characteristics" table "Maximum operating Frequency" -->
+              <param name="PSM_0_FRMFW_FWS_1_MAX_FREQ" value="12000000"/>
+              <param name="PSM_0_FRMLP_FWS_0_MAX_FREQ" value="18000000"/>
+              <param name="PSM_0_FRMLP_FWS_1_MAX_FREQ" value="36000000"/>
+              <param name="PSM_0_FRMHS_FWS_0_MAX_FREQ" value="25000000"/>
+              <param name="PSM_0_FRMHS_FWS_1_MAX_FREQ" value="50000000"/>
+              <param name="PSM_1_FRMFW_FWS_1_MAX_FREQ" value="12000000"/>
+              <param name="PSM_1_FRMLP_FWS_0_MAX_FREQ" value="8000000"/>
+              <param name="PSM_1_FRMLP_FWS_1_MAX_FREQ" value="12000000"/>
               <param name="INSTANCE_ID" value="34"/>
             </parameters>
           </instance>
@@ -254,21 +268,21 @@
           <instance name="PAC0">
             <register-group name="PAC0" name-in-module="PAC" address-space="base" offset="0x40000000"/>
             <parameters>
-              <param name="WPROT_DEFAULT_VAL" value="0x00000000"/>
+              <param name="WPROT_DEFAULT_VAL" value="0x00000000" caption="PAC protection mask at reset"/>
               <param name="INSTANCE_ID" value="0"/>
             </parameters>
           </instance>
           <instance name="PAC1">
             <register-group name="PAC1" name-in-module="PAC" address-space="base" offset="0x41000000"/>
             <parameters>
-              <param name="WPROT_DEFAULT_VAL" value="0x00000002"/>
+              <param name="WPROT_DEFAULT_VAL" value="0x00000002" caption="PAC protection mask at reset"/>
               <param name="INSTANCE_ID" value="32"/>
             </parameters>
           </instance>
           <instance name="PAC2">
             <register-group name="PAC2" name-in-module="PAC" address-space="base" offset="0x42000000"/>
             <parameters>
-              <param name="WPROT_DEFAULT_VAL" value="0x00001000"/>
+              <param name="WPROT_DEFAULT_VAL" value="0x00001000" caption="PAC protection mask at reset"/>
               <param name="INSTANCE_ID" value="64"/>
             </parameters>
           </instance>
@@ -277,7 +291,7 @@
           <instance name="PM">
             <register-group name="PM" name-in-module="PM" address-space="base" offset="0x40000400"/>
             <signals>
-              <signal group="RESET_N" function="RESET_N" pad="PA28"/>
+              <signal group="RESET_N" function="RESET" pad="PA28"/>
             </signals>
             <parameters>
               <param name="CTRL_MCSEL_DFLL48M" value="3"/>
@@ -328,12 +342,50 @@
               <signal group="P" index="31" function="default" pad="PA31"/>
             </signals>
             <parameters>
-              <param name="BITS" value="32"/>
-              <param name="DRVSTR" value="1"/>
-              <param name="GROUPS" value="1"/>
-              <param name="ODRAIN" value="0"/>
-              <param name="SLEWLIM" value="0"/>
+              <param name="BITS" value="32" caption="Number of PORT pins"/>
+              <param name="DRVSTR" value="1" caption="DRVSTR supported"/>
+              <param name="GROUPS" value="1" caption="Number of 32-bit PORT groups"/>
+              <param name="ODRAIN" value="0" caption="ODRAIN supported"/>
+              <param name="SLEWLIM" value="0" caption="SLEWLIM supported"/>
               <param name="INSTANCE_ID" value="35"/>
+            </parameters>
+          </instance>
+        </module>
+        <module name="PTC" id="U2215" version="1.0.4">
+          <instance name="PTC">
+            <register-group name="PTC" name-in-module="PTC" address-space="base" offset="0x42002C00"/>
+            <signals>
+              <signal group="X" index="0" function="B" pad="PA14"/>
+              <signal group="X" index="1" function="B" pad="PA15"/>
+              <signal group="X" index="2" function="B" pad="PA10"/>
+              <signal group="X" index="3" function="B" pad="PA11"/>
+              <signal group="X" index="4" function="B" pad="PA16"/>
+              <signal group="X" index="5" function="B" pad="PA17"/>
+              <signal group="X" index="6" function="B" pad="PA22"/>
+              <signal group="X" index="7" function="B" pad="PA23"/>
+              <signal group="X" index="8" function="B" pad="PA24"/>
+              <signal group="X" index="9" function="B" pad="PA25"/>
+              <signal group="X" index="10" function="B" pad="PA27"/>
+              <signal group="Y" index="0" function="B" pad="PA02"/>
+              <signal group="Y" index="1" function="B" pad="PA03"/>
+              <signal group="Y" index="2" function="B" pad="PA04"/>
+              <signal group="Y" index="3" function="B" pad="PA05"/>
+              <signal group="Y" index="4" function="B" pad="PA06"/>
+              <signal group="Y" index="5" function="B" pad="PA07"/>
+              <signal group="Y" index="6" function="B" pad="PA14"/>
+              <signal group="Y" index="7" function="B" pad="PA15"/>
+              <signal group="Y" index="8" function="B" pad="PA10"/>
+              <signal group="Y" index="9" function="B" pad="PA11"/>
+              <signal group="Y" index="10" function="B" pad="PA16"/>
+              <signal group="Y" index="11" function="B" pad="PA17"/>
+              <signal group="Y" index="12" function="B" pad="PA22"/>
+              <signal group="Y" index="13" function="B" pad="PA23"/>
+              <signal group="Y" index="14" function="B" pad="PA24"/>
+              <signal group="Y" index="15" function="B" pad="PA25"/>
+            </signals>
+            <parameters>
+              <param name="GCLK_ID" value="23" caption="Index of Generic Clock"/>
+              <param name="INSTANCE_ID" value="75"/>
             </parameters>
           </instance>
         </module>
@@ -341,13 +393,13 @@
           <instance name="RTC">
             <register-group name="RTC" name-in-module="RTC" address-space="base" offset="0x40001400"/>
             <parameters>
-              <param name="ALARM_NUM" value="1"/>
-              <param name="COMP16_NUM" value="2"/>
-              <param name="COMP32_NUM" value="1"/>
-              <param name="GCLK_ID" value="4"/>
-              <param name="NUM_OF_ALARMS" value="1"/>
-              <param name="NUM_OF_COMP16" value="2"/>
-              <param name="NUM_OF_COMP32" value="1"/>
+              <param name="ALARM_NUM" value="1" caption="Number of Alarms"/>
+              <param name="COMP16_NUM" value="2" caption="Number of 16-bit Comparators"/>
+              <param name="COMP32_NUM" value="1" caption="Number of 32-bit Comparators"/>
+              <param name="GCLK_ID" value="4" caption="Index of Generic Clock"/>
+              <param name="NUM_OF_ALARMS" value="1" caption="Number of Alarms (obsolete)"/>
+              <param name="NUM_OF_COMP16" value="2" caption="Number of 16-bit Comparators (obsolete)"/>
+              <param name="NUM_OF_COMP32" value="1" caption="Number of 32-bit Comparators (obsolete)"/>
               <param name="INSTANCE_ID" value="5"/>
             </parameters>
           </instance>
@@ -372,8 +424,8 @@
               <signal group="PAD" index="3" function="C" pad="PA11"/>
             </signals>
             <parameters>
-              <param name="GCLK_ID_CORE" value="14"/>
-              <param name="GCLK_ID_SLOW" value="13"/>
+              <param name="GCLK_ID_CORE" value="14" caption="Index of Generic Clock for Core"/>
+              <param name="GCLK_ID_SLOW" value="13" caption="Index of Generic Clock for SMbus Timeout"/>
               <param name="INT_MSB" value="6"/>
               <param name="INSTANCE_ID" value="66"/>
             </parameters>
@@ -395,8 +447,8 @@
               <signal group="PAD" index="3" function="C" pad="PA09"/>
             </signals>
             <parameters>
-              <param name="GCLK_ID_CORE" value="15"/>
-              <param name="GCLK_ID_SLOW" value="13"/>
+              <param name="GCLK_ID_CORE" value="15" caption="Index of Generic Clock for Core"/>
+              <param name="GCLK_ID_SLOW" value="13" caption="Index of Generic Clock for SMbus Timeout"/>
               <param name="INT_MSB" value="6"/>
               <param name="INSTANCE_ID" value="67"/>
             </parameters>
@@ -406,25 +458,25 @@
           <instance name="SYSCTRL">
             <register-group name="SYSCTRL" name-in-module="SYSCTRL" address-space="base" offset="0x40000800"/>
             <signals>
-              <signal group="CAPLESS_EXTREF" function="VREG_TEST" pad="PA04"/>
-              <signal group="CAPLESS_VDDCORE" function="VREG_TEST" pad="PA02"/>
-              <signal group="ULPVREG_BODDETI" function="VREG_TEST" pad="PA06"/>
-              <signal group="ULPVREG_BODDETII" function="VREG_TEST" pad="PA23"/>
-              <signal group="ULPVREG_BODIEN" function="VREG_TEST" pad="PA03"/>
-              <signal group="ULPVREG_BODIIEN" function="VREG_TEST" pad="PA05"/>
-              <signal group="ULPVREG_ENABLE" function="VREG_TEST" pad="PA17"/>
-              <signal group="ULPVREG_FORCELDO" function="VREG_TEST" pad="PA08"/>
-              <signal group="ULPVREG_INC_BIAS" function="VREG_TEST" pad="PA11"/>
-              <signal group="ULPVREG_LDOEN" function="VREG_TEST" pad="PA07"/>
-              <signal group="ULPVREG_OSCEN" function="VREG_TEST" pad="PA22"/>
-              <signal group="ULPVREG_REFRESH" function="VREG_TEST" pad="PA10"/>
-              <signal group="ULPVREG_REFSEL" function="VREG_TEST" pad="PA16"/>
-              <signal group="ULPVREG_REQBIAS" function="VREG_TEST" pad="PA09"/>
-              <signal group="VREG_ENABLE" function="VREG_TEST" pad="PA24"/>
+              <signal group="CAPLESS_EXTREF" function="VREG" pad="PA04"/>
+              <signal group="CAPLESS_VDDCORE" function="VREG" pad="PA02"/>
+              <signal group="ULPVREG_BODDETI" function="VREG" pad="PA06"/>
+              <signal group="ULPVREG_BODDETII" function="VREG" pad="PA23"/>
+              <signal group="ULPVREG_BODIEN" function="VREG" pad="PA03"/>
+              <signal group="ULPVREG_BODIIEN" function="VREG" pad="PA05"/>
+              <signal group="ULPVREG_ENABLE" function="VREG" pad="PA17"/>
+              <signal group="ULPVREG_FORCELDO" function="VREG" pad="PA08"/>
+              <signal group="ULPVREG_INC_BIAS" function="VREG" pad="PA11"/>
+              <signal group="ULPVREG_LDOEN" function="VREG" pad="PA07"/>
+              <signal group="ULPVREG_OSCEN" function="VREG" pad="PA22"/>
+              <signal group="ULPVREG_REFRESH" function="VREG" pad="PA10"/>
+              <signal group="ULPVREG_REFSEL" function="VREG" pad="PA16"/>
+              <signal group="ULPVREG_REQBIAS" function="VREG" pad="PA09"/>
+              <signal group="VREG_ENABLE" function="VREG" pad="PA24"/>
               <signal group="XIN" function="XIN" pad="PA08"/>
               <signal group="XIN32" function="XIN32" pad="PA08"/>
-              <signal group="XOSC_CLK" function="XOSC_TEST" pad="PA15"/>
-              <signal group="XOSC_EN" function="XOSC_TEST" pad="PA14"/>
+              <signal group="XOSC_CLK" function="XOSC" pad="PA15"/>
+              <signal group="XOSC_EN" function="XOSC" pad="PA14"/>
               <signal group="XOUT32" function="XOUT32" pad="PA09"/>
             </signals>
             <parameters>
@@ -433,12 +485,12 @@
               <param name="BOD33_CALIB_MSB" value="5"/>
               <param name="DFLL48M_COARSE_MSB" value="5"/>
               <param name="DFLL48M_FINE_MSB" value="9"/>
-              <param name="GCLK_ID_DFLL48" value="0"/>
-              <param name="GCLK_ID_FDPLL" value="1"/>
-              <param name="GCLK_ID_FDPLL32K" value="2"/>
+              <param name="GCLK_ID_DFLL48" value="0" caption="Index of Generic Clock for DFLL48"/>
+              <param name="GCLK_ID_FDPLL" value="1" caption="Index of Generic Clock for DPLL"/>
+              <param name="GCLK_ID_FDPLL32K" value="2" caption="Index of Generic Clock for DPLL 32K"/>
               <param name="OSC32K_COARSE_CALIB_MSB" value="6"/>
               <param name="POR33_ENTEST_MSB" value="1"/>
-              <param name="SYSTEM_CLOCK" value="1000000"/>
+              <param name="SYSTEM_CLOCK" value="1000000" caption="Initial system clock frequency"/>
               <param name="ULPVREF_DIVLEV_MSB" value="3"/>
               <param name="ULPVREG_FORCEGAIN_MSB" value="1"/>
               <param name="ULPVREG_RAMREFSEL_MSB" value="2"/>
@@ -474,15 +526,15 @@
               <signal group="WO" index="1" function="E" pad="PA23"/>
             </signals>
             <parameters>
-              <param name="CC8_NUM" value="2"/>
-              <param name="CC16_NUM" value="2"/>
-              <param name="CC32_NUM" value="2"/>
-              <param name="DITHERING_EXT" value="0"/>
-              <param name="GCLK_ID" value="18"/>
+              <param name="CC8_NUM" value="2" caption="Number of 8-bit Counters"/>
+              <param name="CC16_NUM" value="2" caption="Number of 16-bit Counters"/>
+              <param name="CC32_NUM" value="2" caption="Number of 32-bit Counters"/>
+              <param name="DITHERING_EXT" value="0" caption="Dithering feature implemented"/>
+              <param name="GCLK_ID" value="18" caption="Index of Generic Clock"/>
               <param name="MASTER" value="1"/>
-              <param name="OW_NUM" value="2"/>
-              <param name="PERIOD_EXT" value="0"/>
-              <param name="SHADOW_EXT" value="0"/>
+              <param name="OW_NUM" value="2" caption="Number of Output Waveforms"/>
+              <param name="PERIOD_EXT" value="0" caption="Period feature implemented"/>
+              <param name="SHADOW_EXT" value="0" caption="Shadow feature implemented"/>
               <param name="INSTANCE_ID" value="70"/>
             </parameters>
           </instance>
@@ -497,15 +549,15 @@
               <signal group="WO" index="1" function="E" pad="PA31"/>
             </signals>
             <parameters>
-              <param name="CC8_NUM" value="2"/>
-              <param name="CC16_NUM" value="2"/>
-              <param name="CC32_NUM" value="2"/>
-              <param name="DITHERING_EXT" value="0"/>
-              <param name="GCLK_ID" value="18"/>
+              <param name="CC8_NUM" value="2" caption="Number of 8-bit Counters"/>
+              <param name="CC16_NUM" value="2" caption="Number of 16-bit Counters"/>
+              <param name="CC32_NUM" value="2" caption="Number of 32-bit Counters"/>
+              <param name="DITHERING_EXT" value="0" caption="Dithering feature implemented"/>
+              <param name="GCLK_ID" value="18" caption="Index of Generic Clock"/>
               <param name="MASTER" value="0"/>
-              <param name="OW_NUM" value="2"/>
-              <param name="PERIOD_EXT" value="0"/>
-              <param name="SHADOW_EXT" value="0"/>
+              <param name="OW_NUM" value="2" caption="Number of Output Waveforms"/>
+              <param name="PERIOD_EXT" value="0" caption="Period feature implemented"/>
+              <param name="SHADOW_EXT" value="0" caption="Shadow feature implemented"/>
               <param name="INSTANCE_ID" value="71"/>
             </parameters>
           </instance>
@@ -514,44 +566,101 @@
           <instance name="WDT">
             <register-group name="WDT" name-in-module="WDT" address-space="base" offset="0x40001000"/>
             <parameters>
-              <param name="GCLK_ID" value="3"/>
+              <param name="GCLK_ID" value="3" caption="Index of Generic Clock"/>
               <param name="INSTANCE_ID" value="4"/>
             </parameters>
           </instance>
         </module>
-      <module name="SystemControl">
-          <instance name="SystemControl">
-            <register-group address-space="base" offset="0xE000E000" name-in-module="SystemControl" name="SystemControl"/>
-          </instance>
-        </module><module name="SysTick">
-          <instance name="SysTick">
-            <register-group address-space="base" offset="0xE000E010" name-in-module="SysTick" name="SysTick"/>
-          </instance>
-        </module><module name="NVIC">
+        <module name="NVIC" version="1.0.0">
           <instance name="NVIC">
-            <register-group address-space="base" offset="0xE000E100" name-in-module="NVIC" name="NVIC"/>
+            <register-group name="NVIC" name-in-module="NVIC" address-space="base" offset="0xE000E100"/>
+            <parameters>
+              <param name="NUM_IRQ" value="19" caption="Number of interrupt requests"/>
+              <param name="__NVIC_PRIO_BITS" value="2" caption="Number of NVIC interrupt priority bits"/>
+            </parameters>
           </instance>
-        </module></peripherals>
+        </module>
+        <module name="SysTick" version="1.0.0">
+          <instance name="SysTick">
+            <register-group name="SysTick" name-in-module="SysTick" address-space="base" offset="0xE000E010"/>
+          </instance>
+        </module>
+        <module name="SystemControl" version="1.0.0">
+          <instance name="SystemControl">
+            <register-group name="SystemControl" name-in-module="SystemControl" address-space="base" offset="0xE000E000"/>
+            <parameters>
+              <param name="__VTOR_PRESENT" value="1" caption="Vector Table Offset Register present"/>
+            </parameters>
+          </instance>
+        </module>
+      </peripherals>
       <interrupts>
-        <interrupt name="NonMaskableInt_IRQn" index="-14" caption="Non Maskable Interrupt"/>
-        <interrupt name="HardFault_IRQn" index="-13" caption="Cortex-M0+ Hard Fault Interrupt"/>
-        <interrupt name="SVCall_IRQn" index="-5" caption="Cortex-M0+ SV Call Interrupt"/>
-        <interrupt name="PendSV_IRQn" index="-2" caption="Cortex-M0+ Pend SV Interrupt"/>
-        <interrupt name="SysTick_IRQn" index="-1" caption="Cortex-M0+ System Tick Interrupt"/>
-        <interrupt name="PM_IRQn" index="0" module-instance="PM"/>
-        <interrupt name="SYSCTRL_IRQn" index="1" module-instance="SYSCTRL"/>
-        <interrupt name="WDT_IRQn" index="2" module-instance="WDT"/>
-        <interrupt name="RTC_IRQn" index="3" module-instance="RTC"/>
-        <interrupt name="EIC_IRQn" index="4" module-instance="EIC"/>
-        <interrupt name="NVMCTRL_IRQn" index="5" module-instance="NVMCTRL"/>
-        <interrupt name="DMAC_IRQn" index="6" module-instance="DMAC"/>
-        <interrupt name="EVSYS_IRQn" index="8" module-instance="EVSYS"/>
-        <interrupt name="SERCOM0_IRQn" index="9" module-instance="SERCOM0"/>
-        <interrupt name="SERCOM1_IRQn" index="10" module-instance="SERCOM1"/>
-        <interrupt name="TC1_IRQn" index="13" module-instance="TC1"/>
-        <interrupt name="TC2_IRQn" index="14" module-instance="TC2"/>
-        <interrupt name="ADC_IRQn" index="15" module-instance="ADC"/>
+        <interrupt name="Reset" index="-15" caption="Reset Vector, invoked on Power up and warm reset"/>
+        <interrupt name="NonMaskableInt" index="-14" caption="Non maskable Interrupt, cannot be stopped or preempted"/>
+        <interrupt name="HardFault" index="-13" caption="Hard Fault, all classes of Fault"/>
+        <interrupt name="SVCall" index="-5" caption="System Service Call via SVC instruction"/>
+        <interrupt name="PendSV" index="-2" caption="Pendable request for system service"/>
+        <interrupt name="SysTick" index="-1" caption="System Tick Timer"/>
+        <interrupt name="PM" index="0" module-instance="PM"/>
+        <interrupt name="SYSCTRL" index="1" module-instance="SYSCTRL"/>
+        <interrupt name="WDT" index="2" module-instance="WDT"/>
+        <interrupt name="RTC" index="3" module-instance="RTC"/>
+        <interrupt name="EIC" index="4" module-instance="EIC"/>
+        <interrupt name="NVMCTRL" index="5" module-instance="NVMCTRL"/>
+        <interrupt name="DMAC" index="6" module-instance="DMAC"/>
+        <interrupt name="EVSYS" index="8" module-instance="EVSYS"/>
+        <interrupt name="SERCOM0" index="9" module-instance="SERCOM0"/>
+        <interrupt name="SERCOM1" index="10" module-instance="SERCOM1"/>
+        <interrupt name="TC1" index="13" module-instance="TC1"/>
+        <interrupt name="TC2" index="14" module-instance="TC2"/>
+        <interrupt name="ADC" index="15" module-instance="ADC"/>
+        <interrupt name="PTC" index="18" module-instance="PTC"/>
       </interrupts>
+      <events>
+        <generators>
+          <generator name="RTC_CMP_0" index="1" module-instance="RTC"/>
+          <generator name="RTC_CMP_1" index="2" module-instance="RTC"/>
+          <generator name="RTC_OVF" index="3" module-instance="RTC"/>
+          <generator name="RTC_PER_0" index="4" module-instance="RTC"/>
+          <generator name="RTC_PER_1" index="5" module-instance="RTC"/>
+          <generator name="RTC_PER_2" index="6" module-instance="RTC"/>
+          <generator name="RTC_PER_3" index="7" module-instance="RTC"/>
+          <generator name="RTC_PER_4" index="8" module-instance="RTC"/>
+          <generator name="RTC_PER_5" index="9" module-instance="RTC"/>
+          <generator name="RTC_PER_6" index="10" module-instance="RTC"/>
+          <generator name="RTC_PER_7" index="11" module-instance="RTC"/>
+          <generator name="EIC_EXTINT_0" index="12" module-instance="EIC"/>
+          <generator name="EIC_EXTINT_1" index="13" module-instance="EIC"/>
+          <generator name="EIC_EXTINT_2" index="14" module-instance="EIC"/>
+          <generator name="EIC_EXTINT_3" index="15" module-instance="EIC"/>
+          <generator name="EIC_EXTINT_4" index="16" module-instance="EIC"/>
+          <generator name="EIC_EXTINT_5" index="17" module-instance="EIC"/>
+          <generator name="EIC_EXTINT_6" index="18" module-instance="EIC"/>
+          <generator name="EIC_EXTINT_7" index="19" module-instance="EIC"/>
+          <generator name="DMAC_CH_0" index="20" module-instance="DMAC"/>
+          <generator name="DMAC_CH_1" index="21" module-instance="DMAC"/>
+          <generator name="DMAC_CH_2" index="22" module-instance="DMAC"/>
+          <generator name="DMAC_CH_3" index="23" module-instance="DMAC"/>
+          <generator name="TC1_OVF" index="31" module-instance="TC1"/>
+          <generator name="TC1_MCX_0" index="32" module-instance="TC1"/>
+          <generator name="TC1_MCX_1" index="33" module-instance="TC1"/>
+          <generator name="TC2_OVF" index="34" module-instance="TC2"/>
+          <generator name="TC2_MCX_0" index="35" module-instance="TC2"/>
+          <generator name="TC2_MCX_1" index="36" module-instance="TC2"/>
+          <generator name="ADC_RESRDY" index="37" module-instance="ADC"/>
+          <generator name="ADC_WINMON" index="38" module-instance="ADC"/>
+        </generators>
+        <users>
+          <user name="DMAC_CH_0" index="0" module-instance="DMAC"/>
+          <user name="DMAC_CH_1" index="1" module-instance="DMAC"/>
+          <user name="DMAC_CH_2" index="2" module-instance="DMAC"/>
+          <user name="DMAC_CH_3" index="3" module-instance="DMAC"/>
+          <user name="TC1_EVU" index="10" module-instance="TC1"/>
+          <user name="TC2_EVU" index="11" module-instance="TC2"/>
+          <user name="ADC_START" index="12" module-instance="ADC"/>
+          <user name="ADC_SYNC" index="13" module-instance="ADC"/>
+        </users>
+      </events>
       <interfaces>
         <interface name="SWD" type="swd"/>
       </interfaces>
@@ -1042,28 +1151,30 @@
         <register name="DCFG" offset="0xF0" rw="RW" size="4" count="2" initval="0x00000000" caption="Device Configuration">
           <bitfield name="DCFG" caption="Device Configuration" mask="0xFFFFFFFF"/>
         </register>
-        <register name="ENTRY" offset="0x1000" rw="R" size="4" count="2" caption="Coresight ROM Table Entry n">
+        <register name="ENTRY0" offset="0x1000" rw="R" size="4" initval="0x9F0FC002" caption="CoreSight ROM Table Entry 0">
           <bitfield name="EPRES" caption="Entry Present" mask="0x1"/>
           <bitfield name="FMT" caption="Format" mask="0x2"/>
           <bitfield name="ADDOFF" caption="Address Offset" mask="0xFFFFF000"/>
         </register>
-        <register name="END" offset="0x1008" rw="R" size="4" initval="0x00000000" caption="Coresight ROM Table End">
+        <register name="ENTRY1" offset="0x1004" rw="R" size="4" initval="0x00003002" caption="CoreSight ROM Table Entry 1">
+        </register>
+        <register name="END" offset="0x1008" rw="R" size="4" initval="0x00000000" caption="CoreSight ROM Table End">
           <bitfield name="END" caption="End Marker" mask="0xFFFFFFFF"/>
         </register>
-        <register name="MEMTYPE" offset="0x1FCC" rw="R" size="4" initval="0x00000000" caption="Coresight ROM Table Memory Type">
+        <register name="MEMTYPE" offset="0x1FCC" rw="R" size="4" initval="0x00000000" caption="CoreSight ROM Table Memory Type">
           <bitfield name="SMEMP" caption="System Memory Present" mask="0x1"/>
         </register>
         <register name="PID4" offset="0x1FD0" rw="R" size="4" initval="0x00000000" caption="Peripheral Identification 4">
           <bitfield name="JEPCC" caption="JEP-106 Continuation Code" mask="0xF"/>
           <bitfield name="FKBC" caption="4KB count" mask="0xF0"/>
         </register>
-        <register name="PID5" offset="0x1FD4" rw="R" size="4" caption="Peripheral Identification 5">
+        <register name="PID5" offset="0x1FD4" rw="R" size="4" initval="0x00000000" caption="Peripheral Identification 5">
         </register>
-        <register name="PID6" offset="0x1FD8" rw="R" size="4" caption="Peripheral Identification 6">
+        <register name="PID6" offset="0x1FD8" rw="R" size="4" initval="0x00000000" caption="Peripheral Identification 6">
         </register>
-        <register name="PID7" offset="0x1FDC" rw="R" size="4" caption="Peripheral Identification 7">
+        <register name="PID7" offset="0x1FDC" rw="R" size="4" initval="0x00000000" caption="Peripheral Identification 7">
         </register>
-        <register name="PID0" offset="0x1FE0" rw="R" size="4" initval="0x00000000" caption="Peripheral Identification 0">
+        <register name="PID0" offset="0x1FE0" rw="R" size="4" initval="0x000000D0" caption="Peripheral Identification 0">
           <bitfield name="PARTNBL" caption="Part Number Low" mask="0xFF"/>
         </register>
         <register name="PID1" offset="0x1FE4" rw="R" size="4" initval="0x000000FC" caption="Peripheral Identification 1">
@@ -1079,17 +1190,17 @@
           <bitfield name="CUSMOD" caption="ARM CUSMOD" mask="0xF"/>
           <bitfield name="REVAND" caption="Revision Number" mask="0xF0"/>
         </register>
-        <register name="CID0" offset="0x1FF0" rw="R" size="4" initval="0x00000000" caption="Component Identification 0">
+        <register name="CID0" offset="0x1FF0" rw="R" size="4" initval="0x0000000D" caption="Component Identification 0">
           <bitfield name="PREAMBLEB0" caption="Preamble Byte 0" mask="0xFF"/>
         </register>
-        <register name="CID1" offset="0x1FF4" rw="R" size="4" initval="0x00000000" caption="Component Identification 1">
+        <register name="CID1" offset="0x1FF4" rw="R" size="4" initval="0x00000010" caption="Component Identification 1">
           <bitfield name="PREAMBLE" caption="Preamble" mask="0xF"/>
           <bitfield name="CCLASS" caption="Component Class" mask="0xF0"/>
         </register>
-        <register name="CID2" offset="0x1FF8" rw="R" size="4" initval="0x00000000" caption="Component Identification 2">
+        <register name="CID2" offset="0x1FF8" rw="R" size="4" initval="0x00000005" caption="Component Identification 2">
           <bitfield name="PREAMBLEB2" caption="Preamble Byte 2" mask="0xFF"/>
         </register>
-        <register name="CID3" offset="0x1FFC" rw="R" size="4" initval="0x00000000" caption="Component Identification 3">
+        <register name="CID3" offset="0x1FFC" rw="R" size="4" initval="0x000000B1" caption="Component Identification 3">
           <bitfield name="PREAMBLEB3" caption="Preamble Byte 3" mask="0xFF"/>
         </register>
       </register-group>
@@ -1423,7 +1534,7 @@
         <value name="XOSC32K" caption="XOSC32K oscillator output" value="5"/>
         <value name="OSC8M" caption="OSC8M oscillator output" value="6"/>
         <value name="DFLL48M" caption="DFLL48M output" value="7"/>
-        <value name="FDPLL" caption="FDPLL output" value="8"/>
+        <value name="DPLL96M" caption="DPLL96M output" value="8"/>
       </value-group>
     </module>
     <module name="HMATRIXB" id="I7638" version="2.1.2" caption="HSB Matrix">
@@ -1450,7 +1561,7 @@
         </register>
       </register-group>
       <register-group name="HMATRIXB" caption="HSB Matrix">
-        <register-group name="PRS" name-in-module="PRS" offset="0x080" count="16"/>
+        <register-group name="PRS" name-in-module="PRS" offset="0x080" size="0x8" count="16"/>
         <register name="SFR" offset="0x110" rw="RW" size="4" access-size="4" count="16" initval="0x00000000" caption="Special Function">
           <bitfield name="SFR" caption="Special Function Register" mask="0xFFFFFFFF"/>
         </register>
@@ -1727,6 +1838,7 @@
           <bitfield name="TC1_" caption="TC1 APB Clock Enable" mask="0x40"/>
           <bitfield name="TC2_" caption="TC2 APB Clock Enable" mask="0x80"/>
           <bitfield name="ADC_" caption="ADC APB Clock Enable" mask="0x100"/>
+          <bitfield name="PTC_" caption="PTC APB Clock Enable" mask="0x800"/>
         </register>
         <register name="INTENCLR" offset="0x34" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="Interrupt Enable Clear">
           <bitfield name="CKRDY" caption="Clock Ready Interrupt Enable" mask="0x1"/>
@@ -1850,7 +1962,7 @@
         </register>
       </register-group>
       <register-group name="PORT" caption="Port Module">
-        <register-group name="GROUP" name-in-module="GROUP" offset="0x00" count="1"/>
+        <register-group name="GROUP" name-in-module="GROUP" offset="0x00" size="0x80" count="1"/>
       </register-group>
       <value-group name="PORT_PMUX__PMUXE">
         <value name="A" caption="Peripheral function A selected" value="0x0"/>
@@ -1873,9 +1985,13 @@
         <value name="H" caption="Peripheral function H selected" value="0x7"/>
       </value-group>
     </module>
+    <module name="PTC" id="U2215" version="1.0.4" caption="Peripheral Touch Controller">
+      <register-group name="PTC" caption="Peripheral Touch Controller"/>
+    </module>
     <module name="RTC" id="U2202" version="1.0.1" caption="Real-Time Counter">
       <register-group name="MODE2_ALARM" size="0x8">
-        <register name="ALARM" offset="0x0" rw="RW" access="WSYNC" size="4" initval="0x00000000" caption="MODE2_ALARM Alarm n Value">
+        <mode name="MODE2" qualifier="RTC.MODE2.CTRL.MODE" value="2" caption="Clock/Calendar with Alarm"/>
+        <register modes="MODE2" name="ALARM" offset="0x0" rw="RW" access="WSYNC" size="4" initval="0x00000000" caption="MODE2_ALARM Alarm n Value">
           <bitfield name="SECOND" caption="Second" mask="0x3F"/>
           <bitfield name="MINUTE" caption="Minute" mask="0xFC0"/>
           <bitfield name="HOUR" caption="Hour" mask="0x1F000" values="RTC_MODE2_ALARM_ALARM__HOUR"/>
@@ -1883,137 +1999,28 @@
           <bitfield name="MONTH" caption="Month" mask="0x3C00000"/>
           <bitfield name="YEAR" caption="Year" mask="0xFC000000"/>
         </register>
-        <register name="MASK" offset="0x4" rw="RW" size="1" initval="0x00" caption="MODE2_ALARM Alarm n Mask">
+        <register modes="MODE2" name="MASK" offset="0x4" rw="RW" size="1" initval="0x00" caption="MODE2_ALARM Alarm n Mask">
           <bitfield name="SEL" caption="Alarm Mask Selection" mask="0x7" values="RTC_MODE2_ALARM_MASK__SEL"/>
         </register>
       </register-group>
-      <register-group class="union" union-tag="RTC.MODE0.CTRL.MODE" name="RTC" caption="Real-Time Counter">
-        <register-group name="MODE0" name-in-module="RTC_MODE0" union-tag-value="0" offset="0"/>
-        <register-group name="MODE1" name-in-module="RTC_MODE1" union-tag-value="1" offset="0"/>
-        <register-group name="MODE2" name-in-module="RTC_MODE2" union-tag-value="2" offset="0"/>
-      </register-group>
-      <register-group name="RTC_MODE0" caption="Real-Time Counter - 32-bit Counter with Single 32-bit Compare">
-        <register name="CTRL" offset="0x0" rw="RW" access="WSYNC" size="2" initval="0x0000" caption="MODE0 Control">
+      <register-group name="RTC" caption="Real-Time Counter">
+        <mode name="MODE0" qualifier="RTC.MODE0.CTRL.MODE" value="0" caption="32-bit Counter with Single 32-bit Compare"/>
+        <mode name="MODE1" qualifier="RTC.MODE1.CTRL.MODE" value="1" caption="16-bit Counter with Two 16-bit Compares"/>
+        <mode name="MODE2" qualifier="RTC.MODE2.CTRL.MODE" value="2" caption="Clock/Calendar with Alarm"/>
+        <register modes="MODE0" name="CTRL" offset="0x0" rw="RW" access="WSYNC" size="2" initval="0x0000" caption="MODE0 Control">
           <bitfield name="SWRST" caption="Software Reset" mask="0x1"/>
           <bitfield name="ENABLE" caption="Enable" mask="0x2"/>
           <bitfield name="MODE" caption="Operating Mode" mask="0xC" values="RTC_MODE0_CTRL__MODE"/>
           <bitfield name="MATCHCLR" caption="Clear on Match" mask="0x80"/>
           <bitfield name="PRESCALER" caption="Prescaler" mask="0xF00" values="RTC_MODE0_CTRL__PRESCALER"/>
         </register>
-        <register name="READREQ" offset="0x2" rw="RW" size="2" initval="0x0010" caption="Read Request">
-          <bitfield name="ADDR" caption="Address" mask="0x3F"/>
-          <bitfield name="RCONT" caption="Read Continuously" mask="0x4000"/>
-          <bitfield name="RREQ" caption="Read Request" mask="0x8000"/>
-        </register>
-        <register name="EVCTRL" offset="0x4" rw="RW" size="2" initval="0x0000" caption="MODE0 Event Control">
-          <bitfield name="PEREO0" caption="Periodic Interval 0 Event Output Enable" mask="0x1"/>
-          <bitfield name="PEREO1" caption="Periodic Interval 1 Event Output Enable" mask="0x2"/>
-          <bitfield name="PEREO2" caption="Periodic Interval 2 Event Output Enable" mask="0x4"/>
-          <bitfield name="PEREO3" caption="Periodic Interval 3 Event Output Enable" mask="0x8"/>
-          <bitfield name="PEREO4" caption="Periodic Interval 4 Event Output Enable" mask="0x10"/>
-          <bitfield name="PEREO5" caption="Periodic Interval 5 Event Output Enable" mask="0x20"/>
-          <bitfield name="PEREO6" caption="Periodic Interval 6 Event Output Enable" mask="0x40"/>
-          <bitfield name="PEREO7" caption="Periodic Interval 7 Event Output Enable" mask="0x80"/>
-          <bitfield name="CMPEO0" caption="Compare 0 Event Output Enable" mask="0x100"/>
-          <bitfield name="OVFEO" caption="Overflow Event Output Enable" mask="0x8000"/>
-        </register>
-        <register name="INTENCLR" offset="0x6" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="MODE0 Interrupt Enable Clear">
-          <bitfield name="CMP0" caption="Compare 0 Interrupt Enable" mask="0x1"/>
-          <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x40"/>
-          <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x80"/>
-        </register>
-        <register name="INTENSET" offset="0x7" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="MODE0 Interrupt Enable Set">
-          <bitfield name="CMP0" caption="Compare 0 Interrupt Enable" mask="0x1"/>
-          <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x40"/>
-          <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x80"/>
-        </register>
-        <register name="INTFLAG" offset="0x8" rw="RW" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="MODE0 Interrupt Flag Status and Clear">
-          <bitfield name="CMP0" caption="Compare 0" mask="0x1"/>
-          <bitfield name="SYNCRDY" caption="Synchronization Ready" mask="0x40"/>
-          <bitfield name="OVF" caption="Overflow" mask="0x80"/>
-        </register>
-        <register name="STATUS" offset="0xA" rw="RW" size="1" initval="0x00" caption="Status">
-          <bitfield name="SYNCBUSY" caption="Synchronization Busy" mask="0x80"/>
-        </register>
-        <register name="DBGCTRL" offset="0xB" rw="RW" size="1" initval="0x00" caption="Debug Control">
-          <bitfield name="DBGRUN" caption="Run During Debug" mask="0x1"/>
-        </register>
-        <register name="FREQCORR" offset="0xC" rw="RW" access="WSYNC" size="1" initval="0x00" caption="Frequency Correction">
-          <bitfield name="VALUE" caption="Correction Value" mask="0x7F"/>
-          <bitfield name="SIGN" caption="Correction Sign" mask="0x80"/>
-        </register>
-        <register name="COUNT" offset="0x10" rw="RW" size="4" initval="0x00000000" caption="MODE0 Counter Value">
-          <bitfield name="COUNT" caption="Counter Value" mask="0xFFFFFFFF"/>
-        </register>
-        <register name="COMP" offset="0x18" rw="RW" access="WSYNC" size="4" count="1" initval="0x00000000" caption="MODE0 Compare n Value">
-          <bitfield name="COMP" caption="Compare Value" mask="0xFFFFFFFF"/>
-        </register>
-      </register-group>
-      <register-group name="RTC_MODE1" caption="Real-Time Counter - 16-bit Counter with Two 16-bit Compares">
-        <register name="CTRL" offset="0x0" rw="RW" access="WSYNC" size="2" initval="0x0000" caption="MODE1 Control">
+        <register modes="MODE1" name="CTRL" offset="0x0" rw="RW" access="WSYNC" size="2" initval="0x0000" caption="MODE1 Control">
           <bitfield name="SWRST" caption="Software Reset" mask="0x1"/>
           <bitfield name="ENABLE" caption="Enable" mask="0x2"/>
           <bitfield name="MODE" caption="Operating Mode" mask="0xC" values="RTC_MODE1_CTRL__MODE"/>
           <bitfield name="PRESCALER" caption="Prescaler" mask="0xF00" values="RTC_MODE1_CTRL__PRESCALER"/>
         </register>
-        <register name="READREQ" offset="0x2" rw="RW" size="2" initval="0x0010" caption="Read Request">
-          <bitfield name="ADDR" caption="Address" mask="0x3F"/>
-          <bitfield name="RCONT" caption="Read Continuously" mask="0x4000"/>
-          <bitfield name="RREQ" caption="Read Request" mask="0x8000"/>
-        </register>
-        <register name="EVCTRL" offset="0x4" rw="RW" size="2" initval="0x0000" caption="MODE1 Event Control">
-          <bitfield name="PEREO0" caption="Periodic Interval 0 Event Output Enable" mask="0x1"/>
-          <bitfield name="PEREO1" caption="Periodic Interval 1 Event Output Enable" mask="0x2"/>
-          <bitfield name="PEREO2" caption="Periodic Interval 2 Event Output Enable" mask="0x4"/>
-          <bitfield name="PEREO3" caption="Periodic Interval 3 Event Output Enable" mask="0x8"/>
-          <bitfield name="PEREO4" caption="Periodic Interval 4 Event Output Enable" mask="0x10"/>
-          <bitfield name="PEREO5" caption="Periodic Interval 5 Event Output Enable" mask="0x20"/>
-          <bitfield name="PEREO6" caption="Periodic Interval 6 Event Output Enable" mask="0x40"/>
-          <bitfield name="PEREO7" caption="Periodic Interval 7 Event Output Enable" mask="0x80"/>
-          <bitfield name="CMPEO0" caption="Compare 0 Event Output Enable" mask="0x100"/>
-          <bitfield name="CMPEO1" caption="Compare 1 Event Output Enable" mask="0x200"/>
-          <bitfield name="OVFEO" caption="Overflow Event Output Enable" mask="0x8000"/>
-        </register>
-        <register name="INTENCLR" offset="0x6" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="MODE1 Interrupt Enable Clear">
-          <bitfield name="CMP0" caption="Compare 0 Interrupt Enable" mask="0x1"/>
-          <bitfield name="CMP1" caption="Compare 1 Interrupt Enable" mask="0x2"/>
-          <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x40"/>
-          <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x80"/>
-        </register>
-        <register name="INTENSET" offset="0x7" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="MODE1 Interrupt Enable Set">
-          <bitfield name="CMP0" caption="Compare 0 Interrupt Enable" mask="0x1"/>
-          <bitfield name="CMP1" caption="Compare 1 Interrupt Enable" mask="0x2"/>
-          <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x40"/>
-          <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x80"/>
-        </register>
-        <register name="INTFLAG" offset="0x8" rw="RW" access="WSYNC" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="MODE1 Interrupt Flag Status and Clear">
-          <bitfield name="CMP0" caption="Compare 0" mask="0x1"/>
-          <bitfield name="CMP1" caption="Compare 1" mask="0x2"/>
-          <bitfield name="SYNCRDY" caption="Synchronization Ready" mask="0x40"/>
-          <bitfield name="OVF" caption="Overflow" mask="0x80"/>
-        </register>
-        <register name="STATUS" offset="0xA" rw="RW" size="1" initval="0x00" caption="Status">
-          <bitfield name="SYNCBUSY" caption="Synchronization Busy" mask="0x80"/>
-        </register>
-        <register name="DBGCTRL" offset="0xB" rw="RW" size="1" initval="0x00" caption="Debug Control">
-          <bitfield name="DBGRUN" caption="Run During Debug" mask="0x1"/>
-        </register>
-        <register name="FREQCORR" offset="0xC" rw="RW" access="WSYNC" size="1" initval="0x00" caption="Frequency Correction">
-          <bitfield name="VALUE" caption="Correction Value" mask="0x7F"/>
-          <bitfield name="SIGN" caption="Correction Sign" mask="0x80"/>
-        </register>
-        <register name="COUNT" offset="0x10" rw="RW" size="2" initval="0x0000" caption="MODE1 Counter Value">
-          <bitfield name="COUNT" caption="Counter Value" mask="0xFFFF"/>
-        </register>
-        <register name="PER" offset="0x14" rw="RW" access="WSYNC" size="2" initval="0x0000" caption="MODE1 Counter Period">
-          <bitfield name="PER" caption="Counter Period" mask="0xFFFF"/>
-        </register>
-        <register name="COMP" offset="0x18" rw="RW" access="WSYNC" size="2" count="2" initval="0x0000" caption="MODE1 Compare n Value">
-          <bitfield name="COMP" caption="Compare Value" mask="0xFFFF"/>
-        </register>
-      </register-group>
-      <register-group name="RTC_MODE2" caption="Real-Time Counter - Clock/Calendar with Alarm">
-        <register name="CTRL" offset="0x0" rw="RW" access="WSYNC" size="2" initval="0x0000" caption="MODE2 Control">
+        <register modes="MODE2" name="CTRL" offset="0x0" rw="RW" access="WSYNC" size="2" initval="0x0000" caption="MODE2 Control">
           <bitfield name="SWRST" caption="Software Reset" mask="0x1"/>
           <bitfield name="ENABLE" caption="Enable" mask="0x2"/>
           <bitfield name="MODE" caption="Operating Mode" mask="0xC" values="RTC_MODE2_CTRL__MODE"/>
@@ -2026,7 +2033,32 @@
           <bitfield name="RCONT" caption="Read Continuously" mask="0x4000"/>
           <bitfield name="RREQ" caption="Read Request" mask="0x8000"/>
         </register>
-        <register name="EVCTRL" offset="0x4" rw="RW" size="2" initval="0x0000" caption="MODE2 Event Control">
+        <register modes="MODE0" name="EVCTRL" offset="0x4" rw="RW" size="2" initval="0x0000" caption="MODE0 Event Control">
+          <bitfield name="PEREO0" caption="Periodic Interval 0 Event Output Enable" mask="0x1"/>
+          <bitfield name="PEREO1" caption="Periodic Interval 1 Event Output Enable" mask="0x2"/>
+          <bitfield name="PEREO2" caption="Periodic Interval 2 Event Output Enable" mask="0x4"/>
+          <bitfield name="PEREO3" caption="Periodic Interval 3 Event Output Enable" mask="0x8"/>
+          <bitfield name="PEREO4" caption="Periodic Interval 4 Event Output Enable" mask="0x10"/>
+          <bitfield name="PEREO5" caption="Periodic Interval 5 Event Output Enable" mask="0x20"/>
+          <bitfield name="PEREO6" caption="Periodic Interval 6 Event Output Enable" mask="0x40"/>
+          <bitfield name="PEREO7" caption="Periodic Interval 7 Event Output Enable" mask="0x80"/>
+          <bitfield name="CMPEO0" caption="Compare 0 Event Output Enable" mask="0x100"/>
+          <bitfield name="OVFEO" caption="Overflow Event Output Enable" mask="0x8000"/>
+        </register>
+        <register modes="MODE1" name="EVCTRL" offset="0x4" rw="RW" size="2" initval="0x0000" caption="MODE1 Event Control">
+          <bitfield name="PEREO0" caption="Periodic Interval 0 Event Output Enable" mask="0x1"/>
+          <bitfield name="PEREO1" caption="Periodic Interval 1 Event Output Enable" mask="0x2"/>
+          <bitfield name="PEREO2" caption="Periodic Interval 2 Event Output Enable" mask="0x4"/>
+          <bitfield name="PEREO3" caption="Periodic Interval 3 Event Output Enable" mask="0x8"/>
+          <bitfield name="PEREO4" caption="Periodic Interval 4 Event Output Enable" mask="0x10"/>
+          <bitfield name="PEREO5" caption="Periodic Interval 5 Event Output Enable" mask="0x20"/>
+          <bitfield name="PEREO6" caption="Periodic Interval 6 Event Output Enable" mask="0x40"/>
+          <bitfield name="PEREO7" caption="Periodic Interval 7 Event Output Enable" mask="0x80"/>
+          <bitfield name="CMPEO0" caption="Compare 0 Event Output Enable" mask="0x100"/>
+          <bitfield name="CMPEO1" caption="Compare 1 Event Output Enable" mask="0x200"/>
+          <bitfield name="OVFEO" caption="Overflow Event Output Enable" mask="0x8000"/>
+        </register>
+        <register modes="MODE2" name="EVCTRL" offset="0x4" rw="RW" size="2" initval="0x0000" caption="MODE2 Event Control">
           <bitfield name="PEREO0" caption="Periodic Interval 0 Event Output Enable" mask="0x1"/>
           <bitfield name="PEREO1" caption="Periodic Interval 1 Event Output Enable" mask="0x2"/>
           <bitfield name="PEREO2" caption="Periodic Interval 2 Event Output Enable" mask="0x4"/>
@@ -2038,17 +2070,50 @@
           <bitfield name="ALARMEO0" caption="Alarm 0 Event Output Enable" mask="0x100"/>
           <bitfield name="OVFEO" caption="Overflow Event Output Enable" mask="0x8000"/>
         </register>
-        <register name="INTENCLR" offset="0x6" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="MODE2 Interrupt Enable Clear">
+        <register modes="MODE0" name="INTENCLR" offset="0x6" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="MODE0 Interrupt Enable Clear">
+          <bitfield name="CMP0" caption="Compare 0 Interrupt Enable" mask="0x1"/>
+          <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x40"/>
+          <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x80"/>
+        </register>
+        <register modes="MODE1" name="INTENCLR" offset="0x6" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="MODE1 Interrupt Enable Clear">
+          <bitfield name="CMP0" caption="Compare 0 Interrupt Enable" mask="0x1"/>
+          <bitfield name="CMP1" caption="Compare 1 Interrupt Enable" mask="0x2"/>
+          <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x40"/>
+          <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x80"/>
+        </register>
+        <register modes="MODE2" name="INTENCLR" offset="0x6" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="MODE2 Interrupt Enable Clear">
           <bitfield name="ALARM0" caption="Alarm 0 Interrupt Enable" mask="0x1"/>
           <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x40"/>
           <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x80"/>
         </register>
-        <register name="INTENSET" offset="0x7" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="MODE2 Interrupt Enable Set">
+        <register modes="MODE0" name="INTENSET" offset="0x7" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="MODE0 Interrupt Enable Set">
+          <bitfield name="CMP0" caption="Compare 0 Interrupt Enable" mask="0x1"/>
+          <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x40"/>
+          <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x80"/>
+        </register>
+        <register modes="MODE1" name="INTENSET" offset="0x7" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="MODE1 Interrupt Enable Set">
+          <bitfield name="CMP0" caption="Compare 0 Interrupt Enable" mask="0x1"/>
+          <bitfield name="CMP1" caption="Compare 1 Interrupt Enable" mask="0x2"/>
+          <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x40"/>
+          <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x80"/>
+        </register>
+        <register modes="MODE2" name="INTENSET" offset="0x7" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="MODE2 Interrupt Enable Set">
           <bitfield name="ALARM0" caption="Alarm 0 Interrupt Enable" mask="0x1"/>
           <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x40"/>
           <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x80"/>
         </register>
-        <register name="INTFLAG" offset="0x8" rw="RW" access="WSYNC" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="MODE2 Interrupt Flag Status and Clear">
+        <register modes="MODE0" name="INTFLAG" offset="0x8" rw="RW" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="MODE0 Interrupt Flag Status and Clear">
+          <bitfield name="CMP0" caption="Compare 0" mask="0x1"/>
+          <bitfield name="SYNCRDY" caption="Synchronization Ready" mask="0x40"/>
+          <bitfield name="OVF" caption="Overflow" mask="0x80"/>
+        </register>
+        <register modes="MODE1" name="INTFLAG" offset="0x8" rw="RW" access="WSYNC" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="MODE1 Interrupt Flag Status and Clear">
+          <bitfield name="CMP0" caption="Compare 0" mask="0x1"/>
+          <bitfield name="CMP1" caption="Compare 1" mask="0x2"/>
+          <bitfield name="SYNCRDY" caption="Synchronization Ready" mask="0x40"/>
+          <bitfield name="OVF" caption="Overflow" mask="0x80"/>
+        </register>
+        <register modes="MODE2" name="INTFLAG" offset="0x8" rw="RW" access="WSYNC" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="MODE2 Interrupt Flag Status and Clear">
           <bitfield name="ALARM0" caption="Alarm 0" mask="0x1"/>
           <bitfield name="SYNCRDY" caption="Synchronization Ready" mask="0x40"/>
           <bitfield name="OVF" caption="Overflow" mask="0x80"/>
@@ -2063,7 +2128,13 @@
           <bitfield name="VALUE" caption="Correction Value" mask="0x7F"/>
           <bitfield name="SIGN" caption="Correction Sign" mask="0x80"/>
         </register>
-        <register name="CLOCK" offset="0x10" rw="RW" size="4" initval="0x00000000" caption="MODE2 Clock Value">
+        <register modes="MODE0" name="COUNT" offset="0x10" rw="RW" size="4" initval="0x00000000" caption="MODE0 Counter Value">
+          <bitfield name="COUNT" caption="Counter Value" mask="0xFFFFFFFF"/>
+        </register>
+        <register modes="MODE1" name="COUNT" offset="0x10" rw="RW" size="2" initval="0x0000" caption="MODE1 Counter Value">
+          <bitfield name="COUNT" caption="Counter Value" mask="0xFFFF"/>
+        </register>
+        <register modes="MODE2" name="CLOCK" offset="0x10" rw="RW" size="4" initval="0x00000000" caption="MODE2 Clock Value">
           <bitfield name="SECOND" caption="Second" mask="0x3F"/>
           <bitfield name="MINUTE" caption="Minute" mask="0xFC0"/>
           <bitfield name="HOUR" caption="Hour" mask="0x1F000" values="RTC_MODE2_CLOCK__HOUR"/>
@@ -2071,7 +2142,16 @@
           <bitfield name="MONTH" caption="Month" mask="0x3C00000"/>
           <bitfield name="YEAR" caption="Year" mask="0xFC000000"/>
         </register>
-        <register-group name="MODE2_ALARM" name-in-module="MODE2_ALARM" offset="0x18" count="1"/>
+        <register modes="MODE1" name="PER" offset="0x14" rw="RW" access="WSYNC" size="2" initval="0x0000" caption="MODE1 Counter Period">
+          <bitfield name="PER" caption="Counter Period" mask="0xFFFF"/>
+        </register>
+        <register modes="MODE0" name="COMP" offset="0x18" rw="RW" access="WSYNC" size="4" count="1" initval="0x00000000" caption="MODE0 Compare n Value">
+          <bitfield name="COMP" caption="Compare Value" mask="0xFFFFFFFF"/>
+        </register>
+        <register modes="MODE1" name="COMP" offset="0x18" rw="RW" access="WSYNC" size="2" count="2" initval="0x0000" caption="MODE1 Compare n Value">
+          <bitfield name="COMP" caption="Compare Value" mask="0xFFFF"/>
+        </register>
+        <register-group modes="MODE2" name="MODE2_ALARM" name-in-module="MODE2_ALARM" offset="0x18" size="0x8" count="1"/>
       </register-group>
       <value-group name="RTC_MODE0_CTRL__MODE">
         <value name="COUNT32" caption="Mode 0: 32-bit Counter" value="0x0"/>
@@ -2146,14 +2226,12 @@
       </value-group>
     </module>
     <module name="SERCOM" id="U2201" version="2.0.0" caption="Serial Communication Interface">
-      <register-group class="union" union-tag="SERCOM.I2CM_CTRLA.MODE" name="SERCOM" caption="Serial Communication Interface">
-        <register-group name="I2CM" name-in-module="SERCOM_I2CM" union-tag-value="5" offset="0"/>
-        <register-group name="I2CS" name-in-module="SERCOM_I2CS" union-tag-value="4" offset="0"/>
-        <register-group name="SPI" name-in-module="SERCOM_SPI" union-tag-mask="6" union-tag-value="2" offset="0"/>
-        <register-group name="USART" name-in-module="SERCOM_USART" union-tag-mask="6" union-tag-value="0" offset="0"/>
-      </register-group>
-      <register-group name="SERCOM_I2CM" caption="Serial Communication Interface - I2C Master Mode">
-        <register name="CTRLA" offset="0x0" rw="RW" size="4" initval="0x00000000" caption="I2CM Control A">
+      <register-group name="SERCOM" caption="Serial Communication Interface">
+        <mode name="I2CM" qualifier="SERCOM.I2CM_CTRLA.MODE" value="5" caption="I2C Master Mode"/>
+        <mode name="I2CS" qualifier="SERCOM.I2CS_CTRLA.MODE" value="4" caption="I2C Slave Mode"/>
+        <mode name="SPI" qualifier="SERCOM.SPI_CTRLA.MODE" mask="6" value="2" caption="SPI Mode"/>
+        <mode name="USART" qualifier="SERCOM.USART_CTRLA.MODE" mask="6" value="0" caption="USART Mode"/>
+        <register modes="I2CM" name="CTRLA" offset="0x0" rw="RW" size="4" initval="0x00000000" caption="I2CM Control A">
           <bitfield name="SWRST" caption="Software Reset" mask="0x1"/>
           <bitfield name="ENABLE" caption="Enable" mask="0x2"/>
           <bitfield name="MODE" caption="Operating Mode" mask="0x1C" values="SERCOM_I2CM_CTRLA__MODE"/>
@@ -2167,65 +2245,7 @@
           <bitfield name="INACTOUT" caption="Inactive Time-Out" mask="0x30000000"/>
           <bitfield name="LOWTOUTEN" caption="SCL Low Timeout Enable" mask="0x40000000"/>
         </register>
-        <register name="CTRLB" offset="0x4" rw="RW" size="4" initval="0x00000000" caption="I2CM Control B">
-          <bitfield name="SMEN" caption="Smart Mode Enable" mask="0x100"/>
-          <bitfield name="QCEN" caption="Quick Command Enable" mask="0x200"/>
-          <bitfield name="CMD" caption="Command" mask="0x30000"/>
-          <bitfield name="ACKACT" caption="Acknowledge Action" mask="0x40000"/>
-        </register>
-        <register name="BAUD" offset="0xC" rw="RW" size="4" initval="0x00000000" caption="I2CM Baud Rate">
-          <bitfield name="BAUD" caption="Baud Rate Value" mask="0xFF"/>
-          <bitfield name="BAUDLOW" caption="Baud Rate Value Low" mask="0xFF00"/>
-          <bitfield name="HSBAUD" caption="High Speed Baud Rate Value" mask="0xFF0000"/>
-          <bitfield name="HSBAUDLOW" caption="High Speed Baud Rate Value Low" mask="0xFF000000"/>
-        </register>
-        <register name="INTENCLR" offset="0x14" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="I2CM Interrupt Enable Clear">
-          <bitfield name="MB" caption="Master On Bus Interrupt Disable" mask="0x1"/>
-          <bitfield name="SB" caption="Slave On Bus Interrupt Disable" mask="0x2"/>
-          <bitfield name="ERROR" caption="Combined Error Interrupt Disable" mask="0x80"/>
-        </register>
-        <register name="INTENSET" offset="0x16" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="I2CM Interrupt Enable Set">
-          <bitfield name="MB" caption="Master On Bus Interrupt Enable" mask="0x1"/>
-          <bitfield name="SB" caption="Slave On Bus Interrupt Enable" mask="0x2"/>
-          <bitfield name="ERROR" caption="Combined Error Interrupt Enable" mask="0x80"/>
-        </register>
-        <register name="INTFLAG" offset="0x18" rw="RW" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="I2CM Interrupt Flag Status and Clear">
-          <bitfield name="MB" caption="Master On Bus Interrupt" mask="0x1"/>
-          <bitfield name="SB" caption="Slave On Bus Interrupt" mask="0x2"/>
-          <bitfield name="ERROR" caption="Combined Error Interrupt" mask="0x80"/>
-        </register>
-        <register name="STATUS" offset="0x1A" rw="RW" size="2" initval="0x0000" caption="I2CM Status">
-          <bitfield name="BUSERR" caption="Bus Error" mask="0x1"/>
-          <bitfield name="ARBLOST" caption="Arbitration Lost" mask="0x2"/>
-          <bitfield name="RXNACK" caption="Received Not Acknowledge" mask="0x4"/>
-          <bitfield name="BUSSTATE" caption="Bus State" mask="0x30"/>
-          <bitfield name="LOWTOUT" caption="SCL Low Timeout" mask="0x40"/>
-          <bitfield name="CLKHOLD" caption="Clock Hold" mask="0x80"/>
-          <bitfield name="MEXTTOUT" caption="Master SCL Low Extend Timeout" mask="0x100"/>
-          <bitfield name="SEXTTOUT" caption="Slave SCL Low Extend Timeout" mask="0x200"/>
-          <bitfield name="LENERR" caption="Length Error" mask="0x400"/>
-        </register>
-        <register name="SYNCBUSY" offset="0x1C" rw="R" size="4" initval="0x00000000" caption="I2CM Syncbusy">
-          <bitfield name="SWRST" caption="Software Reset Synchronization Busy" mask="0x1"/>
-          <bitfield name="ENABLE" caption="SERCOM Enable Synchronization Busy" mask="0x2"/>
-          <bitfield name="SYSOP" caption="System Operation Synchronization Busy" mask="0x4"/>
-        </register>
-        <register name="ADDR" offset="0x24" rw="RW" size="4" initval="0x00000000" caption="I2CM Address">
-          <bitfield name="ADDR" caption="Address Value" mask="0x7FF"/>
-          <bitfield name="LENEN" caption="Length Enable" mask="0x2000"/>
-          <bitfield name="HS" caption="High Speed Mode" mask="0x4000"/>
-          <bitfield name="TENBITEN" caption="Ten Bit Addressing Enable" mask="0x8000"/>
-          <bitfield name="LEN" caption="Length" mask="0xFF0000"/>
-        </register>
-        <register name="DATA" offset="0x28" rw="RW" size="1" initval="0x00" caption="I2CM Data">
-          <bitfield name="DATA" caption="Data Value" mask="0xFF"/>
-        </register>
-        <register name="DBGCTRL" offset="0x30" rw="RW" size="1" initval="0x00" caption="I2CM Debug Control">
-          <bitfield name="DBGSTOP" caption="Debug Mode" mask="0x1"/>
-        </register>
-      </register-group>
-      <register-group name="SERCOM_I2CS" caption="Serial Communication Interface - I2C Slave Mode">
-        <register name="CTRLA" offset="0x0" rw="RW" size="4" initval="0x00000000" caption="I2CS Control A">
+        <register modes="I2CS" name="CTRLA" offset="0x0" rw="RW" size="4" initval="0x00000000" caption="I2CS Control A">
           <bitfield name="SWRST" caption="Software Reset" mask="0x1"/>
           <bitfield name="ENABLE" caption="Enable" mask="0x2"/>
           <bitfield name="MODE" caption="Operating Mode" mask="0x1C" values="SERCOM_I2CS_CTRLA__MODE"/>
@@ -2237,59 +2257,7 @@
           <bitfield name="SCLSM" caption="SCL Clock Stretch Mode" mask="0x8000000"/>
           <bitfield name="LOWTOUTEN" caption="SCL Low Timeout Enable" mask="0x40000000"/>
         </register>
-        <register name="CTRLB" offset="0x4" rw="RW" size="4" initval="0x00000000" caption="I2CS Control B">
-          <bitfield name="SMEN" caption="Smart Mode Enable" mask="0x100"/>
-          <bitfield name="GCMD" caption="PMBus Group Command" mask="0x200"/>
-          <bitfield name="AACKEN" caption="Automatic Address Acknowledge" mask="0x400"/>
-          <bitfield name="AMODE" caption="Address Mode" mask="0xC000"/>
-          <bitfield name="CMD" caption="Command" mask="0x30000"/>
-          <bitfield name="ACKACT" caption="Acknowledge Action" mask="0x40000"/>
-        </register>
-        <register name="INTENCLR" offset="0x14" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="I2CS Interrupt Enable Clear">
-          <bitfield name="PREC" caption="Stop Received Interrupt Disable" mask="0x1"/>
-          <bitfield name="AMATCH" caption="Address Match Interrupt Disable" mask="0x2"/>
-          <bitfield name="DRDY" caption="Data Interrupt Disable" mask="0x4"/>
-          <bitfield name="ERROR" caption="Combined Error Interrupt Disable" mask="0x80"/>
-        </register>
-        <register name="INTENSET" offset="0x16" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="I2CS Interrupt Enable Set">
-          <bitfield name="PREC" caption="Stop Received Interrupt Enable" mask="0x1"/>
-          <bitfield name="AMATCH" caption="Address Match Interrupt Enable" mask="0x2"/>
-          <bitfield name="DRDY" caption="Data Interrupt Enable" mask="0x4"/>
-          <bitfield name="ERROR" caption="Combined Error Interrupt Enable" mask="0x80"/>
-        </register>
-        <register name="INTFLAG" offset="0x18" rw="RW" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="I2CS Interrupt Flag Status and Clear">
-          <bitfield name="PREC" caption="Stop Received Interrupt" mask="0x1"/>
-          <bitfield name="AMATCH" caption="Address Match Interrupt" mask="0x2"/>
-          <bitfield name="DRDY" caption="Data Interrupt" mask="0x4"/>
-          <bitfield name="ERROR" caption="Combined Error Interrupt" mask="0x80"/>
-        </register>
-        <register name="STATUS" offset="0x1A" rw="RW" size="2" initval="0x0000" caption="I2CS Status">
-          <bitfield name="BUSERR" caption="Bus Error" mask="0x1"/>
-          <bitfield name="COLL" caption="Transmit Collision" mask="0x2"/>
-          <bitfield name="RXNACK" caption="Received Not Acknowledge" mask="0x4"/>
-          <bitfield name="DIR" caption="Read/Write Direction" mask="0x8"/>
-          <bitfield name="SR" caption="Repeated Start" mask="0x10"/>
-          <bitfield name="LOWTOUT" caption="SCL Low Timeout" mask="0x40"/>
-          <bitfield name="CLKHOLD" caption="Clock Hold" mask="0x80"/>
-          <bitfield name="SEXTTOUT" caption="Slave SCL Low Extend Timeout" mask="0x200"/>
-          <bitfield name="HS" caption="High Speed" mask="0x400"/>
-        </register>
-        <register name="SYNCBUSY" offset="0x1C" rw="R" size="4" initval="0x00000000" caption="I2CS Syncbusy">
-          <bitfield name="SWRST" caption="Software Reset Synchronization Busy" mask="0x1"/>
-          <bitfield name="ENABLE" caption="SERCOM Enable Synchronization Busy" mask="0x2"/>
-        </register>
-        <register name="ADDR" offset="0x24" rw="RW" size="4" initval="0x00000000" caption="I2CS Address">
-          <bitfield name="GENCEN" caption="General Call Address Enable" mask="0x1"/>
-          <bitfield name="ADDR" caption="Address Value" mask="0x7FE"/>
-          <bitfield name="TENBITEN" caption="Ten Bit Addressing Enable" mask="0x8000"/>
-          <bitfield name="ADDRMASK" caption="Address Mask" mask="0x7FE0000"/>
-        </register>
-        <register name="DATA" offset="0x28" rw="RW" size="1" initval="0x00" caption="I2CS Data">
-          <bitfield name="DATA" caption="Data Value" mask="0xFF"/>
-        </register>
-      </register-group>
-      <register-group name="SERCOM_SPI" caption="Serial Communication Interface - SPI Mode">
-        <register name="CTRLA" offset="0x0" rw="RW" size="4" initval="0x00000000" caption="SPI Control A">
+        <register modes="SPI" name="CTRLA" offset="0x0" rw="RW" size="4" initval="0x00000000" caption="SPI Control A">
           <bitfield name="SWRST" caption="Software Reset" mask="0x1"/>
           <bitfield name="ENABLE" caption="Enable" mask="0x2"/>
           <bitfield name="MODE" caption="Operating Mode" mask="0x1C" values="SERCOM_SPI_CTRLA__MODE"/>
@@ -2302,59 +2270,7 @@
           <bitfield name="CPOL" caption="Clock Polarity" mask="0x20000000"/>
           <bitfield name="DORD" caption="Data Order" mask="0x40000000"/>
         </register>
-        <register name="CTRLB" offset="0x4" rw="RW" size="4" initval="0x00000000" caption="SPI Control B">
-          <bitfield name="CHSIZE" caption="Character Size" mask="0x7"/>
-          <bitfield name="PLOADEN" caption="Data Preload Enable" mask="0x40"/>
-          <bitfield name="SSDE" caption="Slave Select Low Detect Enable" mask="0x200"/>
-          <bitfield name="MSSEN" caption="Master Slave Select Enable" mask="0x2000"/>
-          <bitfield name="AMODE" caption="Address Mode" mask="0xC000"/>
-          <bitfield name="RXEN" caption="Receiver Enable" mask="0x20000"/>
-        </register>
-        <register name="BAUD" offset="0xC" rw="RW" size="1" initval="0x00" caption="SPI Baud Rate">
-          <bitfield name="BAUD" caption="Baud Rate Value" mask="0xFF"/>
-        </register>
-        <register name="INTENCLR" offset="0x14" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="SPI Interrupt Enable Clear">
-          <bitfield name="DRE" caption="Data Register Empty Interrupt Disable" mask="0x1"/>
-          <bitfield name="TXC" caption="Transmit Complete Interrupt Disable" mask="0x2"/>
-          <bitfield name="RXC" caption="Receive Complete Interrupt Disable" mask="0x4"/>
-          <bitfield name="SSL" caption="Slave Select Low Interrupt Disable" mask="0x8"/>
-          <bitfield name="ERROR" caption="Combined Error Interrupt Disable" mask="0x80"/>
-        </register>
-        <register name="INTENSET" offset="0x16" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="SPI Interrupt Enable Set">
-          <bitfield name="DRE" caption="Data Register Empty Interrupt Enable" mask="0x1"/>
-          <bitfield name="TXC" caption="Transmit Complete Interrupt Enable" mask="0x2"/>
-          <bitfield name="RXC" caption="Receive Complete Interrupt Enable" mask="0x4"/>
-          <bitfield name="SSL" caption="Slave Select Low Interrupt Enable" mask="0x8"/>
-          <bitfield name="ERROR" caption="Combined Error Interrupt Enable" mask="0x80"/>
-        </register>
-        <register name="INTFLAG" offset="0x18" rw="RW" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="SPI Interrupt Flag Status and Clear">
-          <bitfield name="DRE" caption="Data Register Empty Interrupt" mask="0x1"/>
-          <bitfield name="TXC" caption="Transmit Complete Interrupt" mask="0x2"/>
-          <bitfield name="RXC" caption="Receive Complete Interrupt" mask="0x4"/>
-          <bitfield name="SSL" caption="Slave Select Low Interrupt Flag" mask="0x8"/>
-          <bitfield name="ERROR" caption="Combined Error Interrupt" mask="0x80"/>
-        </register>
-        <register name="STATUS" offset="0x1A" rw="RW" size="2" initval="0x0000" caption="SPI Status">
-          <bitfield name="BUFOVF" caption="Buffer Overflow" mask="0x4"/>
-        </register>
-        <register name="SYNCBUSY" offset="0x1C" rw="R" size="4" initval="0x00000000" caption="SPI Syncbusy">
-          <bitfield name="SWRST" caption="Software Reset Synchronization Busy" mask="0x1"/>
-          <bitfield name="ENABLE" caption="SERCOM Enable Synchronization Busy" mask="0x2"/>
-          <bitfield name="CTRLB" caption="CTRLB Synchronization Busy" mask="0x4"/>
-        </register>
-        <register name="ADDR" offset="0x24" rw="RW" size="4" initval="0x00000000" caption="SPI Address">
-          <bitfield name="ADDR" caption="Address Value" mask="0xFF"/>
-          <bitfield name="ADDRMASK" caption="Address Mask" mask="0xFF0000"/>
-        </register>
-        <register name="DATA" offset="0x28" rw="RW" size="4" initval="0x00000000" caption="SPI Data">
-          <bitfield name="DATA" caption="Data Value" mask="0x1FF"/>
-        </register>
-        <register name="DBGCTRL" offset="0x30" rw="RW" size="1" initval="0x00" caption="SPI Debug Control">
-          <bitfield name="DBGSTOP" caption="Debug Mode" mask="0x1"/>
-        </register>
-      </register-group>
-      <register-group name="SERCOM_USART" caption="Serial Communication Interface - USART Mode">
-        <register name="CTRLA" offset="0x0" rw="RW" size="4" initval="0x00000000" caption="USART Control A">
+        <register modes="USART" name="CTRLA" offset="0x0" rw="RW" size="4" initval="0x00000000" caption="USART Control A">
           <bitfield name="SWRST" caption="Software Reset" mask="0x1"/>
           <bitfield name="ENABLE" caption="Enable" mask="0x2"/>
           <bitfield name="MODE" caption="Operating Mode" mask="0x1C" values="SERCOM_USART_CTRLA__MODE"/>
@@ -2369,7 +2285,29 @@
           <bitfield name="CPOL" caption="Clock Polarity" mask="0x20000000"/>
           <bitfield name="DORD" caption="Data Order" mask="0x40000000"/>
         </register>
-        <register name="CTRLB" offset="0x4" rw="RW" size="4" initval="0x00000000" caption="USART Control B">
+        <register modes="I2CM" name="CTRLB" offset="0x4" rw="RW" size="4" initval="0x00000000" caption="I2CM Control B">
+          <bitfield name="SMEN" caption="Smart Mode Enable" mask="0x100"/>
+          <bitfield name="QCEN" caption="Quick Command Enable" mask="0x200"/>
+          <bitfield name="CMD" caption="Command" mask="0x30000"/>
+          <bitfield name="ACKACT" caption="Acknowledge Action" mask="0x40000"/>
+        </register>
+        <register modes="I2CS" name="CTRLB" offset="0x4" rw="RW" size="4" initval="0x00000000" caption="I2CS Control B">
+          <bitfield name="SMEN" caption="Smart Mode Enable" mask="0x100"/>
+          <bitfield name="GCMD" caption="PMBus Group Command" mask="0x200"/>
+          <bitfield name="AACKEN" caption="Automatic Address Acknowledge" mask="0x400"/>
+          <bitfield name="AMODE" caption="Address Mode" mask="0xC000"/>
+          <bitfield name="CMD" caption="Command" mask="0x30000"/>
+          <bitfield name="ACKACT" caption="Acknowledge Action" mask="0x40000"/>
+        </register>
+        <register modes="SPI" name="CTRLB" offset="0x4" rw="RW" size="4" initval="0x00000000" caption="SPI Control B">
+          <bitfield name="CHSIZE" caption="Character Size" mask="0x7"/>
+          <bitfield name="PLOADEN" caption="Data Preload Enable" mask="0x40"/>
+          <bitfield name="SSDE" caption="Slave Select Low Detect Enable" mask="0x200"/>
+          <bitfield name="MSSEN" caption="Master Slave Select Enable" mask="0x2000"/>
+          <bitfield name="AMODE" caption="Address Mode" mask="0xC000"/>
+          <bitfield name="RXEN" caption="Receiver Enable" mask="0x20000"/>
+        </register>
+        <register modes="USART" name="CTRLB" offset="0x4" rw="RW" size="4" initval="0x00000000" caption="USART Control B">
           <bitfield name="CHSIZE" caption="Character Size" mask="0x7"/>
           <bitfield name="SBMODE" caption="Stop Bit Mode" mask="0x40"/>
           <bitfield name="COLDEN" caption="Collision Detection Enable" mask="0x100"/>
@@ -2379,26 +2317,46 @@
           <bitfield name="TXEN" caption="Transmitter Enable" mask="0x10000"/>
           <bitfield name="RXEN" caption="Receiver Enable" mask="0x20000"/>
         </register>
-        <register name="BAUD" offset="0xC" rw="RW" size="2" initval="0x0000" caption="USART Baud Rate">
-          <mode name="DEFAULT_MODE">
-            <bitfield name="BAUD" caption="Baud Rate Value" mask="0xFFFF"/>
-          </mode>
-          <mode name="FRAC_MODE">
-            <bitfield name="BAUD" caption="Baud Rate Value" mask="0x1FFF"/>
-            <bitfield name="FP" caption="Fractional Part" mask="0xE000"/>
-          </mode>
-          <mode name="FRACFP_MODE">
-            <bitfield name="BAUD" caption="Baud Rate Value" mask="0x1FFF"/>
-            <bitfield name="FP" caption="Fractional Part" mask="0xE000"/>
-          </mode>
-          <mode name="USARTFP_MODE">
-            <bitfield name="BAUD" caption="Baud Rate Value" mask="0xFFFF"/>
-          </mode>
+        <register modes="I2CM" name="BAUD" offset="0xC" rw="RW" size="4" initval="0x00000000" caption="I2CM Baud Rate">
+          <bitfield name="BAUD" caption="Baud Rate Value" mask="0xFF"/>
+          <bitfield name="BAUDLOW" caption="Baud Rate Value Low" mask="0xFF00"/>
+          <bitfield name="HSBAUD" caption="High Speed Baud Rate Value" mask="0xFF0000"/>
+          <bitfield name="HSBAUDLOW" caption="High Speed Baud Rate Value Low" mask="0xFF000000"/>
         </register>
-        <register name="RXPL" offset="0xE" rw="RW" size="1" initval="0x00" caption="USART Receive Pulse Length">
+        <register modes="SPI" name="BAUD" offset="0xC" rw="RW" size="1" initval="0x00" caption="SPI Baud Rate">
+          <bitfield name="BAUD" caption="Baud Rate Value" mask="0xFF"/>
+        </register>
+        <register modes="USART" name="BAUD" offset="0xC" rw="RW" size="2" initval="0x0000" caption="USART Baud Rate">
+          <mode name="DEFAULT"/>
+          <mode name="FRAC"/>
+          <mode name="FRACFP"/>
+          <mode name="USARTFP"/>
+          <bitfield modes="FRAC FRACFP" name="BAUD" caption="Baud Rate Value" mask="0x1FFF"/>
+          <bitfield modes="FRAC FRACFP" name="FP" caption="Fractional Part" mask="0xE000"/>
+          <bitfield modes="DEFAULT USARTFP" name="BAUD" caption="Baud Rate Value" mask="0xFFFF"/>
+        </register>
+        <register modes="USART" name="RXPL" offset="0xE" rw="RW" size="1" initval="0x00" caption="USART Receive Pulse Length">
           <bitfield name="RXPL" caption="Receive Pulse Length" mask="0xFF"/>
         </register>
-        <register name="INTENCLR" offset="0x14" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="USART Interrupt Enable Clear">
+        <register modes="I2CM" name="INTENCLR" offset="0x14" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="I2CM Interrupt Enable Clear">
+          <bitfield name="MB" caption="Master On Bus Interrupt Disable" mask="0x1"/>
+          <bitfield name="SB" caption="Slave On Bus Interrupt Disable" mask="0x2"/>
+          <bitfield name="ERROR" caption="Combined Error Interrupt Disable" mask="0x80"/>
+        </register>
+        <register modes="I2CS" name="INTENCLR" offset="0x14" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="I2CS Interrupt Enable Clear">
+          <bitfield name="PREC" caption="Stop Received Interrupt Disable" mask="0x1"/>
+          <bitfield name="AMATCH" caption="Address Match Interrupt Disable" mask="0x2"/>
+          <bitfield name="DRDY" caption="Data Interrupt Disable" mask="0x4"/>
+          <bitfield name="ERROR" caption="Combined Error Interrupt Disable" mask="0x80"/>
+        </register>
+        <register modes="SPI" name="INTENCLR" offset="0x14" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="SPI Interrupt Enable Clear">
+          <bitfield name="DRE" caption="Data Register Empty Interrupt Disable" mask="0x1"/>
+          <bitfield name="TXC" caption="Transmit Complete Interrupt Disable" mask="0x2"/>
+          <bitfield name="RXC" caption="Receive Complete Interrupt Disable" mask="0x4"/>
+          <bitfield name="SSL" caption="Slave Select Low Interrupt Disable" mask="0x8"/>
+          <bitfield name="ERROR" caption="Combined Error Interrupt Disable" mask="0x80"/>
+        </register>
+        <register modes="USART" name="INTENCLR" offset="0x14" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="USART Interrupt Enable Clear">
           <bitfield name="DRE" caption="Data Register Empty Interrupt Disable" mask="0x1"/>
           <bitfield name="TXC" caption="Transmit Complete Interrupt Disable" mask="0x2"/>
           <bitfield name="RXC" caption="Receive Complete Interrupt Disable" mask="0x4"/>
@@ -2407,7 +2365,25 @@
           <bitfield name="RXBRK" caption="Break Received Interrupt Disable" mask="0x20"/>
           <bitfield name="ERROR" caption="Combined Error Interrupt Disable" mask="0x80"/>
         </register>
-        <register name="INTENSET" offset="0x16" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="USART Interrupt Enable Set">
+        <register modes="I2CM" name="INTENSET" offset="0x16" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="I2CM Interrupt Enable Set">
+          <bitfield name="MB" caption="Master On Bus Interrupt Enable" mask="0x1"/>
+          <bitfield name="SB" caption="Slave On Bus Interrupt Enable" mask="0x2"/>
+          <bitfield name="ERROR" caption="Combined Error Interrupt Enable" mask="0x80"/>
+        </register>
+        <register modes="I2CS" name="INTENSET" offset="0x16" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="I2CS Interrupt Enable Set">
+          <bitfield name="PREC" caption="Stop Received Interrupt Enable" mask="0x1"/>
+          <bitfield name="AMATCH" caption="Address Match Interrupt Enable" mask="0x2"/>
+          <bitfield name="DRDY" caption="Data Interrupt Enable" mask="0x4"/>
+          <bitfield name="ERROR" caption="Combined Error Interrupt Enable" mask="0x80"/>
+        </register>
+        <register modes="SPI" name="INTENSET" offset="0x16" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="SPI Interrupt Enable Set">
+          <bitfield name="DRE" caption="Data Register Empty Interrupt Enable" mask="0x1"/>
+          <bitfield name="TXC" caption="Transmit Complete Interrupt Enable" mask="0x2"/>
+          <bitfield name="RXC" caption="Receive Complete Interrupt Enable" mask="0x4"/>
+          <bitfield name="SSL" caption="Slave Select Low Interrupt Enable" mask="0x8"/>
+          <bitfield name="ERROR" caption="Combined Error Interrupt Enable" mask="0x80"/>
+        </register>
+        <register modes="USART" name="INTENSET" offset="0x16" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="USART Interrupt Enable Set">
           <bitfield name="DRE" caption="Data Register Empty Interrupt Enable" mask="0x1"/>
           <bitfield name="TXC" caption="Transmit Complete Interrupt Enable" mask="0x2"/>
           <bitfield name="RXC" caption="Receive Complete Interrupt Enable" mask="0x4"/>
@@ -2416,7 +2392,25 @@
           <bitfield name="RXBRK" caption="Break Received Interrupt Enable" mask="0x20"/>
           <bitfield name="ERROR" caption="Combined Error Interrupt Enable" mask="0x80"/>
         </register>
-        <register name="INTFLAG" offset="0x18" rw="RW" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="USART Interrupt Flag Status and Clear">
+        <register modes="I2CM" name="INTFLAG" offset="0x18" rw="RW" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="I2CM Interrupt Flag Status and Clear">
+          <bitfield name="MB" caption="Master On Bus Interrupt" mask="0x1"/>
+          <bitfield name="SB" caption="Slave On Bus Interrupt" mask="0x2"/>
+          <bitfield name="ERROR" caption="Combined Error Interrupt" mask="0x80"/>
+        </register>
+        <register modes="I2CS" name="INTFLAG" offset="0x18" rw="RW" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="I2CS Interrupt Flag Status and Clear">
+          <bitfield name="PREC" caption="Stop Received Interrupt" mask="0x1"/>
+          <bitfield name="AMATCH" caption="Address Match Interrupt" mask="0x2"/>
+          <bitfield name="DRDY" caption="Data Interrupt" mask="0x4"/>
+          <bitfield name="ERROR" caption="Combined Error Interrupt" mask="0x80"/>
+        </register>
+        <register modes="SPI" name="INTFLAG" offset="0x18" rw="RW" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="SPI Interrupt Flag Status and Clear">
+          <bitfield name="DRE" caption="Data Register Empty Interrupt" mask="0x1"/>
+          <bitfield name="TXC" caption="Transmit Complete Interrupt" mask="0x2"/>
+          <bitfield name="RXC" caption="Receive Complete Interrupt" mask="0x4"/>
+          <bitfield name="SSL" caption="Slave Select Low Interrupt Flag" mask="0x8"/>
+          <bitfield name="ERROR" caption="Combined Error Interrupt" mask="0x80"/>
+        </register>
+        <register modes="USART" name="INTFLAG" offset="0x18" rw="RW" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="USART Interrupt Flag Status and Clear">
           <bitfield name="DRE" caption="Data Register Empty Interrupt" mask="0x1"/>
           <bitfield name="TXC" caption="Transmit Complete Interrupt" mask="0x2"/>
           <bitfield name="RXC" caption="Receive Complete Interrupt" mask="0x4"/>
@@ -2425,7 +2419,32 @@
           <bitfield name="RXBRK" caption="Break Received Interrupt" mask="0x20"/>
           <bitfield name="ERROR" caption="Combined Error Interrupt" mask="0x80"/>
         </register>
-        <register name="STATUS" offset="0x1A" rw="RW" size="2" initval="0x0000" caption="USART Status">
+        <register modes="I2CM" name="STATUS" offset="0x1A" rw="RW" size="2" initval="0x0000" caption="I2CM Status">
+          <bitfield name="BUSERR" caption="Bus Error" mask="0x1"/>
+          <bitfield name="ARBLOST" caption="Arbitration Lost" mask="0x2"/>
+          <bitfield name="RXNACK" caption="Received Not Acknowledge" mask="0x4"/>
+          <bitfield name="BUSSTATE" caption="Bus State" mask="0x30"/>
+          <bitfield name="LOWTOUT" caption="SCL Low Timeout" mask="0x40"/>
+          <bitfield name="CLKHOLD" caption="Clock Hold" mask="0x80"/>
+          <bitfield name="MEXTTOUT" caption="Master SCL Low Extend Timeout" mask="0x100"/>
+          <bitfield name="SEXTTOUT" caption="Slave SCL Low Extend Timeout" mask="0x200"/>
+          <bitfield name="LENERR" caption="Length Error" mask="0x400"/>
+        </register>
+        <register modes="I2CS" name="STATUS" offset="0x1A" rw="RW" size="2" initval="0x0000" caption="I2CS Status">
+          <bitfield name="BUSERR" caption="Bus Error" mask="0x1"/>
+          <bitfield name="COLL" caption="Transmit Collision" mask="0x2"/>
+          <bitfield name="RXNACK" caption="Received Not Acknowledge" mask="0x4"/>
+          <bitfield name="DIR" caption="Read/Write Direction" mask="0x8"/>
+          <bitfield name="SR" caption="Repeated Start" mask="0x10"/>
+          <bitfield name="LOWTOUT" caption="SCL Low Timeout" mask="0x40"/>
+          <bitfield name="CLKHOLD" caption="Clock Hold" mask="0x80"/>
+          <bitfield name="SEXTTOUT" caption="Slave SCL Low Extend Timeout" mask="0x200"/>
+          <bitfield name="HS" caption="High Speed" mask="0x400"/>
+        </register>
+        <register modes="SPI" name="STATUS" offset="0x1A" rw="RW" size="2" initval="0x0000" caption="SPI Status">
+          <bitfield name="BUFOVF" caption="Buffer Overflow" mask="0x4"/>
+        </register>
+        <register modes="USART" name="STATUS" offset="0x1A" rw="RW" size="2" initval="0x0000" caption="USART Status">
           <bitfield name="PERR" caption="Parity Error" mask="0x1"/>
           <bitfield name="FERR" caption="Frame Error" mask="0x2"/>
           <bitfield name="BUFOVF" caption="Buffer Overflow" mask="0x4"/>
@@ -2433,15 +2452,61 @@
           <bitfield name="ISF" caption="Inconsistent Sync Field" mask="0x10"/>
           <bitfield name="COLL" caption="Collision Detected" mask="0x20"/>
         </register>
-        <register name="SYNCBUSY" offset="0x1C" rw="R" size="4" initval="0x00000000" caption="USART Syncbusy">
+        <register modes="I2CM" name="SYNCBUSY" offset="0x1C" rw="R" size="4" initval="0x00000000" caption="I2CM Syncbusy">
+          <bitfield name="SWRST" caption="Software Reset Synchronization Busy" mask="0x1"/>
+          <bitfield name="ENABLE" caption="SERCOM Enable Synchronization Busy" mask="0x2"/>
+          <bitfield name="SYSOP" caption="System Operation Synchronization Busy" mask="0x4"/>
+        </register>
+        <register modes="I2CS" name="SYNCBUSY" offset="0x1C" rw="R" size="4" initval="0x00000000" caption="I2CS Syncbusy">
+          <bitfield name="SWRST" caption="Software Reset Synchronization Busy" mask="0x1"/>
+          <bitfield name="ENABLE" caption="SERCOM Enable Synchronization Busy" mask="0x2"/>
+        </register>
+        <register modes="SPI" name="SYNCBUSY" offset="0x1C" rw="R" size="4" initval="0x00000000" caption="SPI Syncbusy">
           <bitfield name="SWRST" caption="Software Reset Synchronization Busy" mask="0x1"/>
           <bitfield name="ENABLE" caption="SERCOM Enable Synchronization Busy" mask="0x2"/>
           <bitfield name="CTRLB" caption="CTRLB Synchronization Busy" mask="0x4"/>
         </register>
-        <register name="DATA" offset="0x28" rw="RW" size="2" initval="0x0000" caption="USART Data">
+        <register modes="USART" name="SYNCBUSY" offset="0x1C" rw="R" size="4" initval="0x00000000" caption="USART Syncbusy">
+          <bitfield name="SWRST" caption="Software Reset Synchronization Busy" mask="0x1"/>
+          <bitfield name="ENABLE" caption="SERCOM Enable Synchronization Busy" mask="0x2"/>
+          <bitfield name="CTRLB" caption="CTRLB Synchronization Busy" mask="0x4"/>
+        </register>
+        <register modes="I2CM" name="ADDR" offset="0x24" rw="RW" size="4" initval="0x00000000" caption="I2CM Address">
+          <bitfield name="ADDR" caption="Address Value" mask="0x7FF"/>
+          <bitfield name="LENEN" caption="Length Enable" mask="0x2000"/>
+          <bitfield name="HS" caption="High Speed Mode" mask="0x4000"/>
+          <bitfield name="TENBITEN" caption="Ten Bit Addressing Enable" mask="0x8000"/>
+          <bitfield name="LEN" caption="Length" mask="0xFF0000"/>
+        </register>
+        <register modes="I2CS" name="ADDR" offset="0x24" rw="RW" size="4" initval="0x00000000" caption="I2CS Address">
+          <bitfield name="GENCEN" caption="General Call Address Enable" mask="0x1"/>
+          <bitfield name="ADDR" caption="Address Value" mask="0x7FE"/>
+          <bitfield name="TENBITEN" caption="Ten Bit Addressing Enable" mask="0x8000"/>
+          <bitfield name="ADDRMASK" caption="Address Mask" mask="0x7FE0000"/>
+        </register>
+        <register modes="SPI" name="ADDR" offset="0x24" rw="RW" size="4" initval="0x00000000" caption="SPI Address">
+          <bitfield name="ADDR" caption="Address Value" mask="0xFF"/>
+          <bitfield name="ADDRMASK" caption="Address Mask" mask="0xFF0000"/>
+        </register>
+        <register modes="I2CM" name="DATA" offset="0x28" rw="RW" size="1" initval="0x00" caption="I2CM Data">
+          <bitfield name="DATA" caption="Data Value" mask="0xFF"/>
+        </register>
+        <register modes="I2CS" name="DATA" offset="0x28" rw="RW" size="1" initval="0x00" caption="I2CS Data">
+          <bitfield name="DATA" caption="Data Value" mask="0xFF"/>
+        </register>
+        <register modes="SPI" name="DATA" offset="0x28" rw="RW" size="4" initval="0x00000000" caption="SPI Data">
           <bitfield name="DATA" caption="Data Value" mask="0x1FF"/>
         </register>
-        <register name="DBGCTRL" offset="0x30" rw="RW" size="1" initval="0x00" caption="USART Debug Control">
+        <register modes="USART" name="DATA" offset="0x28" rw="RW" size="2" initval="0x0000" caption="USART Data">
+          <bitfield name="DATA" caption="Data Value" mask="0x1FF"/>
+        </register>
+        <register modes="I2CM" name="DBGCTRL" offset="0x30" rw="RW" size="1" initval="0x00" caption="I2CM Debug Control">
+          <bitfield name="DBGSTOP" caption="Debug Mode" mask="0x1"/>
+        </register>
+        <register modes="SPI" name="DBGCTRL" offset="0x30" rw="RW" size="1" initval="0x00" caption="SPI Debug Control">
+          <bitfield name="DBGSTOP" caption="Debug Mode" mask="0x1"/>
+        </register>
+        <register modes="USART" name="DBGCTRL" offset="0x30" rw="RW" size="1" initval="0x00" caption="USART Debug Control">
           <bitfield name="DBGSTOP" caption="Debug Mode" mask="0x1"/>
         </register>
       </register-group>
@@ -2718,12 +2783,10 @@
       </value-group>
     </module>
     <module name="TC" id="U2212" version="1.4.0" caption="Basic Timer Counter">
-      <register-group class="union" union-tag="TC.CTRLA.MODE" name="TC" caption="Basic Timer Counter">
-        <register-group name="COUNT8" name-in-module="TC_COUNT8" union-tag-value="1" offset="0"/>
-        <register-group name="COUNT16" name-in-module="TC_COUNT16" union-tag-value="0" offset="0"/>
-        <register-group name="COUNT32" name-in-module="TC_COUNT32" union-tag-value="2" offset="0"/>
-      </register-group>
-      <register-group name="TC_COUNT8" caption="Basic Timer Counter - 8-bit Counter Mode">
+      <register-group name="TC" caption="Basic Timer Counter">
+        <mode name="COUNT8" qualifier="TC.CTRLA.MODE" value="1" caption="8-bit Counter Mode"/>
+        <mode name="COUNT16" qualifier="TC.CTRLA.MODE" value="0" caption="16-bit Counter Mode"/>
+        <mode name="COUNT32" qualifier="TC.CTRLA.MODE" value="2" caption="32-bit Counter Mode"/>
         <register name="CTRLA" offset="0x0" rw="RW" size="2" initval="0x0000" caption="Control A">
           <bitfield name="SWRST" caption="Software Reset" mask="0x1"/>
           <bitfield name="ENABLE" caption="Enable" mask="0x2"/>
@@ -2791,163 +2854,25 @@
           <bitfield name="SLAVE" caption="Slave" mask="0x10"/>
           <bitfield name="SYNCBUSY" caption="Synchronization Busy" mask="0x80"/>
         </register>
-        <register name="COUNT" offset="0x10" rw="RW" size="1" initval="0x00" caption="COUNT8 Counter Value">
+        <register modes="COUNT8" name="COUNT" offset="0x10" rw="RW" size="1" initval="0x00" caption="COUNT8 Counter Value">
           <bitfield name="COUNT" caption="Counter Value" mask="0xFF"/>
         </register>
-        <register name="PER" offset="0x14" rw="RW" size="1" initval="0xFF" caption="COUNT8 Period Value">
-          <bitfield name="PER" caption="Period Value" mask="0xFF"/>
-        </register>
-        <register name="CC" offset="0x18" rw="RW" size="1" count="2" initval="0x00" caption="COUNT8 Compare/Capture">
-          <bitfield name="CC" caption="Compare/Capture Value" mask="0xFF"/>
-        </register>
-      </register-group>
-      <register-group name="TC_COUNT16" caption="Basic Timer Counter - 16-bit Counter Mode">
-        <register name="CTRLA" offset="0x0" rw="RW" size="2" initval="0x0000" caption="Control A">
-          <bitfield name="SWRST" caption="Software Reset" mask="0x1"/>
-          <bitfield name="ENABLE" caption="Enable" mask="0x2"/>
-          <bitfield name="MODE" caption="TC Mode" mask="0xC" values="TC_CTRLA__MODE"/>
-          <bitfield name="WAVEGEN" caption="Waveform Generation Operation" mask="0x60" values="TC_CTRLA__WAVEGEN"/>
-          <bitfield name="PRESCALER" caption="Prescaler" mask="0x700" values="TC_CTRLA__PRESCALER"/>
-          <bitfield name="RUNSTDBY" caption="Run in Standby" mask="0x800"/>
-          <bitfield name="PRESCSYNC" caption="Prescaler and Counter Synchronization" mask="0x3000" values="TC_CTRLA__PRESCSYNC"/>
-        </register>
-        <register name="READREQ" offset="0x2" rw="RW" size="2" initval="0x0000" caption="Read Request">
-          <bitfield name="ADDR" caption="Address" mask="0x1F"/>
-          <bitfield name="RCONT" caption="Read Continuously" mask="0x4000"/>
-          <bitfield name="RREQ" caption="Read Request" mask="0x8000"/>
-        </register>
-        <register name="CTRLBCLR" offset="0x4" rw="RW" size="1" atomic-op="clear:CTRLBCLR" initval="0x02" caption="Control B Clear">
-          <bitfield name="DIR" caption="Counter Direction" mask="0x1"/>
-          <bitfield name="ONESHOT" caption="One-Shot" mask="0x4"/>
-          <bitfield name="CMD" caption="Command" mask="0xC0" values="TC_CTRLBCLR__CMD"/>
-        </register>
-        <register name="CTRLBSET" offset="0x5" rw="RW" size="1" atomic-op="set:CTRLBSET" initval="0x00" caption="Control B Set">
-          <bitfield name="DIR" caption="Counter Direction" mask="0x1"/>
-          <bitfield name="ONESHOT" caption="One-Shot" mask="0x4"/>
-          <bitfield name="CMD" caption="Command" mask="0xC0" values="TC_CTRLBSET__CMD"/>
-        </register>
-        <register name="CTRLC" offset="0x6" rw="RW" size="1" initval="0x00" caption="Control C">
-          <bitfield name="INVEN0" caption="Output Waveform 0 Invert Enable" mask="0x1"/>
-          <bitfield name="INVEN1" caption="Output Waveform 1 Invert Enable" mask="0x2"/>
-          <bitfield name="CPTEN0" caption="Capture Channel 0 Enable" mask="0x10"/>
-          <bitfield name="CPTEN1" caption="Capture Channel 1 Enable" mask="0x20"/>
-        </register>
-        <register name="DBGCTRL" offset="0x8" rw="RW" size="1" initval="0x00" caption="Debug Control">
-          <bitfield name="DBGRUN" caption="Debug Run Mode" mask="0x1"/>
-        </register>
-        <register name="EVCTRL" offset="0xA" rw="RW" size="2" initval="0x0000" caption="Event Control">
-          <bitfield name="EVACT" caption="Event Action" mask="0x7" values="TC_EVCTRL__EVACT"/>
-          <bitfield name="TCINV" caption="TC Inverted Event Input" mask="0x10"/>
-          <bitfield name="TCEI" caption="TC Event Input" mask="0x20"/>
-          <bitfield name="OVFEO" caption="Overflow/Underflow Event Output Enable" mask="0x100"/>
-          <bitfield name="MCEO0" caption="Match or Capture Channel 0 Event Output Enable" mask="0x1000"/>
-          <bitfield name="MCEO1" caption="Match or Capture Channel 1 Event Output Enable" mask="0x2000"/>
-        </register>
-        <register name="INTENCLR" offset="0xC" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="Interrupt Enable Clear">
-          <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x1"/>
-          <bitfield name="ERR" caption="Error Interrupt Enable" mask="0x2"/>
-          <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x8"/>
-          <bitfield name="MC0" caption="Match or Capture Channel 0 Interrupt Enable" mask="0x10"/>
-          <bitfield name="MC1" caption="Match or Capture Channel 1 Interrupt Enable" mask="0x20"/>
-        </register>
-        <register name="INTENSET" offset="0xD" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="Interrupt Enable Set">
-          <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x1"/>
-          <bitfield name="ERR" caption="Error Interrupt Enable" mask="0x2"/>
-          <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x8"/>
-          <bitfield name="MC0" caption="Match or Capture Channel 0 Interrupt Enable" mask="0x10"/>
-          <bitfield name="MC1" caption="Match or Capture Channel 1 Interrupt Enable" mask="0x20"/>
-        </register>
-        <register name="INTFLAG" offset="0xE" rw="RW" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="Interrupt Flag Status and Clear">
-          <bitfield name="OVF" caption="Overflow" mask="0x1"/>
-          <bitfield name="ERR" caption="Error" mask="0x2"/>
-          <bitfield name="SYNCRDY" caption="Synchronization Ready" mask="0x8"/>
-          <bitfield name="MC0" caption="Match or Capture Channel 0" mask="0x10"/>
-          <bitfield name="MC1" caption="Match or Capture Channel 1" mask="0x20"/>
-        </register>
-        <register name="STATUS" offset="0xF" rw="R" size="1" initval="0x08" caption="Status">
-          <bitfield name="STOP" caption="Stop" mask="0x8"/>
-          <bitfield name="SLAVE" caption="Slave" mask="0x10"/>
-          <bitfield name="SYNCBUSY" caption="Synchronization Busy" mask="0x80"/>
-        </register>
-        <register name="COUNT" offset="0x10" rw="RW" size="2" initval="0x0000" caption="COUNT16 Counter Value">
+        <register modes="COUNT16" name="COUNT" offset="0x10" rw="RW" size="2" initval="0x0000" caption="COUNT16 Counter Value">
           <bitfield name="COUNT" caption="Count Value" mask="0xFFFF"/>
         </register>
-        <register name="CC" offset="0x18" rw="RW" size="2" count="2" initval="0x0000" caption="COUNT16 Compare/Capture">
-          <bitfield name="CC" caption="Compare/Capture Value" mask="0xFFFF"/>
-        </register>
-      </register-group>
-      <register-group name="TC_COUNT32" caption="Basic Timer Counter - 32-bit Counter Mode">
-        <register name="CTRLA" offset="0x0" rw="RW" size="2" initval="0x0000" caption="Control A">
-          <bitfield name="SWRST" caption="Software Reset" mask="0x1"/>
-          <bitfield name="ENABLE" caption="Enable" mask="0x2"/>
-          <bitfield name="MODE" caption="TC Mode" mask="0xC" values="TC_CTRLA__MODE"/>
-          <bitfield name="WAVEGEN" caption="Waveform Generation Operation" mask="0x60" values="TC_CTRLA__WAVEGEN"/>
-          <bitfield name="PRESCALER" caption="Prescaler" mask="0x700" values="TC_CTRLA__PRESCALER"/>
-          <bitfield name="RUNSTDBY" caption="Run in Standby" mask="0x800"/>
-          <bitfield name="PRESCSYNC" caption="Prescaler and Counter Synchronization" mask="0x3000" values="TC_CTRLA__PRESCSYNC"/>
-        </register>
-        <register name="READREQ" offset="0x2" rw="RW" size="2" initval="0x0000" caption="Read Request">
-          <bitfield name="ADDR" caption="Address" mask="0x1F"/>
-          <bitfield name="RCONT" caption="Read Continuously" mask="0x4000"/>
-          <bitfield name="RREQ" caption="Read Request" mask="0x8000"/>
-        </register>
-        <register name="CTRLBCLR" offset="0x4" rw="RW" size="1" atomic-op="clear:CTRLBCLR" initval="0x02" caption="Control B Clear">
-          <bitfield name="DIR" caption="Counter Direction" mask="0x1"/>
-          <bitfield name="ONESHOT" caption="One-Shot" mask="0x4"/>
-          <bitfield name="CMD" caption="Command" mask="0xC0" values="TC_CTRLBCLR__CMD"/>
-        </register>
-        <register name="CTRLBSET" offset="0x5" rw="RW" size="1" atomic-op="set:CTRLBSET" initval="0x00" caption="Control B Set">
-          <bitfield name="DIR" caption="Counter Direction" mask="0x1"/>
-          <bitfield name="ONESHOT" caption="One-Shot" mask="0x4"/>
-          <bitfield name="CMD" caption="Command" mask="0xC0" values="TC_CTRLBSET__CMD"/>
-        </register>
-        <register name="CTRLC" offset="0x6" rw="RW" size="1" initval="0x00" caption="Control C">
-          <bitfield name="INVEN0" caption="Output Waveform 0 Invert Enable" mask="0x1"/>
-          <bitfield name="INVEN1" caption="Output Waveform 1 Invert Enable" mask="0x2"/>
-          <bitfield name="CPTEN0" caption="Capture Channel 0 Enable" mask="0x10"/>
-          <bitfield name="CPTEN1" caption="Capture Channel 1 Enable" mask="0x20"/>
-        </register>
-        <register name="DBGCTRL" offset="0x8" rw="RW" size="1" initval="0x00" caption="Debug Control">
-          <bitfield name="DBGRUN" caption="Debug Run Mode" mask="0x1"/>
-        </register>
-        <register name="EVCTRL" offset="0xA" rw="RW" size="2" initval="0x0000" caption="Event Control">
-          <bitfield name="EVACT" caption="Event Action" mask="0x7" values="TC_EVCTRL__EVACT"/>
-          <bitfield name="TCINV" caption="TC Inverted Event Input" mask="0x10"/>
-          <bitfield name="TCEI" caption="TC Event Input" mask="0x20"/>
-          <bitfield name="OVFEO" caption="Overflow/Underflow Event Output Enable" mask="0x100"/>
-          <bitfield name="MCEO0" caption="Match or Capture Channel 0 Event Output Enable" mask="0x1000"/>
-          <bitfield name="MCEO1" caption="Match or Capture Channel 1 Event Output Enable" mask="0x2000"/>
-        </register>
-        <register name="INTENCLR" offset="0xC" rw="RW" size="1" atomic-op="clear:INTENCLR" initval="0x00" caption="Interrupt Enable Clear">
-          <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x1"/>
-          <bitfield name="ERR" caption="Error Interrupt Enable" mask="0x2"/>
-          <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x8"/>
-          <bitfield name="MC0" caption="Match or Capture Channel 0 Interrupt Enable" mask="0x10"/>
-          <bitfield name="MC1" caption="Match or Capture Channel 1 Interrupt Enable" mask="0x20"/>
-        </register>
-        <register name="INTENSET" offset="0xD" rw="RW" size="1" atomic-op="set:INTENSET" initval="0x00" caption="Interrupt Enable Set">
-          <bitfield name="OVF" caption="Overflow Interrupt Enable" mask="0x1"/>
-          <bitfield name="ERR" caption="Error Interrupt Enable" mask="0x2"/>
-          <bitfield name="SYNCRDY" caption="Synchronization Ready Interrupt Enable" mask="0x8"/>
-          <bitfield name="MC0" caption="Match or Capture Channel 0 Interrupt Enable" mask="0x10"/>
-          <bitfield name="MC1" caption="Match or Capture Channel 1 Interrupt Enable" mask="0x20"/>
-        </register>
-        <register name="INTFLAG" offset="0xE" rw="RW" size="1" atomic-op="clear:INTFLAG" initval="0x00" caption="Interrupt Flag Status and Clear">
-          <bitfield name="OVF" caption="Overflow" mask="0x1"/>
-          <bitfield name="ERR" caption="Error" mask="0x2"/>
-          <bitfield name="SYNCRDY" caption="Synchronization Ready" mask="0x8"/>
-          <bitfield name="MC0" caption="Match or Capture Channel 0" mask="0x10"/>
-          <bitfield name="MC1" caption="Match or Capture Channel 1" mask="0x20"/>
-        </register>
-        <register name="STATUS" offset="0xF" rw="R" size="1" initval="0x08" caption="Status">
-          <bitfield name="STOP" caption="Stop" mask="0x8"/>
-          <bitfield name="SLAVE" caption="Slave" mask="0x10"/>
-          <bitfield name="SYNCBUSY" caption="Synchronization Busy" mask="0x80"/>
-        </register>
-        <register name="COUNT" offset="0x10" rw="RW" size="4" initval="0x00000000" caption="COUNT32 Counter Value">
+        <register modes="COUNT32" name="COUNT" offset="0x10" rw="RW" size="4" initval="0x00000000" caption="COUNT32 Counter Value">
           <bitfield name="COUNT" caption="Count Value" mask="0xFFFFFFFF"/>
         </register>
-        <register name="CC" offset="0x18" rw="RW" size="4" count="2" initval="0x00000000" caption="COUNT32 Compare/Capture">
+        <register modes="COUNT8" name="PER" offset="0x14" rw="RW" size="1" initval="0xFF" caption="COUNT8 Period Value">
+          <bitfield name="PER" caption="Period Value" mask="0xFF"/>
+        </register>
+        <register modes="COUNT8" name="CC" offset="0x18" rw="RW" size="1" count="2" initval="0x00" caption="COUNT8 Compare/Capture">
+          <bitfield name="CC" caption="Compare/Capture Value" mask="0xFF"/>
+        </register>
+        <register modes="COUNT16" name="CC" offset="0x18" rw="RW" size="2" count="2" initval="0x0000" caption="COUNT16 Compare/Capture">
+          <bitfield name="CC" caption="Compare/Capture Value" mask="0xFFFF"/>
+        </register>
+        <register modes="COUNT32" name="CC" offset="0x18" rw="RW" size="4" count="2" initval="0x00000000" caption="COUNT32 Compare/Capture">
           <bitfield name="CC" caption="Compare/Capture Value" mask="0xFFFFFFFF"/>
         </register>
       </register-group>
@@ -3072,201 +2997,175 @@
         <value name="KEY" caption="Clear Key" value="0xA5"/>
       </value-group>
     </module>
-  <module name="SystemControl" caption="System Control Registers">
-      <register-group name="SystemControl" caption="System Control Registers">
-        <register offset="0x00000d00" size="4" name="CPUID" initval="0x410CC601" caption="CPUID Base Register">
-          <bitfield mask="0x0000000f" name="REVISION" caption="Indicates patch release: 0x0 = Patch 0"/>
-          <bitfield mask="0x0000fff0" name="PARTNO" caption="Indicates part number"/>
-          <bitfield mask="0x000f0000" name="ARCHITECTURE" caption="Constant that defines the architecture of the processor"/>
-          <bitfield mask="0x00f00000" name="VARIANT" caption="Indicates processor revision: 0x2 = Revision 2"/>
-          <bitfield mask="0xff000000" name="IMPLEMENTER" caption="Implementer code"/>
-        </register>
-        <register offset="0x00000d04" size="4" name="ICSR" initval="0" caption="Interrupt Control and State Register">
-          <bitfield mask="0x0003f000" name="VECTPENDING" caption="Exception number of the highest priority pending enabled exception"/>
-          <bitfield mask="0x02000000" name="PENDSTCLR" values="PENDSTCLR" caption="no description available"/>
-          <bitfield mask="0x04000000" name="PENDSTSET" values="PENDSTSET" caption="no description available"/>
-          <bitfield mask="0x08000000" name="PENDSVCLR" values="PENDSVCLR" caption="no description available"/>
-          <bitfield mask="0x10000000" name="PENDSVSET" values="PENDSVSET" caption="no description available"/>
-          <bitfield mask="0x80000000" name="NMIPENDSET" values="NMIPENDSET" caption="no description available"/>
-        </register>
-        <register offset="0x00000d08" size="4" name="VTOR" initval="0" caption="Vector Table Offset Register">
-          <bitfield mask="0xffffff80" name="TBLOFF" caption="Vector table base offset"/>
-        </register>
-        <register offset="0x00000d0c" size="4" name="AIRCR" initval="0xFA050000" caption="Application Interrupt and Reset Control Register">
-          <bitfield mask="0x00000002" name="VECTCLRACTIVE" caption="no description available"/>
-          <bitfield mask="0x00000004" name="SYSRESETREQ" values="SYSRESETREQ" caption="no description available"/>
-          <bitfield mask="0x00008000" name="ENDIANNESS" values="ENDIANNESS" caption="no description available"/>
-          <bitfield mask="0xffff0000" name="VECTKEY" caption="Register key"/>
-        </register>
-        <register offset="0x00000d10" size="4" name="SCR" initval="0" caption="System Control Register">
-          <bitfield mask="0x00000002" name="SLEEPONEXIT" values="SLEEPONEXIT" caption="no description available"/>
-          <bitfield mask="0x00000004" name="SLEEPDEEP" values="SLEEPDEEP" caption="no description available"/>
-          <bitfield mask="0x00000010" name="SEVONPEND" values="SEVONPEND" caption="no description available"/>
-        </register>
-        <register offset="0x00000d14" size="4" name="CCR" initval="0x00000204" caption="Configuration and Control Register">
-          <bitfield mask="0x00000008" name="UNALIGN_TRP" values="UNALIGN_TRP" caption="Enables unaligned access traps"/>
-          <bitfield mask="0x00000200" name="STKALIGN" values="STKALIGN" caption="Indicates stack alignment on exception entry"/>
-        </register>
-        <register offset="0x00000d1c" size="4" name="SHPR2" initval="0" caption="System Handler Priority Register 2">
-          <bitfield mask="0xff000000" name="PRI_11" caption="Priority of system handler 11, SVCall"/>
-        </register>
-        <register offset="0x00000d20" size="4" name="SHPR3" initval="0" caption="System Handler Priority Register 3">
-          <bitfield mask="0x00ff0000" name="PRI_14" caption="Priority of system handler 14, PendSV"/>
-          <bitfield mask="0xff000000" name="PRI_15" caption="Priority of system handler 15, SysTick exception"/>
-        </register>
-      </register-group>
-      <value-group name="PENDSTCLR">
-        <value value="0" name="VALUE_0" caption="no effect"/>
-        <value value="1" name="VALUE_1" caption="removes the pending state from the SysTick exception"/>
-      </value-group>
-      <value-group name="PENDSTSET">
-        <value value="0" name="VALUE_0" caption="write: no effect; read: SysTick exception is not pending"/>
-        <value value="1" name="VALUE_1" caption="write: changes SysTick exception state to pending; read: SysTick exception is pending"/>
-      </value-group>
-      <value-group name="PENDSVCLR">
-        <value value="0" name="VALUE_0" caption="no effect"/>
-        <value value="1" name="VALUE_1" caption="removes the pending state from the PendSV exception"/>
-      </value-group>
-      <value-group name="PENDSVSET">
-        <value value="0" name="VALUE_0" caption="write: no effect; read: PendSV exception is not pending"/>
-        <value value="1" name="VALUE_1" caption="write: changes PendSV exception state to pending; read: PendSV exception is pending"/>
-      </value-group>
-      <value-group name="NMIPENDSET">
-        <value value="0" name="VALUE_0" caption="write: no effect; read: NMI exception is not pending"/>
-        <value value="1" name="VALUE_1" caption="write: changes NMI exception state to pending; read: NMI exception is pending"/>
-      </value-group>
-      <value-group name="SYSRESETREQ">
-        <value value="0" name="VALUE_0" caption="no system reset request"/>
-        <value value="1" name="VALUE_1" caption="asserts a signal to the outer system that requests a reset"/>
-      </value-group>
-      <value-group name="ENDIANNESS">
-        <value value="0" name="VALUE_0" caption="Little-endian"/>
-        <value value="1" name="VALUE_1" caption="Big-endian"/>
-      </value-group>
-      <value-group name="SLEEPONEXIT">
-        <value value="0" name="VALUE_0" caption="o not sleep when returning to Thread mode"/>
-        <value value="1" name="VALUE_1" caption="enter sleep, or deep sleep, on return from an ISR"/>
-      </value-group>
-      <value-group name="SLEEPDEEP">
-        <value value="0" name="VALUE_0" caption="sleep"/>
-        <value value="1" name="VALUE_1" caption="deep sleep"/>
-      </value-group>
-      <value-group name="SEVONPEND">
-        <value value="0" name="VALUE_0" caption="only enabled interrupts or events can wakeup the processor, disabled interrupts are excluded"/>
-        <value value="1" name="VALUE_1" caption="enabled events and all interrupts, including disabled interrupts, can wakeup the processor"/>
-      </value-group>
-      <value-group name="UNALIGN_TRP">
-        <value value="0" name="VALUE_0" caption="do not trap unaligned halfword and word accesses"/>
-        <value value="1" name="VALUE_1" caption="trap unaligned halfword and word accesses"/>
-      </value-group>
-      <value-group name="STKALIGN">
-        <value value="0" name="VALUE_0" caption="4-byte aligned"/>
-        <value value="1" name="VALUE_1" caption="8-byte aligned"/>
-      </value-group>
-    </module><module name="SysTick" caption="System timer">
-      <register-group name="SysTick" caption="System timer">
-        <register offset="0x00000000" size="4" name="CSR" initval="0x4" caption="SysTick Control and Status Register">
-          <bitfield mask="0x00000001" name="ENABLE" values="ENABLE" caption="no description available"/>
-          <bitfield mask="0x00000002" name="TICKINT" values="TICKINT" caption="no description available"/>
-          <bitfield mask="0x00000004" name="CLKSOURCE" values="CLKSOURCE" caption="no description available"/>
-          <bitfield mask="0x00010000" name="COUNTFLAG" caption="no description available"/>
-        </register>
-        <register offset="0x00000004" size="4" name="RVR" initval="0" caption="SysTick Reload Value Register">
-          <bitfield mask="0x00ffffff" name="RELOAD" caption="Value to load into the SysTick Current Value Register when the counter reaches 0"/>
-        </register>
-        <register offset="0x00000008" size="4" name="CVR" initval="0" caption="SysTick Current Value Register">
-          <bitfield mask="0x00ffffff" name="CURRENT" caption="Current value at the time the register is accessed"/>
-        </register>
-        <register offset="0x0000000c" size="4" name="CALIB" initval="0" caption="SysTick Calibration Value Register">
-          <bitfield mask="0x00ffffff" name="TENMS" caption="Reload value to use for 10ms timing"/>
-          <bitfield mask="0x40000000" name="SKEW" values="SKEW" caption="no description available"/>
-          <bitfield mask="0x80000000" name="NOREF" values="NOREF" caption="no description available"/>
-        </register>
-      </register-group>
-      <value-group name="ENABLE">
-        <value value="0" name="VALUE_0" caption="counter disabled"/>
-        <value value="1" name="VALUE_1" caption="counter enabled"/>
-      </value-group>
-      <value-group name="TICKINT">
-        <value value="0" name="VALUE_0" caption="counting down to 0 does not assert the SysTick exception request"/>
-        <value value="1" name="VALUE_1" caption="counting down to 0 asserts the SysTick exception request"/>
-      </value-group>
-      <value-group name="CLKSOURCE">
-        <value value="0" name="VALUE_0" caption="external clock"/>
-        <value value="1" name="VALUE_1" caption="processor clock"/>
-      </value-group>
-      <value-group name="SKEW">
-        <value value="0" name="VALUE_0" caption="10ms calibration value is exact"/>
-        <value value="1" name="VALUE_1" caption="10ms calibration value is inexact, because of the clock frequency"/>
-      </value-group>
-      <value-group name="NOREF">
-        <value value="0" name="VALUE_0" caption="The reference clock is provided"/>
-        <value value="1" name="VALUE_1" caption="The reference clock is not provided"/>
-      </value-group>
-    </module><module name="NVIC" caption="Nested Vectored Interrupt Controller">
+    <module name="NVIC" version="1.0.0" caption="Nested Vectored Interrupt Controller">
       <register-group name="NVIC" caption="Nested Vectored Interrupt Controller">
-        <register offset="0x00000000" size="4" name="NVICISER" initval="0" caption="Interrupt Set Enable Register">
-          <bitfield mask="0xffffffff" name="SETENA" caption="Interrupt set enable bits"/>
+        <register name="ISER" offset="0x0" rw="RW" size="4" access-size="4" initval="0x00000000" caption="Interrupt Set Enable Register">
+          <bitfield name="SETENA" caption="Interrupt set enable bits" mask="0x7FFFF"/>
         </register>
-        <register offset="0x00000080" size="4" name="NVICICER" initval="0" caption="Interrupt Clear Enable Register">
-          <bitfield mask="0xffffffff" name="CLRENA" caption="Interrupt clear-enable bits"/>
+        <register name="ICER" offset="0x80" rw="RW" size="4" access-size="4" initval="0x00000000" caption="Interrupt Clear Enable Register">
+          <bitfield name="CLRENA" caption="Interrupt clear-enable bits" mask="0x7FFFF"/>
         </register>
-        <register offset="0x00000100" size="4" name="NVICISPR" initval="0" caption="Interrupt Set Pending Register">
-          <bitfield mask="0xffffffff" name="SETPEND" caption="Interrupt set-pending bits"/>
+        <register name="ISPR" offset="0x100" rw="RW" size="4" access-size="4" initval="0x00000000" caption="Interrupt Set Pending Register">
+          <bitfield name="SETPEND" caption="Interrupt set-pending bits" mask="0x7FFFF"/>
         </register>
-        <register offset="0x00000180" size="4" name="NVICICPR" initval="0" caption="Interrupt Clear Pending Register">
-          <bitfield mask="0xffffffff" name="CLRPEND" caption="Interrupt clear-pending bits"/>
+        <register name="ICPR" offset="0x180" rw="RW" size="4" access-size="4" initval="0x00000000" caption="Interrupt Clear Pending Register">
+          <bitfield name="CLRPEND" caption="Interrupt clear-pending bits" mask="0x7FFFF"/>
         </register>
-        <register offset="0x00000300" size="4" name="NVICIPR0" initval="0" caption="Interrupt Priority Register 0">
-          <bitfield mask="0x000000ff" name="PRI0" caption="Priority of interrupt 0"/>
-          <bitfield mask="0x0000ff00" name="PRI1" caption="Priority of interrupt 1"/>
-          <bitfield mask="0x00ff0000" name="PRI2" caption="Priority of interrupt 2"/>
-          <bitfield mask="0xff000000" name="PRI3" caption="Priority of interrupt 3"/>
-        </register>
-        <register offset="0x00000304" size="4" name="NVICIPR1" initval="0" caption="Interrupt Priority Register 1">
-          <bitfield mask="0x000000ff" name="PRI4" caption="Priority of interrupt 4"/>
-          <bitfield mask="0x0000ff00" name="PRI5" caption="Priority of interrupt 5"/>
-          <bitfield mask="0x00ff0000" name="PRI6" caption="Priority of interrupt 6"/>
-          <bitfield mask="0xff000000" name="PRI7" caption="Priority of interrupt 7"/>
-        </register>
-        <register offset="0x00000308" size="4" name="NVICIPR2" initval="0" caption="Interrupt Priority Register 2">
-          <bitfield mask="0x000000ff" name="PRI8" caption="Priority of interrupt 8"/>
-          <bitfield mask="0x0000ff00" name="PRI9" caption="Priority of interrupt 9"/>
-          <bitfield mask="0x00ff0000" name="PRI10" caption="Priority of interrupt 10"/>
-          <bitfield mask="0xff000000" name="PRI11" caption="Priority of interrupt 11"/>
-        </register>
-        <register offset="0x0000030C" size="4" name="NVICIPR3" initval="0" caption="Interrupt Priority Register 3">
-          <bitfield mask="0x000000ff" name="PRI12" caption="Priority of interrupt 12"/>
-          <bitfield mask="0x0000ff00" name="PRI13" caption="Priority of interrupt 13"/>
-          <bitfield mask="0x00ff0000" name="PRI14" caption="Priority of interrupt 14"/>
-          <bitfield mask="0xff000000" name="PRI15" caption="Priority of interrupt 15"/>
-        </register>
-        <register offset="0x00000310" size="4" name="NVICIPR4" initval="0" caption="Interrupt Priority Register 4">
-          <bitfield mask="0x000000ff" name="PRI16" caption="Priority of interrupt 16"/>
-          <bitfield mask="0x0000ff00" name="PRI17" caption="Priority of interrupt 17"/>
-          <bitfield mask="0x00ff0000" name="PRI18" caption="Priority of interrupt 18"/>
-          <bitfield mask="0xff000000" name="PRI19" caption="Priority of interrupt 19"/>
-        </register>
-        <register offset="0x00000314" size="4" name="NVICIPR5" initval="0" caption="Interrupt Priority Register 5">
-          <bitfield mask="0x000000ff" name="PRI20" caption="Priority of interrupt 20"/>
-          <bitfield mask="0x0000ff00" name="PRI21" caption="Priority of interrupt 21"/>
-          <bitfield mask="0x00ff0000" name="PRI22" caption="Priority of interrupt 22"/>
-          <bitfield mask="0xff000000" name="PRI23" caption="Priority of interrupt 23"/>
-        </register>
-        <register offset="0x00000318" size="4" name="NVICIPR6" initval="0" caption="Interrupt Priority Register 6">
-          <bitfield mask="0x000000ff" name="PRI24" caption="Priority of interrupt 24"/>
-          <bitfield mask="0x0000ff00" name="PRI25" caption="Priority of interrupt 25"/>
-          <bitfield mask="0x00ff0000" name="PRI26" caption="Priority of interrupt 26"/>
-          <bitfield mask="0xff000000" name="PRI27" caption="Priority of interrupt 27"/>
-        </register>
-        <register offset="0x0000031C" size="4" name="NVICIPR7" initval="0" caption="Interrupt Priority Register 7">
-          <bitfield mask="0x000000ff" name="PRI28" caption="Priority of interrupt 28"/>
-          <bitfield mask="0x0000ff00" name="PRI29" caption="Priority of interrupt 29"/>
-          <bitfield mask="0x00ff0000" name="PRI30" caption="Priority of interrupt 30"/>
-          <bitfield mask="0xff000000" name="PRI31" caption="Priority of interrupt 31"/>
+        <register name="IPR" offset="0x300" rw="RW" size="4" access-size="4" count="5" initval="0x00000000" caption="Interrupt Priority Register n">
+          <bitfield name="PRI0" caption="Priority of interrupt n" mask="0x3"/>
+          <bitfield name="PRI1" caption="Priority of interrupt n" mask="0x300"/>
+          <bitfield name="PRI2" caption="Priority of interrupt n" mask="0x30000"/>
+          <bitfield name="PRI3" caption="Priority of interrupt n" mask="0x3000000"/>
         </register>
       </register-group>
-    </module></modules>
+    </module>
+    <module name="SysTick" version="1.0.0" caption="System timer">
+      <register-group name="SysTick" caption="System timer">
+        <register name="CSR" offset="0x0" rw="RW" size="4" access-size="4" initval="0x4" caption="SysTick Control and Status Register">
+          <bitfield name="ENABLE" caption="SysTick Counter Enable" mask="0x1" values="SysTick_CSR__ENABLE"/>
+          <bitfield name="TICKINT" caption="SysTick Exception Request Enable" mask="0x2" values="SysTick_CSR__TICKINT"/>
+          <bitfield name="CLKSOURCE" caption="Clock Source 0=external, 1=processor" mask="0x4" values="SysTick_CSR__CLKSOURCE"/>
+          <bitfield name="COUNTFLAG" caption="Timer counted to 0 since last read of register" mask="0x10000"/>
+        </register>
+        <register name="RVR" offset="0x4" rw="RW" size="4" access-size="4" caption="SysTick Reload Value Register">
+          <bitfield name="RELOAD" caption="Value to load into the SysTick Current Value Register when the counter reaches 0" mask="0xFFFFFF"/>
+        </register>
+        <register name="CVR" offset="0x8" rw="RW" size="4" access-size="4" caption="SysTick Current Value Register">
+          <bitfield name="CURRENT" caption="Current value at the time the register is accessed" mask="0xFFFFFF"/>
+        </register>
+        <register name="CALIB" offset="0xC" rw="R" size="4" access-size="4" initval="0" caption="SysTick Calibration Value Register">
+          <bitfield name="TENMS" caption="Reload value to use for 10ms timing" mask="0xFFFFFF"/>
+          <bitfield name="SKEW" caption="TENMS is rounded from non-integer ratio" mask="0x40000000" values="SysTick_CALIB__SKEW"/>
+          <bitfield name="NOREF" caption="No Separate Reference Clock" mask="0x80000000" values="SysTick_CALIB__NOREF"/>
+        </register>
+      </register-group>
+      <value-group name="SysTick_CSR__CLKSOURCE">
+        <value name="VALUE_0" caption="External clock" value="0"/>
+        <value name="VALUE_1" caption="Processor clock" value="1"/>
+      </value-group>
+      <value-group name="SysTick_CSR__ENABLE">
+        <value name="VALUE_0" caption="Counter disabled" value="0"/>
+        <value name="VALUE_1" caption="Counter enabled" value="1"/>
+      </value-group>
+      <value-group name="SysTick_CSR__TICKINT">
+        <value name="VALUE_0" caption="Counting down to 0 does not assert the SysTick exception request" value="0"/>
+        <value name="VALUE_1" caption="Counting down to 0 asserts the SysTick exception request" value="1"/>
+      </value-group>
+      <value-group name="SysTick_CALIB__NOREF">
+        <value name="VALUE_0" caption="The reference clock is provided" value="0"/>
+        <value name="VALUE_1" caption="The reference clock is not provided" value="1"/>
+      </value-group>
+      <value-group name="SysTick_CALIB__SKEW">
+        <value name="VALUE_0" caption="10ms calibration value is exact" value="0"/>
+        <value name="VALUE_1" caption="10ms calibration value is inexact, because of the clock frequency" value="1"/>
+      </value-group>
+    </module>
+    <module name="SystemControl" version="1.0.0" caption="System Control Registers">
+      <register-group name="SystemControl" caption="System Control Registers">
+        <register name="CPUID" offset="0xD00" rw="R" size="4" access-size="4" initval="0x410CC601" caption="CPUID Base Register">
+          <bitfield name="REVISION" caption="Minor revision number" mask="0xF"/>
+          <bitfield name="PARTNO" caption="Processor Part Number, 0xC60=Cortex-M0+" mask="0xFFF0"/>
+          <bitfield name="ARCHITECTURE" caption="Processor Architecture, 0xC=ARMv6-M" mask="0xF0000"/>
+          <bitfield name="VARIANT" caption="Major revision number" mask="0xF00000"/>
+          <bitfield name="IMPLEMENTER" caption="Implementer code, ARM=0x41" mask="0xFF000000"/>
+        </register>
+        <register name="ICSR" offset="0xD04" rw="RW" size="4" access-size="4" initval="0x00000000" caption="Interrupt Control and State Register">
+          <bitfield name="VECTACTIVE" caption="Debug: Exception number of currently executing exception, or 0 if thread mode" mask="0x1FF"/>
+          <bitfield name="VECTPENDING" caption="Exception number of the highest priority pending enabled exception" mask="0x1FF000"/>
+          <bitfield name="ISRPENDING" caption="Debug: NVIC interrupt pending" mask="0x400000"/>
+          <bitfield name="ISRPREEMPT" caption="Debug: Pending exception serviced on exit from debug halt" mask="0x800000"/>
+          <bitfield name="PENDSTCLR" caption="SysTick exception clear-pending bit" mask="0x2000000" values="SystemControl_ICSR__PENDSTCLR"/>
+          <bitfield name="PENDSTSET" caption="SysTick exception set-pending bit" mask="0x4000000" values="SystemControl_ICSR__PENDSTSET"/>
+          <bitfield name="PENDSVCLR" caption="PendSV clear-pending bit" mask="0x8000000" values="SystemControl_ICSR__PENDSVCLR"/>
+          <bitfield name="PENDSVSET" caption="PendSV set-pending bit" mask="0x10000000" values="SystemControl_ICSR__PENDSVSET"/>
+          <bitfield name="NMIPENDSET" caption="NMI set-pending bit" mask="0x80000000" values="SystemControl_ICSR__NMIPENDSET"/>
+        </register>
+        <register name="VTOR" offset="0xD08" rw="RW" size="4" access-size="4" initval="0x00000000" caption="Vector Table Offset Register">
+          <bitfield name="TBLOFF" caption="Vector table base offset" mask="0xFFFFFF80"/>
+        </register>
+        <register name="AIRCR" offset="0xD0C" rw="RW" size="4" access-size="4" initval="0x00000000" caption="Application Interrupt and Reset Control Register">
+          <bitfield name="VECTCLRACTIVE" caption="Debug: Clear state information" mask="0x2"/>
+          <bitfield name="SYSRESETREQ" caption="System Reset Request" mask="0x4" values="SystemControl_AIRCR__SYSRESETREQ"/>
+          <bitfield name="ENDIANNESS" caption="Data Endianness, 0=little, 1=big" mask="0x8000" values="SystemControl_AIRCR__ENDIANNESS"/>
+          <bitfield name="VECTKEY" caption="Register key (0x05FA)" mask="0xFFFF0000"/>
+        </register>
+        <register name="SCR" offset="0xD10" rw="RW" size="4" access-size="4" initval="0x00000000" caption="System Control Register">
+          <bitfield name="SLEEPONEXIT" caption="Sleep-On-Exit when exiting Handler mode" mask="0x2" values="SystemControl_SCR__SLEEPONEXIT"/>
+          <bitfield name="SLEEPDEEP" caption="Uses Deep Sleep as low power mode" mask="0x4" values="SystemControl_SCR__SLEEPDEEP"/>
+          <bitfield name="SEVONPEND" caption="Send Event on Pending bit" mask="0x10" values="SystemControl_SCR__SEVONPEND"/>
+        </register>
+        <register name="CCR" offset="0xD14" rw="R" size="4" access-size="4" initval="0x00000204" caption="Configuration and Control Register">
+          <bitfield name="UNALIGN_TRP" caption="Unaligned accesses generates a Hard Fault" mask="0x8" values="SystemControl_CCR__UNALIGN_TRP"/>
+          <bitfield name="STKALIGN" caption="Stack 8-byte aligned on exception entry" mask="0x200" values="SystemControl_CCR__STKALIGN"/>
+        </register>
+        <register name="SHPR2" offset="0xD1C" rw="RW" size="4" access-size="4" initval="0x00000000" caption="System Handler Priority Register 2">
+          <bitfield name="PRI_11" caption="Priority of system handler 11, SVCall" mask="0xFF000000"/>
+        </register>
+        <register name="SHPR3" offset="0xD20" rw="RW" size="4" access-size="4" initval="0x00000000" caption="System Handler Priority Register 3">
+          <bitfield name="PRI_14" caption="Priority of system handler 14, PendSV" mask="0xFF0000"/>
+          <bitfield name="PRI_15" caption="Priority of system handler 15, SysTick exception" mask="0xFF000000"/>
+        </register>
+        <register name="SHCSR" offset="0xD24" rw="RW" size="4" access-size="4" initval="0x00000000" caption="System Handler Control and State Register">
+          <bitfield name="SVCALLPENDED" caption="no description available" mask="0x8000"/>
+        </register>
+        <register name="DFSR" offset="0xD30" rw="RW" size="4" access-size="4" initval="0x00000000" caption="Debug Fault Status Register">
+          <bitfield name="HALTED" caption="Halt request debug event active" mask="0x1"/>
+          <bitfield name="BKPT" caption="Breakpoint debug event" mask="0x2"/>
+          <bitfield name="DWTTRAP" caption="DWT debug event" mask="0x4"/>
+          <bitfield name="VCATCH" caption="Vector catch debug event" mask="0x8"/>
+          <bitfield name="EXTERNAL" caption="EDBGRQ debug event" mask="0x10"/>
+        </register>
+      </register-group>
+      <value-group name="SystemControl_ICSR__NMIPENDSET">
+        <value name="VALUE_0" caption="Write: no effect; read: NMI exception is not pending" value="0"/>
+        <value name="VALUE_1" caption="Write: changes NMI exception state to pending; read: NMI exception is pending" value="1"/>
+      </value-group>
+      <value-group name="SystemControl_ICSR__PENDSTCLR">
+        <value name="VALUE_0" caption="No effect" value="0"/>
+        <value name="VALUE_1" caption="Removes the pending state from the SysTick exception" value="1"/>
+      </value-group>
+      <value-group name="SystemControl_ICSR__PENDSTSET">
+        <value name="VALUE_0" caption="Write: no effect; read: SysTick exception is not pending" value="0"/>
+        <value name="VALUE_1" caption="Write: changes SysTick exception state to pending; read: SysTick exception is pending" value="1"/>
+      </value-group>
+      <value-group name="SystemControl_ICSR__PENDSVCLR">
+        <value name="VALUE_0" caption="No effect" value="0"/>
+        <value name="VALUE_1" caption="Removes the pending state from the PendSV exception" value="1"/>
+      </value-group>
+      <value-group name="SystemControl_ICSR__PENDSVSET">
+        <value name="VALUE_0" caption="Write: no effect; read: PendSV exception is not pending" value="0"/>
+        <value name="VALUE_1" caption="Write: changes PendSV exception state to pending; read: PendSV exception is pending" value="1"/>
+      </value-group>
+      <value-group name="SystemControl_AIRCR__ENDIANNESS">
+        <value name="VALUE_0" caption="Little-endian" value="0"/>
+        <value name="VALUE_1" caption="Big-endian" value="1"/>
+      </value-group>
+      <value-group name="SystemControl_AIRCR__SYSRESETREQ">
+        <value name="VALUE_0" caption="No system reset request" value="0"/>
+        <value name="VALUE_1" caption="Asserts a signal to the outer system that requests a reset" value="1"/>
+      </value-group>
+      <value-group name="SystemControl_SCR__SEVONPEND">
+        <value name="VALUE_0" caption="Only enabled interrupts or events can wakeup the processor, disabled interrupts are excluded" value="0"/>
+        <value name="VALUE_1" caption="Enabled events and all interrupts, including disabled interrupts, can wakeup the processor" value="1"/>
+      </value-group>
+      <value-group name="SystemControl_SCR__SLEEPDEEP">
+        <value name="VALUE_0" caption="Sleep" value="0"/>
+        <value name="VALUE_1" caption="Deep sleep" value="1"/>
+      </value-group>
+      <value-group name="SystemControl_SCR__SLEEPONEXIT">
+        <value name="VALUE_0" caption="O not sleep when returning to Thread mode" value="0"/>
+        <value name="VALUE_1" caption="Enter sleep, or deep sleep, on return from an ISR" value="1"/>
+      </value-group>
+      <value-group name="SystemControl_CCR__STKALIGN">
+        <value name="VALUE_0" caption="4-byte aligned" value="0"/>
+        <value name="VALUE_1" caption="8-byte aligned" value="1"/>
+      </value-group>
+      <value-group name="SystemControl_CCR__UNALIGN_TRP">
+        <value name="VALUE_0" caption="Do not trap unaligned halfword and word accesses" value="0"/>
+        <value name="VALUE_1" caption="Trap unaligned halfword and word accesses" value="1"/>
+      </value-group>
+    </module>
+  </modules>
   <pinouts>
     <pinout name="SAMD1xE" caption="SAMD1xE">
       <pin position="1" pad="PA02"/>
@@ -3293,7 +3192,6 @@
       <pin position="22" pad="PA25"/>
       <pin position="23" pad="GNDIO"/>
       <pin position="24" pad="VDDIO"/>
-      <pin position="DB" pad="GNDANA"/>
     </pinout>
   </pinouts>
 </avr-tools-device-file>
