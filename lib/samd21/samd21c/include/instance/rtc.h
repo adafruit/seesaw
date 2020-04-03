@@ -3,22 +3,23 @@
  *
  * \brief Instance description for RTC
  *
- * Copyright (c) 2017 Atmel Corporation,
- *                    a wholly owned subsidiary of Microchip Technology Inc.
+ * Copyright (c) 2018 Microchip Technology Inc.
  *
  * \asf_license_start
  *
  * \page License
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License.
  * You may obtain a copy of the Licence at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
@@ -87,7 +88,7 @@
 #define REG_RTC_MODE2_INTFLAG      (*(RwReg8 *)0x40001408UL) /**< \brief (RTC) MODE2 Interrupt Flag Status and Clear */
 #define REG_RTC_MODE2_CLOCK        (*(RwReg  *)0x40001410UL) /**< \brief (RTC) MODE2 Clock Value */
 #define REG_RTC_MODE2_ALARM_ALARM0 (*(RwReg  *)0x40001418UL) /**< \brief (RTC) MODE2_ALARM Alarm 0 Value */
-#define REG_RTC_MODE2_ALARM_MASK0  (*(RwReg  *)0x4000141CUL) /**< \brief (RTC) MODE2_ALARM Alarm 0 Mask */
+#define REG_RTC_MODE2_ALARM_MASK0  (*(RwReg8 *)0x4000141CUL) /**< \brief (RTC) MODE2_ALARM Alarm 0 Mask */
 #endif /* (defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__)) */
 
 /* ========== Instance parameters for RTC peripheral ========== */

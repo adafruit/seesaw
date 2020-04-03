@@ -1,30 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <device schemaVersion="1.2" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="CMSIS-SVD.xsd">
-  <vendor>Atmel Corporation</vendor>
-  <vendorID>ATMEL</vendorID>
+  <vendor>Microchip Technology Inc.</vendor>
+  <vendorID>MICROCHIP</vendorID>
   <name>ATSAMD21E15B</name>
   <series>SAMD21</series>
   <version>F</version>
-  <description>Atmel ATSAMD21E15B device: Cortex-M0+ Microcontroller with 32KB Flash, 4KB SRAM, 32-pin package (refer to http://www.atmel.com/devices/SAMD21E15B.aspx for more)</description>
+  <description>Microchip ATSAMD21E15B device: Cortex-M0+ Microcontroller with 32KB Flash, 4KB SRAM, 32-pin package</description>
   <licenseText>
-  ============================================================================\n
-                   Atmel Microcontroller Software Support\n
-  ============================================================================\n
-  Copyright (c) 2017 Atmel Corporation,\n
-                     a wholly owned subsidiary of Microchip Technology Inc.\n
+  Copyright (c) 2018 Microchip Technology Inc.\n
+\n
+  SPDX-License-Identifier: Apache-2.0\n
 \n
   Licensed under the Apache License, Version 2.0 (the "License");\n
   you may not use this file except in compliance with the License.\n
-  You may obtain a copy of the Licence at\n
+  You may obtain a copy of the License at\n
 \n
-      http://www.apache.org/licenses/LICENSE-2.0\n
+  http://www.apache.org/licenses/LICENSE-2.0\n
 \n
   Unless required by applicable law or agreed to in writing, software\n
   distributed under the License is distributed on an "AS IS" BASIS,\n
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n
   See the License for the specific language governing permissions and\n
-  limitations under the License.\n
-  ============================================================================
+  limitations under the License.
   </licenseText>
   <cpu>
     <name>CM0+</name>
@@ -35,6 +32,7 @@
     <vtorPresent>true</vtorPresent>
     <nvicPrioBits>2</nvicPrioBits>
     <vendorSystickConfig>false</vendorSystickConfig>
+    <deviceNumInterrupts>29</deviceNumInterrupts>
   </cpu>
   <headerSystemFilename>system_samd21</headerSystemFilename>
   <addressUnitBits>8</addressUnitBits>
@@ -57,7 +55,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>AC_INTREQ</name>
+        <name>AC</name>
         <value>24</value>
       </interrupt>
       <registers>
@@ -632,7 +630,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>ADC_INTREQ</name>
+        <name>ADC</name>
         <value>23</value>
       </interrupt>
       <registers>
@@ -1491,7 +1489,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>DAC_INTREQ</name>
+        <name>DAC</name>
         <value>25</value>
       </interrupt>
       <registers>
@@ -1740,7 +1738,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>DMAC_INTREQ</name>
+        <name>DMAC</name>
         <value>6</value>
       </interrupt>
       <registers>
@@ -3115,14 +3113,12 @@
           </fields>
         </register>
         <register>
-          <dim>2</dim>
-          <dimIncrement>0x4</dimIncrement>
-          <name>ENTRY%s</name>
-          <description>Coresight ROM Table Entry n</description>
+          <name>ENTRY0</name>
+          <description>CoreSight ROM Table Entry 0</description>
           <addressOffset>0x1000</addressOffset>
           <size>32</size>
           <access>read-only</access>
-          <resetValue>0x00000002</resetValue>
+          <resetValue>0x9F0FC002</resetValue>
           <fields>
             <field>
               <name>EPRES</name>
@@ -3147,8 +3143,16 @@
           </fields>
         </register>
         <register>
+          <name>ENTRY1</name>
+          <description>CoreSight ROM Table Entry 1</description>
+          <addressOffset>0x1004</addressOffset>
+          <size>32</size>
+          <access>read-only</access>
+          <resetValue>0x00003002</resetValue>
+        </register>
+        <register>
           <name>END</name>
-          <description>Coresight ROM Table End</description>
+          <description>CoreSight ROM Table End</description>
           <addressOffset>0x1008</addressOffset>
           <size>32</size>
           <access>read-only</access>
@@ -3163,7 +3167,7 @@
         </register>
         <register>
           <name>MEMTYPE</name>
-          <description>Coresight ROM Table Memory Type</description>
+          <description>CoreSight ROM Table Memory Type</description>
           <addressOffset>0x1FCC</addressOffset>
           <size>32</size>
           <access>read-only</access>
@@ -3378,7 +3382,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>EIC_INTREQ</name>
+        <name>EIC</name>
         <value>4</value>
       </interrupt>
       <registers>
@@ -4390,7 +4394,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>EVSYS_INTREQ</name>
+        <name>EVSYS</name>
         <value>8</value>
       </interrupt>
       <registers>
@@ -5444,6 +5448,11 @@
                   <description>Generic clock generator 7</description>
                   <value>0x7</value>
                 </enumeratedValue>
+                <enumeratedValue>
+                  <name>GCLK8</name>
+                  <description>Generic clock generator 8</description>
+                  <value>0x8</value>
+                </enumeratedValue>
               </enumeratedValues>
             </field>
             <field>
@@ -5520,8 +5529,8 @@
                   <value>0x7</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>FDPLL</name>
-                  <description>FDPLL output</description>
+                  <name>DPLL96M</name>
+                  <description>DPLL96M output</description>
                   <value>0x8</value>
                 </enumeratedValue>
               </enumeratedValues>
@@ -5646,7 +5655,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>I2S_INTREQ</name>
+        <name>I2S</name>
         <value>27</value>
       </interrupt>
       <registers>
@@ -6715,7 +6724,7 @@
     </peripheral>
     <peripheral>
       <name>NVMCTRL</name>
-      <version>2.0.2</version>
+      <version>2.0.3</version>
       <description>Non-Volatile Memory Controller</description>
       <groupName>NVMCTRL</groupName>
       <prependToName>NVMCTRL_</prependToName>
@@ -6726,7 +6735,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>NVMCTRL_INTREQ</name>
+        <name>NVMCTRL</name>
         <value>5</value>
       </interrupt>
       <registers>
@@ -7203,7 +7212,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>PM_INTREQ</name>
+        <name>PM</name>
         <value>0</value>
       </interrupt>
       <registers>
@@ -8246,7 +8255,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>RTC_INTREQ</name>
+        <name>RTC</name>
         <value>3</value>
       </interrupt>
       <registers>
@@ -9570,7 +9579,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>SERCOM0_INTREQ</name>
+        <name>SERCOM0</name>
         <value>9</value>
       </interrupt>
       <registers>
@@ -11290,7 +11299,7 @@
       <description>Serial Communication Interface 1</description>
       <baseAddress>0x42000C00</baseAddress>
       <interrupt>
-        <name>SERCOM1_INTREQ</name>
+        <name>SERCOM1</name>
         <value>10</value>
       </interrupt>
     </peripheral>
@@ -11299,7 +11308,7 @@
       <description>Serial Communication Interface 2</description>
       <baseAddress>0x42001000</baseAddress>
       <interrupt>
-        <name>SERCOM2_INTREQ</name>
+        <name>SERCOM2</name>
         <value>11</value>
       </interrupt>
     </peripheral>
@@ -11308,7 +11317,7 @@
       <description>Serial Communication Interface 3</description>
       <baseAddress>0x42001400</baseAddress>
       <interrupt>
-        <name>SERCOM3_INTREQ</name>
+        <name>SERCOM3</name>
         <value>12</value>
       </interrupt>
     </peripheral>
@@ -11325,7 +11334,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>SYSCTRL_INTREQ</name>
+        <name>SYSCTRL</name>
         <value>1</value>
       </interrupt>
       <registers>
@@ -12612,7 +12621,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>TC3_INTREQ</name>
+        <name>TC3</name>
         <value>18</value>
       </interrupt>
       <registers>
@@ -14344,7 +14353,7 @@
       <description>Basic Timer Counter 4</description>
       <baseAddress>0x42003000</baseAddress>
       <interrupt>
-        <name>TC4_INTREQ</name>
+        <name>TC4</name>
         <value>19</value>
       </interrupt>
     </peripheral>
@@ -14353,7 +14362,7 @@
       <description>Basic Timer Counter 5</description>
       <baseAddress>0x42003400</baseAddress>
       <interrupt>
-        <name>TC5_INTREQ</name>
+        <name>TC5</name>
         <value>20</value>
       </interrupt>
     </peripheral>
@@ -14370,7 +14379,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>TCC0_INTREQ</name>
+        <name>TCC0</name>
         <value>15</value>
       </interrupt>
       <registers>
@@ -17013,7 +17022,7 @@
       <description>Timer Counter Control 1</description>
       <baseAddress>0x42002400</baseAddress>
       <interrupt>
-        <name>TCC1_INTREQ</name>
+        <name>TCC1</name>
         <value>16</value>
       </interrupt>
     </peripheral>
@@ -17022,7 +17031,7 @@
       <description>Timer Counter Control 2</description>
       <baseAddress>0x42002800</baseAddress>
       <interrupt>
-        <name>TCC2_INTREQ</name>
+        <name>TCC2</name>
         <value>17</value>
       </interrupt>
     </peripheral>
@@ -17039,7 +17048,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>USB_INTREQ</name>
+        <name>USB</name>
         <value>7</value>
       </interrupt>
       <registers>
@@ -19088,7 +19097,7 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>WDT_INTREQ</name>
+        <name>WDT</name>
         <value>2</value>
       </interrupt>
       <registers>

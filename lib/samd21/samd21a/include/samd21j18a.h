@@ -3,22 +3,23 @@
  *
  * \brief Header file for SAMD21J18A
  *
- * Copyright (c) 2016 Atmel Corporation,
- *                    a wholly owned subsidiary of Microchip Technology Inc.
+ * Copyright (c) 2018 Microchip Technology Inc.
  *
  * \asf_license_start
  *
  * \page License
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License.
  * You may obtain a copy of the Licence at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
@@ -57,22 +58,28 @@ typedef volatile       uint8_t  RoReg8;  /**< Read only  8-bit register (volatil
 #endif
 typedef volatile       uint32_t WoReg;   /**< Write only 32-bit register (volatile unsigned int) */
 typedef volatile       uint16_t WoReg16; /**< Write only 16-bit register (volatile unsigned int) */
-typedef volatile       uint32_t WoReg8;  /**< Write only  8-bit register (volatile unsigned int) */
+typedef volatile       uint8_t  WoReg8;  /**< Write only  8-bit register (volatile unsigned int) */
 typedef volatile       uint32_t RwReg;   /**< Read-Write 32-bit register (volatile unsigned int) */
 typedef volatile       uint16_t RwReg16; /**< Read-Write 16-bit register (volatile unsigned int) */
 typedef volatile       uint8_t  RwReg8;  /**< Read-Write  8-bit register (volatile unsigned int) */
-#if !defined(_UL)
-#define _U(x)          x ## U            /**< C code: Unsigned integer literal constant value */
-#define _L(x)          x ## L            /**< C code: Long integer literal constant value */
-#define _UL(x)         x ## UL           /**< C code: Unsigned Long integer literal constant value */
 #endif
-#else
-#if !defined(_UL)
-#define _U(x)          x                 /**< Assembler: Unsigned integer literal constant value */
-#define _L(x)          x                 /**< Assembler: Long integer literal constant value */
-#define _UL(x)         x                 /**< Assembler: Unsigned Long integer literal constant value */
+
+#if !defined(SKIP_INTEGER_LITERALS)
+#if defined(_U_) || defined(_L_) || defined(_UL_)
+  #error "Integer Literals macros already defined elsewhere"
 #endif
-#endif
+
+#if !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))
+/* Macros that deal with adding suffixes to integer literal constants for C/C++ */
+#define _U_(x)         x ## U            /**< C code: Unsigned integer literal constant value */
+#define _L_(x)         x ## L            /**< C code: Long integer literal constant value */
+#define _UL_(x)        x ## UL           /**< C code: Unsigned Long integer literal constant value */
+#else /* Assembler */
+#define _U_(x)         x                 /**< Assembler: Unsigned integer literal constant value */
+#define _L_(x)         x                 /**< Assembler: Long integer literal constant value */
+#define _UL_(x)        x                 /**< Assembler: Unsigned Long integer literal constant value */
+#endif /* !(defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__)) */
+#endif /* SKIP_INTEGER_LITERALS */
 
 /* ************************************************************************** */
 /**  CMSIS DEFINITIONS FOR SAMD21J18A */
@@ -83,13 +90,13 @@ typedef volatile       uint8_t  RwReg8;  /**< Read-Write  8-bit register (volati
 /** Interrupt Number Definition */
 typedef enum IRQn
 {
-  /******  Cortex-M0+ Processor Exceptions Numbers ******************************/
-  NonMaskableInt_IRQn      = -14,/**<  2 Non Maskable Interrupt                 */
-  HardFault_IRQn           = -13,/**<  3 Cortex-M0+ Hard Fault Interrupt        */
-  SVCall_IRQn              = -5, /**< 11 Cortex-M0+ SV Call Interrupt           */
-  PendSV_IRQn              = -2, /**< 14 Cortex-M0+ Pend SV Interrupt           */
-  SysTick_IRQn             = -1, /**< 15 Cortex-M0+ System Tick Interrupt       */
-  /******  SAMD21J18A-specific Interrupt Numbers ***********************/
+  /******  Cortex-M0+ Processor Exceptions Numbers *******************/
+  NonMaskableInt_IRQn      = -14,/**<  2 Non Maskable Interrupt      */
+  HardFault_IRQn           = -13,/**<  3 Hard Fault Interrupt        */
+  SVCall_IRQn              = -5, /**< 11 SV Call Interrupt           */
+  PendSV_IRQn              = -2, /**< 14 Pend SV Interrupt           */
+  SysTick_IRQn             = -1, /**< 15 System Tick Interrupt       */
+  /******  SAMD21J18A-specific Interrupt Numbers *********************/
   PM_IRQn                  =  0, /**<  0 SAMD21J18A Power Manager (PM) */
   SYSCTRL_IRQn             =  1, /**<  1 SAMD21J18A System Control (SYSCTRL) */
   WDT_IRQn                 =  2, /**<  2 SAMD21J18A Watchdog Timer (WDT) */
@@ -129,7 +136,7 @@ typedef struct _DeviceVectors
 
   /* Cortex-M handlers */
   void* pfnReset_Handler;
-  void* pfnNMI_Handler;
+  void* pfnNonMaskableInt_Handler;
   void* pfnHardFault_Handler;
   void* pvReservedM12;
   void* pvReservedM11;
@@ -138,7 +145,7 @@ typedef struct _DeviceVectors
   void* pvReservedM8;
   void* pvReservedM7;
   void* pvReservedM6;
-  void* pfnSVC_Handler;
+  void* pfnSVCall_Handler;
   void* pvReservedM4;
   void* pvReservedM3;
   void* pfnPendSV_Handler;
@@ -178,9 +185,9 @@ typedef struct _DeviceVectors
 
 /* Cortex-M0+ processor handlers */
 void Reset_Handler               ( void );
-void NMI_Handler                 ( void );
+void NonMaskableInt_Handler      ( void );
 void HardFault_Handler           ( void );
-void SVC_Handler                 ( void );
+void SVCall_Handler              ( void );
 void PendSV_Handler              ( void );
 void SysTick_Handler             ( void );
 
@@ -218,7 +225,6 @@ void I2S_Handler                 ( void );
  * \brief Configuration of the Cortex-M0+ Processor and Core Peripherals
  */
 
-#define LITTLE_ENDIAN          1        
 #define __CM0PLUS_REV          1         /*!< Core revision r0p1 */
 #define __MPU_PRESENT          0         /*!< MPU present or not */
 #define __NVIC_PRIO_BITS       2         /*!< Number of bits used for Priority Levels */
@@ -289,6 +295,7 @@ void I2S_Handler                 ( void );
 #include "instance/pac2.h"
 #include "instance/pm.h"
 #include "instance/port.h"
+#include "instance/ptc.h"
 #include "instance/rtc.h"
 #include "instance/sercom0.h"
 #include "instance/sercom1.h"
@@ -544,21 +551,21 @@ void I2S_Handler                 ( void );
 /**  MEMORY MAPPING DEFINITIONS FOR SAMD21J18A */
 /* ************************************************************************** */
 
-#define FLASH_SIZE            _UL(0x00040000) /* 256 kB */
+#define FLASH_SIZE            _UL_(0x00040000) /* 256 kB */
 #define FLASH_PAGE_SIZE       64
 #define FLASH_NB_OF_PAGES     4096
 #define FLASH_USER_PAGE_SIZE  64
-#define HMCRAMC0_SIZE         _UL(0x00008000) /* 32 kB */
+#define HMCRAMC0_SIZE         _UL_(0x00008000) /* 32 kB */
 
-#define FLASH_ADDR            _UL(0x00000000) /**< FLASH base address */
-#define FLASH_USER_PAGE_ADDR  _UL(0x00800000) /**< FLASH_USER_PAGE base address */
-#define HMCRAMC0_ADDR         _UL(0x20000000) /**< HMCRAMC0 base address */
-#define HPB0_ADDR             _UL(0x40000000) /**< HPB0 base address */
-#define HPB1_ADDR             _UL(0x41000000) /**< HPB1 base address */
-#define HPB2_ADDR             _UL(0x42000000) /**< HPB2 base address */
-#define PPB_ADDR              _UL(0xE0000000) /**< PPB base address */
+#define FLASH_ADDR            _UL_(0x00000000) /**< FLASH base address */
+#define FLASH_USER_PAGE_ADDR  _UL_(0x00800000) /**< FLASH_USER_PAGE base address */
+#define HMCRAMC0_ADDR         _UL_(0x20000000) /**< HMCRAMC0 base address */
+#define HPB0_ADDR             _UL_(0x40000000) /**< HPB0 base address */
+#define HPB1_ADDR             _UL_(0x41000000) /**< HPB1 base address */
+#define HPB2_ADDR             _UL_(0x42000000) /**< HPB2 base address */
+#define PPB_ADDR              _UL_(0xE0000000) /**< PPB base address */
 
-#define DSU_DID_RESETVALUE    _UL(0x10010300)
+#define DSU_DID_RESETVALUE    _UL_(0x10010300)
 #define EIC_EXTINT_NUM        16
 #define PORT_GROUPS           2
 
