@@ -3,7 +3,7 @@
 
 import sys, argparse, logging, os
 
-get_input = raw_input
+get_input = input
 
 new_config = {
     'i2c' : { 'active' : True }
