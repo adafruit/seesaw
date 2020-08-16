@@ -46,8 +46,8 @@
 #define CONFIG_I2C_SLAVE_FLOW_CONTROL 0
 #define CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN 0
 #define CONFIG_I2C_SLAVE_ADDR 0x49
-#define PIN_ADDR_0 16
-#define PIN_ADDR_1 17
+//#define PIN_ADDR_0 16
+//#define PIN_ADDR_1 17
 
 //* ============== SERCOM =================== *//
 #define CONFIG_SERCOM0 0
@@ -67,3 +67,16 @@
 #define CONFIG_NEOPIXEL 0
  #define CONFIG_NEOPIXEL_BUF_MAX 0
 #endif
+
+
+//* =========== DPI ASSIST ================ *//
+
+#define CONFIG_DPIASSIST 1
+
+#define CONFIG_DPIASSIST_DAT 2
+#define CONFIG_DPIASSIST_CLK 3
+#define CONFIG_DPIASSIST_CS  4
+#define CONFIG_DPIASSIST_RST 5
+#define CONFIG_DPIASSIST_VSYNCIRQ 16 // PA16 (CHANGE ME)
+#define CONFIG_DPIASSIST_LED 27
+#define CONFIG_DPIASSIST_DISPLAY 61408

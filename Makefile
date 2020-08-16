@@ -110,6 +110,7 @@ SOURCES = $(COMMON_SRC) \
 	source/System.cpp \
 	source/AOKeypad.cpp \
 	source/AOEncoder.cpp \
+	source/DPIassist.cpp \
 	bsp/bsp_adc.cpp \
 	bsp/bsp_gpio.cpp \
 	bsp/bsp_sercom.cpp \

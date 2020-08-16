@@ -35,6 +35,7 @@
 #include "AOKeypad.h"
 #include "AOUSB.h"
 #include "AOEncoder.h"
+#include "DPIassist.h"
 
 #include "bsp_gpio.h"
 
@@ -111,6 +112,12 @@ static AOUSB usb;
 #if CONFIG_ENCODER
 static AOEncoder encoder;
 #endif
+
+void Main_SysTick_Hook(void) {
+#if CONFIG_DPIASSIST
+  DPIassist_tick();
+#endif
+}
 
 int main(void)
 {
@@ -193,7 +200,15 @@ int main(void)
 #if CONFIG_ENCODER
 	encoder.Start(PRIO_ENCODER);
 #endif
-	
+
+#if CONFIG_DPIASSIST
+    DPIassist_init(CONFIG_DPIASSIST_CLK, CONFIG_DPIASSIST_DAT, 
+                   CONFIG_DPIASSIST_CS, CONFIG_DPIASSIST_RST);
+    DPIassist_reset();
+
+    DPIassist_sendInit();
+#endif
+    
 	//publish a start request
 	Evt *evt = new SystemStartReq(0);
 	QF::PUBLISH(evt, dummy);

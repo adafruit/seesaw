@@ -90,12 +90,12 @@ void BspInit() {
 #if CONFIG_EEPROM
 	eeprom_init();
 #endif
-/*
+    
 	GCLK->CLKCTRL.reg = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID(GCLK_CLKCTRL_ID_EIC_Val));
 	// Enable EIC
 	EIC->CTRL.bit.ENABLE = 1;
 	while (EIC->STATUS.bit.SYNCBUSY == 1) { }
-		*/
+	   
 
 #ifdef ENABLE_LOGGING
     pinPeripheral(CONFIG_LOG_UART_PIN_TX, CONFIG_LOG_UART_PIN_TX_MUX);
@@ -133,6 +133,8 @@ extern "C" {
 #if defined(SAMD21)
 		tickReset();
 #endif
+
+        Main_SysTick_Hook();
 		
 		QXK_ISR_EXIT();
 	}

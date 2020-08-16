@@ -70,6 +70,7 @@ extern "C" {
 void initiateReset(int ms);
 void tickReset();
 void cancelReset();
+void Main_SysTick_Hook(void);
 
 #ifdef __cplusplus
 }
