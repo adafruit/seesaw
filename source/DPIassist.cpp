@@ -5,6 +5,8 @@
 
 #include "DPIassist.h"
 
+#if CONFIG_DPIASSIST
+
 static int _clk, _dat, _cs, _rst;
 
 const uint8_t init61408[] = {
@@ -169,16 +171,17 @@ void DPIassist_transfer(uint8_t data, bool dc) {
   
   gpio_write(PORTA, _clk, 1);
   gpio_write(PORTA, _cs, 0);
-  delay_us(1);
+  delay_us(3);
   for (int b = 8; b >= 0; b--) {
     gpio_write(PORTA, _dat, (send >> b) & 0x1);
-    delay_us(1);
+    delay_us(3);
     gpio_write(PORTA, _clk, 0);
-    delay_us(1);
+    delay_us(3);
     gpio_write(PORTA, _clk, 1);
   }
-  delay_us(1);
+  delay_us(3);
   gpio_write(PORTA, _cs, 1);
   return;
 }
 
+#endif

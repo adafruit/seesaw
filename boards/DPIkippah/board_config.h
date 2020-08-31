@@ -46,8 +46,8 @@
 #define CONFIG_I2C_SLAVE_FLOW_CONTROL 0
 #define CONFIG_I2C_SLAVE_FLOW_CONTROL_PIN 0
 #define CONFIG_I2C_SLAVE_ADDR 0x49
-//#define PIN_ADDR_0 16
-//#define PIN_ADDR_1 17
+#define PIN_ADDR_0 14
+#define PIN_ADDR_1 15
 
 //* ============== SERCOM =================== *//
 #define CONFIG_SERCOM0 0
