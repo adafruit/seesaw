@@ -11,8 +11,8 @@
 #include "bsp_dma.h"
 
 __attribute__((__aligned__(16))) static DmacDescriptor // 128 bit alignment
-  _descriptor[DMAC_CH_NUM] SECTION_DMAC_DESCRIPTOR,
-  _writeback[DMAC_CH_NUM]  SECTION_DMAC_DESCRIPTOR;
+  _descriptor[DMAC_CH_NUM] SECTION_DMAC_DESCRIPTOR = {0},
+  _writeback[DMAC_CH_NUM]  SECTION_DMAC_DESCRIPTOR = {0};
 
 void dmac_init()
 {
@@ -27,8 +27,6 @@ void dmac_init()
     // Initialize descriptor list addresses
     DMAC->BASEADDR.bit.BASEADDR = (uint32_t)_descriptor;
     DMAC->WRBADDR.bit.WRBADDR   = (uint32_t)_writeback;
-    memset(_descriptor, 0, sizeof(_descriptor));
-    memset(_writeback , 0, sizeof(_writeback));
 
     // Re-enable DMA controller with all priority levels
     DMAC->CTRL.reg = DMAC_CTRL_DMAENABLE | DMAC_CTRL_LVLEN(0xF);
