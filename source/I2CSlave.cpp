@@ -209,17 +209,13 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
             }
 #endif
 			val ^= addrmask;
-
+            val &= addrmask;
 
 #endif
 
 			FLOW_CONTROL_INIT
 
-#if CONFIG_ADDR_2 || CONFIG_ADDR_3 || CONFIG_ADDR_4
-			initSlaveWIRE( me->m_sercom, addr + (val & 0x1F) );
-#else
-			initSlaveWIRE( me->m_sercom, addr + (val & 0x03) );
-#endif
+			initSlaveWIRE( me->m_sercom, addr + val);
 
 			enableWIRE( me->m_sercom );
 			NVIC_ClearPendingIRQ( CONFIG_I2C_SLAVE_IRQn );

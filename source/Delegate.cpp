@@ -792,11 +792,12 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 #if CONFIG_INTERRUPT
 		case GPIO_INTERRUPT_RECEIVED: {
 			LOG_EVENT(e);
-			Q_ASSERT(Delegate::m_intflag > 0);
-			
-			Evt *evt = new InterruptSetReq( SEESAW_INTERRUPT_GPIO );
-			QF::PUBLISH(evt, me);
-			
+
+			if (Delegate::m_intflag > 0) {
+              Evt *evt = new InterruptSetReq( SEESAW_INTERRUPT_GPIO );
+              QF::PUBLISH(evt, me);
+			}
+
 			status = Q_HANDLED();
 			break;
 		}
