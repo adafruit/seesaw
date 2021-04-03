@@ -164,7 +164,7 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
 #else
 			uint8_t addr = CONFIG_I2C_SLAVE_ADDR;
 #endif
-			uint32_t val = 0;
+			volatile uint32_t val = 0;
 			addr = (addr > 0x7F ? CONFIG_I2C_SLAVE_ADDR : addr);
 
 #if CONFIG_ADDR
@@ -180,30 +180,40 @@ QState I2CSlave::Stopped(I2CSlave * const me, QEvt const * const e) {
 				asm("nop");
 			}
 			
-#if CONFIG_ADDR_2 || CONFIG_ADDR_3 || CONFIG_ADDR_4
 			uint32_t addrs = gpio_read_bulk();
-			val = ((addrs & (1ul << PIN_ADDR_0)) > 0) 
-				| (((addrs & (1ul << PIN_ADDR_1)) > 0) << 1)
-				| (((addrs & (CONFIG_ADDR_2 << PIN_ADDR_2)) > 0) << 2)
-				| (((addrs & (CONFIG_ADDR_3 << PIN_ADDR_3)) > 0) << 3)
-				| (((addrs & (CONFIG_ADDR_4 << PIN_ADDR_4)) > 0) << 4);
-			
-			val ^= 0x1F;
-#else
-			val = (gpio_read_bulk() >> PIN_ADDR_0);
-			val ^= 0x03;
+            uint32_t addrmask = 0x3;
+            if (addrs & (1ul << PIN_ADDR_0)) {
+              val |= (1 << 0);
+            }
+            if (addrs & (1ul << PIN_ADDR_1)) {
+              val |= (1 << 1);
+            }
+#if CONFIG_ADDR_2
+            addrmask |= (1 << 2);
+            if (addrs & (1ul << PIN_ADDR_2)) {
+              val |= (1 << 2);
+            }
 #endif
-
+#if CONFIG_ADDR_3
+            addrmask |= (1 << 3);
+            if (addrs & (1ul << PIN_ADDR_3)) {
+              val |= (1 << 3);
+            }
+#endif
+#if CONFIG_ADDR_4
+            addrmask |= (1 << 4);
+            if (addrs & (1ul << PIN_ADDR_4)) {
+              val |= (1 << 4);
+            }
+#endif
+			
+			val ^= addrmask;
+            val &= addrmask;
 #endif
 
 			FLOW_CONTROL_INIT
 
-#if CONFIG_ADDR_2 || CONFIG_ADDR_3 || CONFIG_ADDR_4
-			initSlaveWIRE( me->m_sercom, addr + (val & 0x1F) );
-#else
-			initSlaveWIRE( me->m_sercom, addr + (val & 0x03) );
-#endif
-
+			initSlaveWIRE( me->m_sercom, addr + val );
 			enableWIRE( me->m_sercom );
 			NVIC_ClearPendingIRQ( CONFIG_I2C_SLAVE_IRQn );
 			
