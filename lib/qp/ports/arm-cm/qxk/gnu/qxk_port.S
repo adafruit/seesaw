@@ -454,7 +454,7 @@ Thread_ret:
 
 
 /*****************************************************************************
-* The NMI_Handler exception handler is used for returning back to the
+* The NonMaskableInt_Handler exception handler is used for returning back to the
 * interrupted task. The NMI exception simply removes its own interrupt
 * stack frame from the stack and returns to the preempted task using the
 * interrupt stack frame that must be at the top of the stack.
@@ -462,11 +462,11 @@ Thread_ret:
 * NOTE: The NMI exception is entered with interrupts DISABLED, so it needs
 * to re-enable interrupts before it returns to the preempted task.
 *****************************************************************************/
-    .section .text.NMI_Handler
-    .global NMI_Handler
-    .type   NMI_Handler, %function
+    .section .text.NonMaskableInt_Handler
+    .global NonMaskableInt_Handler
+    .type   NonMaskableInt_Handler, %function
 
-NMI_Handler:
+NonMaskableInt_Handler:
     ADD     sp,sp,#(8*4)      /* remove one 8-register exception frame */
 
   .if  __ARM_ARCH == 6        /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
@@ -481,7 +481,7 @@ NMI_Handler:
     BX      lr                /* return to the preempted task */
   .endif                      /* VFP available */
   .endif                      /* M3/M4/M7 */
-  .size   NMI_Handler, . - NMI_Handler
+  .size   NonMaskableInt_Handler, . - NonMaskableInt_Handler
 
 
 /*****************************************************************************
