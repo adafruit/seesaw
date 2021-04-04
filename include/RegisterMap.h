@@ -274,14 +274,14 @@
 	#define SEESAW_ENCODER_STATUS 0x00
 
 	/****** Writing a 1 to any bit in this register will enable the interrupt *****/
-	#define SEESAW_ENCODER_INTENSET 0x02
+	#define SEESAW_ENCODER_INTENSET 0x10
 
 	/****** Writing a 1 to any bit in this register will disable the interrupt *****/
-	#define SEESAW_ENCODER_INTENCLR 0x03
+	#define SEESAW_ENCODER_INTENCLR 0x20
 
 	/****** POSITION *****/
-	#define SEESAW_ENCODER_POSITION 0x04
+	#define SEESAW_ENCODER_POSITION 0x30
 
 	/****** DELTA *****/
-	#define SEESAW_ENCODER_DELTA 0x05
+	#define SEESAW_ENCODER_DELTA 0x40
 

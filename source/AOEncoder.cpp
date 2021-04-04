@@ -48,6 +48,17 @@ using namespace FW;
 
 #define ENCODER0_INPUT_MASK ((1UL << CONFIG_ENCODER0_A_PIN) | (1UL << CONFIG_ENCODER0_B_PIN))
 
+#ifdef CONFIG_ENCODER1_A_PIN
+#define ENCODER1_INPUT_MASK ((1UL << CONFIG_ENCODER1_A_PIN) | (1UL << CONFIG_ENCODER1_B_PIN))
+#endif
+#ifdef CONFIG_ENCODER2_A_PIN
+#define ENCODER2_INPUT_MASK ((1UL << CONFIG_ENCODER2_A_PIN) | (1UL << CONFIG_ENCODER2_B_PIN))
+#endif
+#ifdef CONFIG_ENCODER3_A_PIN
+#define ENCODER3_INPUT_MASK ((1UL << CONFIG_ENCODER3_A_PIN) | (1UL << CONFIG_ENCODER3_B_PIN))
+#endif
+
+
 volatile int32_t AOEncoder::m_value[CONFIG_NUM_ENCODERS];
 volatile int32_t AOEncoder::m_delta[CONFIG_NUM_ENCODERS];
 volatile uint8_t AOEncoder::m_enc_prev_pos[CONFIG_NUM_ENCODERS];
@@ -124,16 +135,25 @@ QState AOEncoder::Stopped(AOEncoder * const me, QEvt const * const e) {
         case ENCODER_START_REQ: {
             LOG_EVENT(e);
 
-            uint8_t encodernum = 0;
-
-            AOEncoder::m_value[encodernum] = 0;
-            AOEncoder::m_delta[encodernum] = 0;
-            AOEncoder::m_enc_prev_pos[encodernum] = 0;
-            AOEncoder::m_enc_flags[encodernum] = 0;
-            me->m_status[encodernum].reg = 0;
-            me->m_inten[encodernum].reg = 0;
+            for (uint8_t encodernum=0; encodernum<CONFIG_NUM_ENCODERS; encodernum++) {
+              AOEncoder::m_value[encodernum] = 0;
+              AOEncoder::m_delta[encodernum] = 0;
+              AOEncoder::m_enc_prev_pos[encodernum] = 0;
+              AOEncoder::m_enc_flags[encodernum] = 0;
+              me->m_status[encodernum].reg = 0;
+              me->m_inten[encodernum].reg = 0;
+            }
 
             uint32_t mask = ENCODER0_INPUT_MASK;
+#ifdef ENCODER1_INPUT_MASK
+            mask |= ENCODER1_INPUT_MASK;
+#endif
+#ifdef ENCODER2_INPUT_MASK
+            mask |= ENCODER2_INPUT_MASK;
+#endif
+#ifdef ENCODER3_INPUT_MASK
+            mask |= ENCODER3_INPUT_MASK;
+#endif
             gpio_dirclr_bulk(PORTA, mask);
 			gpio_pullenset_bulk(mask);
 			gpio_outset_bulk(PORTA, mask);
@@ -182,20 +202,23 @@ QState AOEncoder::Started(AOEncoder * const me, QEvt const * const e) {
             LOG_EVENT(e);
             EncoderReadRegReq const &req = static_cast<EncoderReadRegReq const &>(*e);
             Fifo *dest = req.getDest();
-			uint8_t reg = req.getReg();
-            uint8_t encodernum = 0;
+			uint8_t reg = req.getReg() & 0xF0;
+            uint8_t encodernum = req.getReg() & 0x0F;
 
             uint32_t c = 0;
             Evt *evt;
 
             switch(reg) {
-                case SEESAW_ENCODER_POSITION: {
+                case SEESAW_ENCODER_POSITION:
+                {
                     c = static_cast<uint32_t>(AOEncoder::m_value[encodernum]);
                     goto data_read;
                     break;
                 }
 
-                case SEESAW_ENCODER_DELTA:{
+
+                case SEESAW_ENCODER_DELTA:
+                {
                     c = static_cast<uint32_t>(AOEncoder::m_delta[encodernum]);
                     goto data_read;
                     break;
@@ -207,7 +230,6 @@ QState AOEncoder::Started(AOEncoder * const me, QEvt const * const e) {
                 }
             }
 data_read:
-            encodernum = 0;
             AOEncoder::m_delta[encodernum] = 0;
             if(AOEncoder::m_status[encodernum].bit.DATA_RDY){
                 if(AOEncoder::m_inten[encodernum].bit.DATA_RDY){
@@ -227,13 +249,16 @@ reg_read_exit:
             status = Q_HANDLED();
             break;
         }
-        case ENCODER_WRITE_REG_REQ: {
+        case ENCODER_WRITE_REG_REQ: 
+        {
             LOG_EVENT(e);
             EncoderWriteRegReq const &req = static_cast<EncoderWriteRegReq const &>(*e);
             int32_t c = req.getValue();
-            uint8_t encodernum = 0;
 
-            switch (req.getReg()){
+            uint8_t cmd = req.getReg() & 0xF0;
+            uint8_t encodernum =  req.getReg() & 0x0F;
+            
+            switch (cmd) {
                 case SEESAW_ENCODER_POSITION:
                     AOEncoder::m_value[encodernum] = c;
                     break;
@@ -259,80 +284,108 @@ reg_read_exit:
 
 void CONFIG_ENCODER_HANDLER( void ) {
 
-    uint32_t in = gpio_read_bulk() & ENCODER0_INPUT_MASK;
+  uint32_t mask = ENCODER0_INPUT_MASK;
+#ifdef ENCODER1_INPUT_MASK
+    mask |= ENCODER1_INPUT_MASK;
+#endif
+#ifdef ENCODER2_INPUT_MASK
+    mask |= ENCODER2_INPUT_MASK;
+#endif
+#ifdef ENCODER3_INPUT_MASK
+    mask |= ENCODER3_INPUT_MASK;
+#endif
+    uint32_t in = gpio_read_bulk() & mask;
 
-    uint8_t encodernum = 0;
+    for (uint8_t encodernum=0; encodernum<CONFIG_NUM_ENCODERS; encodernum++) {
 
-    int8_t enc_action = 0; // 1 or -1 if moved, sign is direction
+      int8_t enc_action = 0; // 1 or -1 if moved, sign is direction
 
-    uint8_t enc_cur_pos = 0;
-    // read in the encoder state first
-    enc_cur_pos |= ((BIT_IS_CLEAR(in, CONFIG_ENCODER0_A_PIN)) << 0) | ((BIT_IS_CLEAR(in, CONFIG_ENCODER0_B_PIN)) << 1);
+      uint8_t enc_cur_pos = 0;
+      // read in the encoder state first
+      if (encodernum == 0) {
+        enc_cur_pos |= ((BIT_IS_CLEAR(in, CONFIG_ENCODER0_A_PIN)) << 0) | ((BIT_IS_CLEAR(in, CONFIG_ENCODER0_B_PIN)) << 1);
+      }
+#if defined(CONFIG_ENCODER1_A_PIN)
+      if (encodernum == 1) {
+        enc_cur_pos |= ((BIT_IS_CLEAR(in, CONFIG_ENCODER1_A_PIN)) << 0) | ((BIT_IS_CLEAR(in, CONFIG_ENCODER1_B_PIN)) << 1);      
+      }
+#endif
+#if defined(CONFIG_ENCODER2_A_PIN)
+      if (encodernum == 2) {
+        enc_cur_pos |= ((BIT_IS_CLEAR(in, CONFIG_ENCODER2_A_PIN)) << 0) | ((BIT_IS_CLEAR(in, CONFIG_ENCODER2_B_PIN)) << 1);      
+      }
+#endif
+#if defined(CONFIG_ENCODER3_A_PIN)
+      if (encodernum == 3) {
+        enc_cur_pos |= ((BIT_IS_CLEAR(in, CONFIG_ENCODER3_A_PIN)) << 0) | ((BIT_IS_CLEAR(in, CONFIG_ENCODER3_B_PIN)) << 1);      
+      }
+#endif
 
-    // if any rotation at all
-    if (enc_cur_pos != AOEncoder::m_enc_prev_pos[encodernum])
-    {
-        if (AOEncoder::m_enc_prev_pos[encodernum] == 0x00)
+      // if any rotation at all
+      if (enc_cur_pos != AOEncoder::m_enc_prev_pos[encodernum])
         {
-        // this is the first edge
-        if (enc_cur_pos == 0x01) {
-            AOEncoder::m_enc_flags[encodernum] |= (1 << 0);
-        }
-        else if (enc_cur_pos == 0x02) {
-            AOEncoder::m_enc_flags[encodernum] |= (1 << 1);
-        }
-        }
-
-        if (enc_cur_pos == 0x03)
-        {
-        // this is when the encoder is in the middle of a "step"
-        AOEncoder::m_enc_flags[encodernum] |= (1 << 4);
-        }
-        else if (enc_cur_pos == 0x00)
-        {
-        // this is the final edge
-        if (AOEncoder::m_enc_prev_pos[encodernum] == 0x02) {
-            AOEncoder::m_enc_flags[encodernum] |= (1 << 2);
-        }
-        else if (AOEncoder::m_enc_prev_pos[encodernum] == 0x01) {
-            AOEncoder::m_enc_flags[encodernum] |= (1 << 3);
-        }
-
-        // check the first and last edge
-        // or maybe one edge is missing, if missing then require the middle state
-        // this will reject bounces and false movements
-        if (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 0) && (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 2) || BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 4))) {
-            enc_action = 1;
-        }
-        else if (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 2) && (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 0) || BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 4))) {
-            enc_action = 1;
-        }
-        else if (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 1) && (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 3) || BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 4))) {
-            enc_action = -1;
-        }
-        else if (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 3) && (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 1) || BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 4))) {
-            enc_action = -1;
-        }
-
-        AOEncoder::m_enc_flags[encodernum] = 0; // reset for next time
-        }
-    }
-
-    AOEncoder::m_enc_prev_pos[encodernum] = enc_cur_pos;
-
-    if(enc_action != 0){
-        AOEncoder::m_value[encodernum] += enc_action;
-        AOEncoder::m_delta[encodernum] += enc_action;
-
-        //if interrupts are enabled fire an interrupt
-        if(!AOEncoder::m_status[encodernum].bit.DATA_RDY){
-            AOEncoder::m_status[encodernum].bit.DATA_RDY = 1;
-
-            if(AOEncoder::m_inten[encodernum].bit.DATA_RDY){
-                Evt *evt = new InterruptSetReq( SEESAW_INTERRUPT_ENCODER_DATA_RDY );
-                QF::PUBLISH(evt, 0);
+          if (AOEncoder::m_enc_prev_pos[encodernum] == 0x00)
+            {
+              // this is the first edge
+              if (enc_cur_pos == 0x01) {
+                AOEncoder::m_enc_flags[encodernum] |= (1 << 0);
+              }
+              else if (enc_cur_pos == 0x02) {
+                AOEncoder::m_enc_flags[encodernum] |= (1 << 1);
+              }
+            }
+          
+          if (enc_cur_pos == 0x03)
+            {
+              // this is when the encoder is in the middle of a "step"
+              AOEncoder::m_enc_flags[encodernum] |= (1 << 4);
+            }
+          else if (enc_cur_pos == 0x00)
+            {
+              // this is the final edge
+              if (AOEncoder::m_enc_prev_pos[encodernum] == 0x02) {
+                AOEncoder::m_enc_flags[encodernum] |= (1 << 2);
+              }
+              else if (AOEncoder::m_enc_prev_pos[encodernum] == 0x01) {
+                AOEncoder::m_enc_flags[encodernum] |= (1 << 3);
+              }
+              
+              // check the first and last edge
+              // or maybe one edge is missing, if missing then require the middle state
+              // this will reject bounces and false movements
+              if (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 0) && (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 2) || BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 4))) {
+                enc_action = 1;
+              }
+              else if (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 2) && (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 0) || BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 4))) {
+                enc_action = 1;
+              }
+              else if (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 1) && (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 3) || BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 4))) {
+                enc_action = -1;
+              }
+              else if (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 3) && (BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 1) || BIT_IS_SET(AOEncoder::m_enc_flags[encodernum], 4))) {
+                enc_action = -1;
+              }
+              
+              AOEncoder::m_enc_flags[encodernum] = 0; // reset for next time
             }
         }
+
+      AOEncoder::m_enc_prev_pos[encodernum] = enc_cur_pos;
+      
+      if(enc_action != 0){
+        AOEncoder::m_value[encodernum] += enc_action;
+        AOEncoder::m_delta[encodernum] += enc_action;
+        
+        //if interrupts are enabled fire an interrupt
+        if(!AOEncoder::m_status[encodernum].bit.DATA_RDY){
+          AOEncoder::m_status[encodernum].bit.DATA_RDY = 1;
+          
+          if(AOEncoder::m_inten[encodernum].bit.DATA_RDY){
+            Evt *evt = new InterruptSetReq( SEESAW_INTERRUPT_ENCODER_DATA_RDY );
+            QF::PUBLISH(evt, 0);
+          }
+        }
+      }
     }
 
     //clear the interrupt
