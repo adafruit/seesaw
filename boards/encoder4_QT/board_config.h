@@ -41,11 +41,15 @@
 
 //* ============== ENCODER =================== *//
 #define CONFIG_ENCODER 1
-#define CONFIG_NUM_ENCODERS 2
+#define CONFIG_NUM_ENCODERS 4
 #define CONFIG_ENCODER0_A_PIN 8
 #define CONFIG_ENCODER0_B_PIN 9
 #define CONFIG_ENCODER1_A_PIN 10
 #define CONFIG_ENCODER1_B_PIN 11
+#define CONFIG_ENCODER2_A_PIN 2
+#define CONFIG_ENCODER2_B_PIN 3
+#define CONFIG_ENCODER3_A_PIN 4
+#define CONFIG_ENCODER3_B_PIN 5
 
 //* ============== SERCOM =================== *//
 #define CONFIG_SERCOM0 0
@@ -62,6 +66,6 @@
 #define CONFIG_DAP 0
 
 //* =========== NEOPIXEL ================ *//
-#define CONFIG_NEOPIXEL 0
- #define CONFIG_NEOPIXEL_BUF_MAX 0
+#define CONFIG_NEOPIXEL 1
+ #define CONFIG_NEOPIXEL_BUF_MAX 64
 #endif
