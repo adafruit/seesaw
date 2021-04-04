@@ -23,35 +23,27 @@
 #define CONFIG_DAC 0
 
 //* ============== TIMER =================== *//
-#define CONFIG_TIMER 1
-#define CONFIG_TIMER_PWM_OUT0 1
-#define CONFIG_TIMER_PWM_OUT0_PIN 4
-#define CONFIG_TIMER_PWM_OUT0_TC TC1
-#define CONFIG_TIMER_PWM_OUT0_WO 0
-#define CONFIG_TIMER_PWM_OUT1 1
-#define CONFIG_TIMER_PWM_OUT1_PIN 5
-#define CONFIG_TIMER_PWM_OUT1_TC TC1
-#define CONFIG_TIMER_PWM_OUT1_WO 1
-#define CONFIG_TIMER_PWM_OUT2 1
-#define CONFIG_TIMER_PWM_OUT2_PIN 6
-#define CONFIG_TIMER_PWM_OUT2_TC TC2
-#define CONFIG_TIMER_PWM_OUT2_WO 0
+#define CONFIG_TIMER 0
+#define CONFIG_TIMER_PWM_OUT0 0
+#define CONFIG_TIMER_PWM_OUT1 0
+#define CONFIG_TIMER_PWM_OUT2 0
 #define CONFIG_TIMER_PWM_OUT3 0
 
 //* ============== INTERRUPT =================== *//
 #define CONFIG_INTERRUPT 1
-#define CONFIG_INTERRUPT_PIN 10
+#define CONFIG_INTERRUPT_PIN 25
 
 //* ============== I2C SLAVE =================== *//
 #define CONFIG_I2C_SLAVE 1
-#define PIN_ADDR_0 24
-#define PIN_ADDR_1 3
+#define PIN_ADDR_0 5
+#define PIN_ADDR_1 6
 #define CONFIG_I2C_SLAVE_ADDR 0x36
 
 //* ============== ENCODER =================== *//
 #define CONFIG_ENCODER 1
-#define CONFIG_ENCODER_A_PIN 9
-#define CONFIG_ENCODER_B_PIN 8
+#define CONFIG_NUM_ENCODERS 1
+#define CONFIG_ENCODER0_A_PIN 9
+#define CONFIG_ENCODER0_B_PIN 8
 
 //* ============== SERCOM =================== *//
 #define CONFIG_SERCOM0 0

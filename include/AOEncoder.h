@@ -47,10 +47,10 @@ public:
         QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
     }
 
-    static volatile int32_t m_value;
-    static volatile int32_t m_delta;
-    static volatile uint8_t m_enc_prev_pos;
-    static volatile uint8_t m_enc_flags;
+    static volatile int32_t m_value[CONFIG_NUM_ENCODERS];
+    static volatile int32_t m_delta[CONFIG_NUM_ENCODERS];
+    static volatile uint8_t m_enc_prev_pos[CONFIG_NUM_ENCODERS];
+    static volatile uint8_t m_enc_flags[CONFIG_NUM_ENCODERS];
 
     // The status register
     union status {
@@ -68,7 +68,7 @@ public:
         } bit;
         uint8_t reg;
     };
-    static volatile status m_status;
+    static volatile status m_status[CONFIG_NUM_ENCODERS];
 
     union inten {
         struct {
@@ -77,7 +77,7 @@ public:
         } bit;
         uint8_t reg;
 	};
-	static inten m_inten;
+	static inten m_inten[CONFIG_NUM_ENCODERS];
 
 protected:
     static QState InitialPseudoState(AOEncoder * const me, QEvt const * const e);
