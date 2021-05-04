@@ -39,10 +39,6 @@
 using namespace QP;
 using namespace FW;
 
-#if !defined(CONFIG_NUM_ENCODERS)
-#define CONFIG_NUM_ENCODERS 1
-#endif
-
 class AOEncoder : public QActive {
 public:
     AOEncoder();
