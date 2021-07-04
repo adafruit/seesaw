@@ -1,34 +1,43 @@
-/* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2014 ARM Ltd.
+/* -------------------------------------------------------------------------- 
+ * Copyright (c) 2013-2016 ARM Limited. All rights reserved.
  *
- * This software is provided 'as-is', without any express or implied warranty.
- * In no event will the authors be held liable for any damages arising from
- * the use of this software. Permission is granted to anyone to use this
- * software for any purpose, including commercial applications, and to alter
- * it and redistribute it freely, subject to the following restrictions:
+ * SPDX-License-Identifier: Apache-2.0
  *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software. If you use this software in
- *    a product, an acknowledgment in the product documentation would be
- *    appreciated but is not required.
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
+ * www.apache.org/licenses/LICENSE-2.0
  *
- * 3. This notice may not be removed or altered from any source distribution.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
- *
- * $Date:        12. May 2014
- * $Revision:    V2.01
+ * $Date:        02. March 2016
+ * $Revision:    V2.4
  *
  * Project:      MCI Driver Definitions for NXP LPC18xx
- * ---------------------------------------------------------------------------*/
+ * -------------------------------------------------------------------------- */
 
 #ifndef __MCI_LPC18XX_H
 #define __MCI_LPC18XX_H
 
 #include "Driver_MCI.h"
 
+#include "LPC18xx.h"
+#include "SCU_LPC18xx.h"
+#include "MCI_LPC18xx.h"
+
+#include "RTE_Device.h"
+#include "RTE_Components.h"
+
+#include <string.h>
+
+#if (defined(RTE_Drivers_MCI0) && !RTE_SDMMC)
+#error "SDMMC not configured in RTE_Device.h!"
+#endif
 /* Driver flag definitions */
 #define MCI_INIT            (1 << 0)    /* MCI initialized         */
 #define MCI_POWER           (1 << 1)    /* MCI powered on          */
@@ -42,12 +51,47 @@
                                    ARM_MCI_RESPONSE_SHORT_BUSY | \
                                    ARM_MCI_RESPONSE_LONG)
 
+#define MCI_TRANSFER_EVENT_Msk   (ARM_MCI_EVENT_TRANSFER_ERROR   | \
+                                  ARM_MCI_EVENT_TRANSFER_TIMEOUT | \
+                                  ARM_MCI_EVENT_TRANSFER_COMPLETE)
+
+#define MCI_COMMAND_EVENT_Msk    (ARM_MCI_EVENT_COMMAND_ERROR   | \
+                                  ARM_MCI_EVENT_COMMAND_TIMEOUT | \
+                                  ARM_MCI_EVENT_COMMAND_COMPLETE)
+
+#define MCI_CONTROL_EVENT_Msk    (ARM_MCI_EVENT_CARD_INSERTED | \
+                                  ARM_MCI_EVENT_CARD_REMOVED  | \
+                                  ARM_MCI_EVENT_SDIO_INTERRUPT)
+
 #define SDMMC_CTRL_RESET_BITMASK (SDMMC_CTRL_CONTROLLER_RESET | \
                                   SDMMC_CTRL_FIFO_RESET       | \
                                   SDMMC_CTRL_DMA_RESET)
 
+#define SDMMC_RINT_ERR_SDIO_Msk  (SDMMC_RINTSTS_RE            | \
+                                  SDMMC_RINTSTS_RCRC          | \
+                                  SDMMC_RINTSTS_DCRC          | \
+                                  SDMMC_RINTSTS_RTO_BAR       | \
+                                  SDMMC_RINTSTS_DRTO_BDS      | \
+                                  SDMMC_RINTSTS_HLE           | \
+                                  SDMMC_RINTSTS_SBE           | \
+                                  SDMMC_RINTSTS_EBE           | \
+                                  SDMMC_RINTSTS_SDIO_INTERRUPT)
 
-/* Descriptor bit definitions */
+/* Clock Control Unit register bits */
+#define CCU_CLK_CFG_RUN   (1 << 0)
+#define CCU_CLK_CFG_AUTO  (1 << 1)
+#define CCU_CLK_STAT_RUN  (1 << 0)
+
+/* Reset Generation Unit register bits */
+#define RGU_RESET_CTRL0_SDIO_RST (1 << 20)
+
+/* CGU BASE_SDIO_CLK CLK_SEL definition */
+#define SDIO_CLK_SEL_PLL1 0x09
+
+/* Number of DMA descriptors */
+#define SDMMC_DMA_DESC_CNT 4
+
+/* DMA descriptor bit definitions */
 #define SDMMC_DMA_DESC_DIC (1U <<  1)   /* Disable Interrupt on Completion    */
 #define SDMMC_DMA_DESC_LD  (1U <<  2)   /* Last Descriptor                    */
 #define SDMMC_DMA_DESC_FS  (1U <<  3)   /* First Descriptor                   */

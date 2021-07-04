@@ -1,12 +1,55 @@
+/*
+ * Copyright (c) 2013-2018 Arm Limited. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include "Driver_USART.h"
-#include "RTE_Components.h"
 
-#define ARM_USART_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 00)
+#define ARM_USART_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 0)  /* driver version */
 
-// Driver Version
-static const ARM_DRIVER_VERSION usart_driver_version = { ARM_USART_API_VERSION, ARM_USART_DRV_VERSION };
+/* Driver Version */
+static const ARM_DRIVER_VERSION DriverVersion = { 
+    ARM_USART_API_VERSION,
+    ARM_USART_DRV_VERSION
+};
 
-// end group USART_control
+/* Driver Capabilities */
+static const ARM_USART_CAPABILITIES DriverCapabilities = {
+    1, /* supports UART (Asynchronous) mode */
+    0, /* supports Synchronous Master mode */
+    0, /* supports Synchronous Slave mode */
+    0, /* supports UART Single-wire mode */
+    0, /* supports UART IrDA mode */
+    0, /* supports UART Smart Card mode */
+    0, /* Smart Card Clock generator available */
+    0, /* RTS Flow Control available */
+    0, /* CTS Flow Control available */
+    0, /* Transmit completed event: \ref ARM_USART_EVENT_TX_COMPLETE */
+    0, /* Signal receive character timeout event: \ref ARM_USART_EVENT_RX_TIMEOUT */
+    0, /* RTS Line: 0=not available, 1=available */
+    0, /* CTS Line: 0=not available, 1=available */
+    0, /* DTR Line: 0=not available, 1=available */
+    0, /* DSR Line: 0=not available, 1=available */
+    0, /* DCD Line: 0=not available, 1=available */
+    0, /* RI Line: 0=not available, 1=available */
+    0, /* Signal CTS change event: \ref ARM_USART_EVENT_CTS */
+    0, /* Signal DSR change event: \ref ARM_USART_EVENT_DSR */
+    0, /* Signal DCD change event: \ref ARM_USART_EVENT_DCD */
+    0  /* Signal RI change event: \ref ARM_USART_EVENT_RI */
+};
 
 //
 //   Functions
@@ -105,4 +148,3 @@ ARM_DRIVER_USART Driver_USART = {
     ARM_USART_SetModemControl,
     ARM_USART_GetModemStatus
 };
-

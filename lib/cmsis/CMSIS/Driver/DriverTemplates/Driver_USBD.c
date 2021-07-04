@@ -1,19 +1,36 @@
+/*
+ * Copyright (c) 2013-2018 Arm Limited. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
 #include "Driver_USBD.h"
 
-#include "RTE_Components.h"
-
-/* USBD Driver ****************************************************************/
-
-#define ARM_USBD_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 0) /* USBD driver version */
+#define ARM_USBD_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 0) /* driver version */
 
 /* Driver Version */
-static const ARM_DRIVER_VERSION usbd_driver_version = { ARM_USBD_API_VERSION, ARM_USBD_DRV_VERSION };
+static const ARM_DRIVER_VERSION usbd_driver_version = { 
+    ARM_USBD_API_VERSION,
+    ARM_USBD_DRV_VERSION
+};
 
 /* Driver Capabilities */
 static const ARM_USBD_CAPABILITIES usbd_driver_capabilities = {
-    0, // vbus_detection
-    0, // event_vbus_on
-    0, // event_vbus_off
+    0, /* vbus_detection */
+    0, /* event_vbus_on */
+    0  /* event_vbus_off */
 };
 
 //
@@ -121,7 +138,7 @@ void ARM_USBD_SignalEndpointEvent(uint8_t ep_addr, uint32_t ep_event)
 
 // End USBD Interface
 
-ARM_DRIVER_USBD Driver_USBD0 =
+ARM_DRIVER_USBD Driver_USBD =
 {
     ARM_USBD_GetVersion,
     ARM_USBD_GetCapabilities,
@@ -133,6 +150,7 @@ ARM_DRIVER_USBD Driver_USBD0 =
     ARM_USBD_DeviceGetState,
     ARM_USBD_DeviceRemoteWakeup,
     ARM_USBD_DeviceSetAddress,
+    ARM_USBD_ReadSetupPacket,
     ARM_USBD_EndpointConfigure,
     ARM_USBD_EndpointUnconfigure,
     ARM_USBD_EndpointStall,
@@ -141,4 +159,3 @@ ARM_DRIVER_USBD Driver_USBD0 =
     ARM_USBD_EndpointTransferAbort,
     ARM_USBD_GetFrameNumber
 };
-
