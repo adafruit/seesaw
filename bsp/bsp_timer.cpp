@@ -119,7 +119,9 @@ void setFreq( uint8_t pwm, uint16_t freq )
         p.tc->COUNT16.CTRLA.bit.ENABLE = 0;
         syncTC_16(p.tc);
         p.tc->COUNT16.CTRLA.bit.PRESCALER = prescale;
-        enableTimer(p.tc);
+        if (freq > 0){
+          enableTimer(p.tc);
+        }
 #ifdef USE_TCC_TIMERS
     }
     else{
