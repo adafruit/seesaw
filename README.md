@@ -55,6 +55,22 @@ conditionally subscribe the `System` object to the new START, START_CFM, STOP, a
 
 lastly, route any desired read and write host commands to the new module in the switch statement in the `DELEGATE_PROCESS_COMMAND` event in `source/Delegate.cpp`
 
+### Building with docker
+
+First build the `adafruit-seesaw-builder` container:
+
+```
+docker build --platform linux/amd64 -f scripts/adafruit-seesaw-builder.Dockerfile --tag adafruit-seesaw-builder .
+```
+
+Then use it to build, e.g.:
+
+```
+docker run --platform linux/amd64 -v "$(pwd):/seesaw" -w /seesaw adafruit-seesaw-builder make BOARD=samd09Breakout
+```
+
+Since the above make command mounts the current directory as a docker volume, build files will show up in `build/` as usual.  
+
 # Future Work
 
 Much of the boilerplate work listed above could be automated away using the preprocessor and other build tools so only the new module files would need to be edited.
