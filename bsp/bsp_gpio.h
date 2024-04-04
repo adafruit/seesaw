@@ -43,6 +43,10 @@ inline void gpio_outclr_bulk(int port, uint32_t mask) {
 	PORT->Group[port].OUTCLR.reg = mask;
 }
 
+inline void gpio_toggle_bulk(int port, uint32_t mask) {
+	PORT->Group[port].OUTTGL.reg = mask;
+}
+
 void gpio_pullenset_bulk(uint32_t mask, uint8_t port = 0);
 
 void gpio_pullenclr_bulk(uint32_t mask, uint8_t port = 0);

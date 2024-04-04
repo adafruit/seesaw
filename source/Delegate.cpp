@@ -502,6 +502,24 @@ QState Delegate::Started(Delegate * const me, QEvt const * const e) {
 								
 								break;
 							}
+							case SEESAW_GPIO_BULK_TOGGLE: {
+								uint8_t pins[4];
+								fifo->Read(pins, 4);
+								len-=4;
+
+								uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+								gpio_toggle_bulk(PORTA, combined & CONFIG_GPIO_A_MASK);
+#ifdef HAS_PORTB
+                                if(len > 0){
+                                    fifo->Read(pins, 4);
+                                    len-=4;
+
+                                    uint32_t combined = ((uint32_t)pins[0] << 24) | ((uint32_t)pins[1] << 16) | ((uint32_t)pins[2] << 8) | (uint32_t)pins[3];
+                                    gpio_toggle_bulk(PORTB, combined & CONFIG_GPIO_B_MASK);
+                                }
+#endif
+								break;
+							}
 							case SEESAW_GPIO_INTENSET: {
 								uint8_t pins[4];
 								fifo->Read(pins, 4);
