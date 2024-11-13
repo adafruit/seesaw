@@ -51,7 +51,6 @@
 //* ============== SERCOM =================== *//
 #define CONFIG_SERCOM0 0
 #define CONFIG_SERCOM1 0
-#define CONFIG_SERCOM1 0
 #define CONFIG_SERCOM2 0
 
 //These are only available on samd21
