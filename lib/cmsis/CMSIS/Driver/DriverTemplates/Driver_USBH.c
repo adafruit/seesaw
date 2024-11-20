@@ -1,21 +1,41 @@
-#include <stdint.h>
-#include <string.h>
-
+/*
+ * Copyright (c) 2013-2018 Arm Limited. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
 #include "Driver_USBH.h"
 
-#include "RTE_Components.h"
+/* USB Host Driver */
 
-#define ARM_USBH_EHCI_DRIVER_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 00)
+#define ARM_USBH_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 0) /* driver version */
 
 /* Driver Version */
-static const ARM_DRIVER_VERSION usbh_ehci_driver_version = { ARM_USBH_API_VERSION, ARM_USBH_EHCI_DRIVER_VERSION };
-
-/* Driver Capabilities */
-static const ARM_USBH_HCI_CAPABILITIES usbh_ehci_driver_capabilities = {
-    0x0001, /* Root HUB available Ports Mask   */
+static const ARM_DRIVER_VERSION usbh_driver_version = { 
+    ARM_USBH_API_VERSION,
+    ARM_USBH_DRV_VERSION
 };
 
-static ARM_USBH_HCI_Interrupt_t        handle_interrupt;
+/* Driver Capabilities */
+static const ARM_USBH_CAPABILITIES usbd_driver_capabilities = {
+    0x0001, /* Root HUB available Ports Mask   */
+    0,      /* Automatic SPLIT packet handling */
+    0,      /* Signal Connect event */
+    0,      /* Signal Disconnect event */
+    0       /* Signal Overcurrent event */
+};
 
 //
 // Functions
@@ -133,6 +153,19 @@ void ARM_USBH_SignalEndpointEvent(ARM_USBH_EP_HANDLE ep_hndl, uint32_t event)
     // function body
 }
 
+/* USB Host HCI (OHCI/EHCI) Driver */
+
+/* Driver Version */
+static const ARM_DRIVER_VERSION usbh_hci_driver_version = { 
+    ARM_USBH_API_VERSION,
+    ARM_USBH_DRV_VERSION
+};
+
+/* Driver Capabilities */
+static const ARM_USBH_HCI_CAPABILITIES usbh_hci_driver_capabilities = {
+    0x0001  /* Root HUB available Ports Mask   */
+};
+
 //
 // Functions
 //
@@ -145,7 +178,7 @@ ARM_USBH_HCI_CAPABILITIES ARM_USBH_HCI_GetCapabilities(void)
 {
 }
 
-int32_t ARM_USBH_HCI_Initialize(ARM_USBH_HCI_Interrupt_t *cb_interrupt)
+int32_t ARM_USBH_HCI_Initialize(ARM_USBH_HCI_Interrupt_t cb_interrupt)
 {
 }
 
@@ -155,7 +188,7 @@ int32_t ARM_USBH_HCI_Uninitialize(void)
 
 int32_t ARM_USBH_HCI_PowerControl(ARM_POWER_STATE state)
 {
-	    switch (state)
+    switch (state)
     {
     case ARM_POWER_OFF:
         break;
@@ -168,7 +201,7 @@ int32_t ARM_USBH_HCI_PowerControl(ARM_POWER_STATE state)
 
     default:
         return ARM_DRIVER_ERROR_UNSUPPORTED;
-    }	
+    }
 }
 
 int32_t ARM_USBH_HCI_PortVbusOnOff(uint8_t port, bool vbus)
@@ -190,4 +223,3 @@ ARM_DRIVER_USBH_HCI Driver_USBH_HCI = {
     ARM_USBH_HCI_PowerControl,
     ARM_USBH_HCI_PortVbusOnOff
 };
-

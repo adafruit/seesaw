@@ -1,12 +1,54 @@
+/*
+ * Copyright (c) 2013-2018 Arm Limited. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include "Driver_ETH_MAC.h"
 
-#include "RTE_Components.h"
+#define ARM_ETH_MAC_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 0) /* driver version */
 
-#define ARM_ETH_MAC_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 00) /* driver version */
+/* Driver Version */
+static const ARM_DRIVER_VERSION DriverVersion = {
+    ARM_ETH_MAC_API_VERSION,
+    ARM_ETH_MAC_DRV_VERSION
+};
 
-#if (defined(RTE_Drivers_ETH_MAC0) && !RTE_ENET)
-#error "Ethernet not configured in RTE_Device.h!"
-#endif
+/* Driver Capabilities */
+static const ARM_ETH_MAC_CAPABILITIES DriverCapabilities = {
+    0, /* 1 = IPv4 header checksum verified on receive */
+    0, /* 1 = IPv6 checksum verification supported on receive */
+    0, /* 1 = UDP payload checksum verified on receive */
+    0, /* 1 = TCP payload checksum verified on receive */
+    0, /* 1 = ICMP payload checksum verified on receive */
+    0, /* 1 = IPv4 header checksum generated on transmit */
+    0, /* 1 = IPv6 checksum generation supported on transmit */
+    0, /* 1 = UDP payload checksum generated on transmit */
+    0, /* 1 = TCP payload checksum generated on transmit */
+    0, /* 1 = ICMP payload checksum generated on transmit */
+    0, /* Ethernet Media Interface type */
+    0, /* 1 = driver provides initial valid MAC address */
+    0, /* 1 = callback event \ref ARM_ETH_MAC_EVENT_RX_FRAME generated */
+    0, /* 1 = callback event \ref ARM_ETH_MAC_EVENT_TX_FRAME generated */
+    0, /* 1 = wakeup event \ref ARM_ETH_MAC_EVENT_WAKEUP generated */
+    0  /* 1 = Precision Timer supported */
+};
+
+//
+//  Functions
+//
 
 ARM_DRIVER_VERSION ARM_ETH_MAC_GetVersion(void)
 {
@@ -162,8 +204,6 @@ void ARM_ETH_MAC_SignalEvent(uint32_t event)
 {
 }
 
-// end group eth_mac_control
-
 // End ETH MAC Interface
 
 ARM_DRIVER_ETH_MAC Driver_ETH_MAC =
@@ -186,4 +226,3 @@ ARM_DRIVER_ETH_MAC Driver_ETH_MAC =
     ARM_ETH_MAC_PHY_Read,
     ARM_ETH_MAC_PHY_Write
 };
-
