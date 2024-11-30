@@ -26,13 +26,15 @@ CXXFLAGS = $(COMMON_FLAGS) \
 -ffunction-sections -fdata-sections \
 -fno-rtti -fno-exceptions -c -std=c++11 \
 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)" \
+-flto \
 $(WFLAGS)
 
 LDFLAGS= $(COMMON_FLAGS) \
 -Wall -Werror -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--unresolved-symbols=report-all -Wl,--warn-common \
 -Wl,--warn-section-align -Wl,--warn-unresolved-symbols \
 -save-temps \
---specs=nano.specs --specs=nosys.specs
+--specs=nano.specs --specs=nosys.specs \
+-flto
 BUILD_PATH=build/$(BOARD)
 
 QPPORT = lib/qp/ports/arm-cm/qxk/gnu
