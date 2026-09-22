@@ -324,6 +324,38 @@ void CONFIG_ENCODER_HANDLER( void ) {
       // if any rotation at all
       if (enc_cur_pos != AOEncoder::m_enc_prev_pos[encodernum])
         {
+#if CONFIG_ENCODER_RKJXT1F
+          // Save init state into m_enc_flags if moving
+          if (enc_cur_pos == 0b10 || enc_cur_pos == 0b01)
+            {
+              AOEncoder::m_enc_flags[encodernum] = AOEncoder::m_enc_prev_pos[encodernum];
+            }
+          // Final edge low: forward click if B was high last, else reverse click
+          else if (enc_cur_pos == 0b00 && AOEncoder::m_enc_flags[encodernum] != 0b00)
+            {
+              if (AOEncoder::m_enc_prev_pos[encodernum] == 0b10)
+                {
+                  enc_action = +1;
+                }
+              if (AOEncoder::m_enc_prev_pos[encodernum] == 0b01)
+                {
+                  enc_action = -1;
+                }
+            }
+          // Final edge high: forward click if B was high last, else reverse click
+          else if (enc_cur_pos == 0b11 && AOEncoder::m_enc_flags[encodernum] != 0b11)
+            {
+              if (AOEncoder::m_enc_prev_pos[encodernum] == 0b01)
+                {
+                  enc_action = +1;
+                }
+              if (AOEncoder::m_enc_prev_pos[encodernum] == 0b10)
+                {
+                  enc_action = -1;
+                }
+            }
+        }
+#else
           if (AOEncoder::m_enc_prev_pos[encodernum] == 0x00)
             {
               // this is the first edge
@@ -369,6 +401,7 @@ void CONFIG_ENCODER_HANDLER( void ) {
               AOEncoder::m_enc_flags[encodernum] = 0; // reset for next time
             }
         }
+#endif
 
       AOEncoder::m_enc_prev_pos[encodernum] = enc_cur_pos;
       

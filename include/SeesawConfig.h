@@ -627,6 +627,10 @@
 #define CONFIG_ENCODER0_B_PIN 9
 #endif
 
+#ifndef CONFIG_ENCODER_RKJXT1F
+#define CONFIG_ENCODER_RKJXT1F 0
+#endif
+
 //* ============== GPIO ================= *//
 #ifndef CONFIG_NO_ACTIVITY_LED
 #define CONFIG_ACTIVITY_LED 1ul
